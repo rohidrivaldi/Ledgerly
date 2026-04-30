@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# env files
+.env
+.env.local
+
+# Dicoding / Internal guidelines
+*.zip
+
+# build output
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# logs
+*.log
+npm-debug.log*
+
+# bot wa terpisah (repo lain di pterodactyl)
+bot-wa/

@@ -1,0 +1,14 @@
+{
+  "name": "ledgerly",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sistem Manajemen Inventori dan Keuangan UMKM",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}

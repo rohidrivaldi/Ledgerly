@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ledgerly — Sistem Manajemen Inventori & Keuangan UMKM</title>
+  <meta name="description" content="Kelola inventaris dan keuangan toko Anda dengan mudah. Dashboard real-time, laporan otomatis, notifikasi WhatsApp, dan chatbot AI.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.23/dist/lenis.css">
+</head>
+<body>
+
+  <!-- navbar -->
+  <nav class="landing-nav" id="nav-utama">
+    <div class="nav-inner">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <a href="index.html" class="nav-logo">
+          <div class="nav-logo-icon" style="padding: 8px;">
+            <img src="assets/logo.svg" alt="Ledgerly Logo" style="width:100%; height:100%; filter:brightness(0) invert(1);">
+          </div>
+          <span class="nav-logo-text">Ledgerly</span>
+        </a>
+        <span class="nav-badge-id">TP-G007</span>
+      </div>
+      <div class="nav-links">
+        <a href="#fitur">Fitur</a>
+        <a href="#harga">Harga</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="nav-actions">
+        <a href="login.html" class="nav-btn-login">Masuk</a>
+        <a href="login.html" class="nav-btn-cta">
+          Mulai Gratis
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- hero section -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-badge animate-fade-in-up">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+        Platform Bisnis UMKM #1 di Indonesia
+      </div>
+
+      <h1 class="animate-fade-in-up delay-100">
+        Kelola <span class="gradient-text">Inventaris & Keuangan</span> Toko Anda dengan Cerdas
+      </h1>
+
+      <p class="hero-desc animate-fade-in-up delay-200">
+        Sistem terintegrasi untuk monitoring stok real-time, laporan keuangan otomatis, notifikasi WhatsApp, dan rekomendasi bisnis berbasis data — semua dalam satu dashboard.
+      </p>
+
+      <div class="hero-cta animate-fade-in-up delay-300">
+        <a href="login.html" class="btn-hero-primary">
+          Mulai Gratis Sekarang
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <a href="#fitur" class="btn-hero-secondary">
+          Lihat Fitur
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="m8 12 4 4 4-4"/></svg>
+        </a>
+      </div>
+
+      <div class="hero-trust">
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          Gratis selamanya
+        </span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          Tanpa kartu kredit
+        </span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          Setup 5 menit
+        </span>
+      </div>
+
+      <!-- mockup dashboard -->
+      <div class="mockup-wrapper animate-float">
+        <div class="mockup-fade"></div>
+        <div class="mockup-frame">
+          <div class="mockup-toolbar">
+            <div style="display:flex; align-items:center;">
+              <div class="mockup-dots">
+                <span class="mockup-dot" style="background:#ef4444;"></span>
+                <span class="mockup-dot" style="background:#f59e0b;"></span>
+                <span class="mockup-dot" style="background:#22c55e;"></span>
+              </div>
+              <span class="mockup-url">ledgerly.vercel.app/dasbor</span>
+            </div>
+            <div class="mockup-sync">
+              <span class="mockup-sync-dot"></span>
+              Cloud Sync
+            </div>
+          </div>
+
+          <div class="mockup-stats">
+            <div class="mockup-stat">
+              <div class="label">Total Omzet</div>
+              <div class="val">Rp38,9jt</div>
+              <div class="sub" style="color:var(--emerald-600);">↑ 12.5% vs bulan lalu</div>
+            </div>
+            <div class="mockup-stat">
+              <div class="label">Laba Bersih</div>
+              <div class="val">Rp11,2jt</div>
+              <div class="sub" style="color:var(--emerald-600);">↑ 8.3%</div>
+            </div>
+            <div class="mockup-stat">
+              <div class="label">Total SKU</div>
+              <div class="val">10</div>
+              <div class="sub" style="color:var(--slate-500);">4 kategori produk</div>
+            </div>
+            <div class="mockup-stat">
+              <div class="label">Peringatan Stok</div>
+              <div class="val" style="color:var(--amber-600);">4</div>
+              <div class="sub" style="color:var(--rose-600);">Perlu restock segera</div>
+            </div>
+          </div>
+
+          <div class="mockup-bottom">
+            <div class="mockup-top-products">
+              <div class="head">
+                <span>Produk Terlaris</span>
+                <span>Bulan ini</span>
+              </div>
+              <div class="mockup-product-row">
+                <span class="name">Aqua Mineral 600ml</span>
+                <div class="meta">
+                  <span class="units">1,840 unit</span>
+                  <span class="revenue">Rp9,2jt</span>
+                </div>
+              </div>
+              <div class="mockup-product-row">
+                <span class="name">Indomie Goreng</span>
+                <div class="meta">
+                  <span class="units">1,320 unit</span>
+                  <span class="revenue">Rp4,6jt</span>
+                </div>
+              </div>
+              <div class="mockup-product-row">
+                <span class="name">Rinso Cair 650ml</span>
+                <div class="meta">
+                  <span class="units">410 unit</span>
+                  <span class="revenue">Rp6,5jt</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mockup-ai-card">
+              <div>
+                <div class="ai-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                  AI INSIGHT
+                </div>
+                <div class="ai-text">"Stok Teh Botol Sosro menipis (18 unit). Berdasarkan tren penjualan, disarankan restock 100 unit dalam 3 hari ke depan."</div>
+              </div>
+              <div class="ai-footer">
+                <span>Gemini AI</span>
+                <span class="ai-accuracy">Akurasi 94%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- social proof -->
+      <div class="social-proof">
+        <div style="text-align:center;">
+          <div class="number">500+</div>
+          <div class="desc">UMKM Aktif</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="number">10rb+</div>
+          <div class="desc">Transaksi Dicatat</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="number">99.9%</div>
+          <div class="desc">Uptime Server</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="number">4.8/5</div>
+          <div class="desc">Rating Pengguna</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- fitur section -->
+  <section class="section-fitur" id="fitur">
+    <div class="section-inner">
+      <div class="section-label">Fitur Unggulan</div>
+      <h2 class="section-heading scroll-reveal">Semua yang Anda Butuhkan untuk Mengelola Toko</h2>
+      <p class="section-desc scroll-reveal">
+        Dari monitoring stok sampai laporan keuangan otomatis — Ledgerly dirancang khusus untuk kebutuhan UMKM Indonesia.
+      </p>
+
+      <div class="fitur-grid">
+        <!-- fitur 1 -->
+        <div class="fitur-card scroll-reveal">
+          <div>
+            <div class="fitur-icon" style="background:linear-gradient(135deg,var(--indigo-100),var(--indigo-50)); color:var(--indigo-600);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+            </div>
+            <h4>Dashboard Inventaris</h4>
+            <p>Monitoring stok secara real-time dengan visualisasi grafik. Peringatan otomatis saat stok di bawah batas minimum. Filter dan pencarian produk instan.</p>
+          </div>
+          <div class="fitur-footer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+            Real-time monitoring
+          </div>
+        </div>
+
+        <!-- fitur 2 -->
+        <div class="fitur-card scroll-reveal delay-100">
+          <div>
+            <div class="fitur-icon" style="background:linear-gradient(135deg,var(--emerald-100, #d1fae5),var(--emerald-50)); color:var(--emerald-600);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            </div>
+            <h4>Laporan Keuangan</h4>
+            <p>Laporan laba rugi otomatis, grafik tren penjualan, dan arus kas bulanan. Pilih periode laporan dengan fleksibel (7/30/60 hari).</p>
+          </div>
+          <div class="fitur-footer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+            Otomatis tergenerate
+          </div>
+        </div>
+
+        <!-- fitur 3 -->
+        <div class="fitur-card scroll-reveal delay-200">
+          <div>
+            <div class="fitur-icon" style="background:linear-gradient(135deg,var(--purple-100, #f3e8ff),var(--purple-50, #faf5ff)); color:var(--purple-600);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            </div>
+            <h4>Chatbot AI</h4>
+            <p>Input stok dan cek data lewat chat natural language. Tanya "berapa stok Aqua?" atau "tambah 50 Indomie masuk" — chatbot paham!</p>
+          </div>
+          <div class="fitur-footer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+            Powered by Gemini AI
+          </div>
+        </div>
+
+        <!-- fitur 4 -->
+        <div class="fitur-card scroll-reveal">
+          <div>
+            <div class="fitur-icon" style="background:linear-gradient(135deg,var(--rose-100),var(--rose-50)); color:var(--rose-600);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            </div>
+            <h4>Notifikasi WhatsApp</h4>
+            <p>Alert otomatis langsung ke WhatsApp pemilik saat stok menipis di bawah batas minimum. Gak perlu cek manual terus-terusan.</p>
+          </div>
+          <div class="fitur-footer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+            Integrasi Fonnte API
+          </div>
+        </div>
+
+        <!-- fitur 5 -->
+        <div class="fitur-card scroll-reveal delay-100">
+          <div>
+            <div class="fitur-icon" style="background:linear-gradient(135deg,var(--amber-100, #fef3c7),var(--amber-50)); color:var(--amber-600);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 18v-2"/><path d="M12 18v-4"/><path d="M16 18v-6"/></svg>
+            </div>
+            <h4>Export Laporan</h4>
+            <p>Unduh data inventaris dan transaksi ke CSV, Excel, atau PDF kapan saja. Cocok buat laporan ke partner bisnis atau arsip pribadi.</p>
+          </div>
+          <div class="fitur-footer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+            PDF, CSV, Excel
+          </div>
+        </div>
+
+        <!-- fitur 6 -->
+        <div class="fitur-card scroll-reveal delay-200">
+          <div>
+            <div class="fitur-icon" style="background:linear-gradient(135deg,var(--sky-100, #e0f2fe),var(--sky-50)); color:var(--sky-600);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+            </div>
+            <h4>Cloud Database</h4>
+            <p>Data tersimpan aman di cloud Supabase dengan Row-Level Security. Akses dari mana saja, kapan saja. Backup otomatis setiap hari.</p>
+          </div>
+          <div class="fitur-footer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+            Powered by Supabase
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- simulasi chatbot section -->
+  <section class="section-simulasi">
+    <div class="simulasi-glow top-right"></div>
+    <div class="simulasi-glow bottom-left"></div>
+    <div class="section-inner">
+      <div class="simulasi-grid">
+        <div class="simulasi-left scroll-reveal">
+          <span class="simulasi-badge">Cara Kerja</span>
+          <h2>Kelola Toko Cukup Lewat Chat</h2>
+          <p>Dengan chatbot AI, kamu bisa input data, cek stok, dan dapatkan rekomendasi bisnis hanya lewat percakapan natural. Gak perlu buka banyak menu.</p>
+          <div>
+            <div class="simulasi-step">
+              <span class="num">1</span>
+              <span class="text">Ketik pertanyaan atau perintah dalam bahasa Indonesia biasa</span>
+            </div>
+            <div class="simulasi-step">
+              <span class="num">2</span>
+              <span class="text">AI memproses dan mengambil data dari database kamu secara real-time</span>
+            </div>
+            <div class="simulasi-step">
+              <span class="num">3</span>
+              <span class="text">Hasil langsung ditampilkan atau data otomatis ter-update di sistem</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="chat-demo scroll-reveal delay-200">
+            <div class="chat-demo-header">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div class="chat-demo-avatar">AI</div>
+                <div class="chat-demo-info">
+                  <div class="name">Ledgerly AI</div>
+                  <div class="status">
+                    <span class="status-dot"></span>
+                    Aktif
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chat-messages">
+              <div class="chat-msg user">Berapa stok Indomie sekarang?</div>
+              <div class="chat-msg bot">Stok Indomie Goreng saat ini: <strong>320 unit</strong>. Stok aman, masih di atas batas minimum (80 unit). 👍</div>
+              <div class="chat-msg user">Tambah 50 Aqua masuk</div>
+              <div class="chat-msg bot">Berhasil! Stok Aqua Mineral 600ml bertambah <strong>50 unit</strong>. Total stok sekarang: <strong>290 unit</strong>. Transaksi tercatat otomatis. ✅</div>
+            </div>
+            <div class="chat-demo-input" style="display:flex; align-items:center; gap:8px;">
+              <input type="text" placeholder="Ketik pesan..." disabled style="flex:1;">
+              <button disabled style="background:transparent; border:none; color:var(--text-muted); cursor:not-allowed; display:grid; place-items:center; padding:4px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+              </button>
+              <button disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- harga section -->
+  <section class="section-harga" id="harga">
+    <div class="section-inner" style="text-align:center;">
+      <div class="section-label">Paket & Harga</div>
+      <h2 class="section-heading scroll-reveal">Pilih Paket yang Sesuai Kebutuhan</h2>
+      <p class="section-desc scroll-reveal" style="margin-left:auto; margin-right:auto;">
+        Mulai gratis, tingkatkan kapan saja. Semua paket sudah termasuk dashboard, chatbot AI, dan cloud database.
+      </p>
+
+      <div class="harga-grid">
+        <!-- starter -->
+        <div class="harga-card scroll-reveal">
+          <div>
+            <h4>Starter</h4>
+            <p class="desc">Cocok untuk UMKM yang baru mulai digitalisasi. Fitur dasar untuk mengelola inventaris.</p>
+            <div class="harga-price">
+              <span class="amount">Gratis</span>
+              <span class="period">selamanya</span>
+            </div>
+            <ul class="harga-features">
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Hingga 50 produk
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Dashboard inventaris
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Ekspor CSV
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Chatbot AI (10 kueri/hari)
+              </li>
+            </ul>
+          </div>
+          <a href="login.html" class="harga-btn secondary">Mulai Gratis</a>
+        </div>
+
+        <!-- profesional -->
+        <div class="harga-card populer scroll-reveal delay-100">
+          <span class="harga-badge-populer">Pilihan Terfavorit</span>
+          <div>
+            <h4>Profesional</h4>
+            <p class="desc">Untuk toko dengan volume tinggi. Fitur lengkap termasuk WhatsApp dan laporan PDF.</p>
+            <div class="harga-price">
+              <span class="amount">Rp49rb</span>
+              <span class="period">/bulan</span>
+            </div>
+            <ul class="harga-features">
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Produk tak terbatas
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Laporan keuangan lengkap
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Ekspor PDF + Excel
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Notifikasi WhatsApp
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Chatbot AI unlimited
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Decision support
+              </li>
+            </ul>
+          </div>
+          <a href="login.html" class="harga-btn primary">
+            Mulai 7 Hari Trial
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- enterprise -->
+        <div class="harga-card scroll-reveal delay-200">
+          <div>
+            <h4>Enterprise</h4>
+            <p class="desc">Untuk bisnis dengan banyak cabang. Kustomisasi integrasi dan dukungan prioritas.</p>
+            <div class="harga-price">
+              <span class="amount">Kustom</span>
+            </div>
+            <ul class="harga-features">
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Semua fitur Profesional
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Multi-cabang / multi-user
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Akses API
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Dukungan khusus 24/7
+              </li>
+            </ul>
+          </div>
+          <a href="https://wa.me/6285750917686?text=Halo%20Admin%20Ledgerly,%20saya%20tertarik%20dengan%20Paket%20Enterprise%20Kustom%20untuk%20multi-cabang." target="_blank" class="harga-btn secondary">Hubungi Sales</a>
+        </div>
+      </div>
+
+      <p class="harga-note">
+        Punya pertanyaan tentang harga? <a href="#faq">Lihat FAQ</a> atau hubungi tim kami.
+      </p>
+    </div>
+  </section>
+
+  <!-- testimoni -->
+  <section class="section-testimoni">
+    <div class="section-inner" style="text-align:center;">
+      <div class="section-label">Testimoni</div>
+      <h2 class="section-heading scroll-reveal">Dipercaya oleh Ratusan Pemilik Usaha</h2>
+      <p class="section-desc scroll-reveal" style="margin-left:auto; margin-right:auto;">
+        Lihat ulasan dari para mitra yang telah menggunakan Ledgerly untuk mempermudah operasional bisnis mereka.
+      </p>
+
+      <div class="testimoni-grid">
+        <div class="testimoni-card scroll-reveal">
+          <div>
+            <div class="testimoni-stars">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimoni-quote">"Sebelumnya saya mencatat stok di buku secara manual. Sekarang tinggal membuka dashboard, semua langsung terlihat jelas. Fitur notifikasi WhatsApp-nya juga sangat berguna untuk mengingatkan saat stok kritis!"</p>
+          </div>
+          <div class="testimoni-author">
+            <div class="testimoni-avatar">AF</div>
+            <div>
+              <div class="name">Anwar Fauzi</div>
+              <div class="biz">Toko Sembako Anwar, Surabaya</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimoni-card scroll-reveal delay-100">
+          <div>
+            <div class="testimoni-stars">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimoni-quote">"Fitur asisten AI chatbot-nya sangat luar biasa. Cukup mengetik pesan biasa seperti menanyakan stok, asisten langsung menjawab dengan cepat. Rekan kerja saya di kedai juga bisa menggunakannya tanpa perlu pelatihan lama."</p>
+          </div>
+          <div class="testimoni-author">
+            <div class="testimoni-avatar">NC</div>
+            <div>
+              <div class="name">Nathanael Chandra Kusuma</div>
+              <div class="biz">Kopi Chandra, Bandung</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimoni-card scroll-reveal delay-200">
+          <div>
+            <div class="testimoni-stars">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimoni-quote">"Saya sangat menyukai fitur ekspor laporannya. Cukup dengan satu klik, laporan keuangan format PDF langsung terunduh dengan rapi dan siap dikirim ke rekan bisnis saya."</p>
+          </div>
+          <div class="testimoni-author">
+            <div class="testimoni-avatar">BA</div>
+            <div>
+              <div class="name">Bangkit Agung Nugroho</div>
+              <div class="biz">Bangkit Tech, Jakarta</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- faq -->
+  <section class="section-faq" id="faq">
+    <div class="section-inner" style="text-align:center;">
+      <div class="section-label scroll-reveal">FAQ</div>
+      <h2 class="section-heading scroll-reveal">Pertanyaan yang Sering Diajukan</h2>
+      <p class="section-desc scroll-reveal" style="margin-left:auto; margin-right:auto; margin-bottom:48px;">
+        Belum menemukan jawaban? Hubungi tim kami langsung lewat WhatsApp.
+      </p>
+
+      <div class="faq-list">
+        <div class="faq-item scroll-reveal">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Apakah Ledgerly benar-benar gratis?</span>
+            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="faq-answer">Ya, paket Starter gratis selamanya tanpa batas waktu. Anda bisa mengelola hingga 50 produk, menggunakan dashboard inventaris, dan ekspor data ke CSV. Tidak perlu kartu kredit untuk mendaftar.</div>
+        </div>
+        <div class="faq-item scroll-reveal delay-100">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Bagaimana cara integrasi WhatsApp?</span>
+            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="faq-answer">Cukup masukkan nomor WhatsApp di halaman Pengaturan dan aktifkan notifikasi. Sistem akan otomatis mengirimkan alert saat stok produk di bawah batas minimum. Kami menggunakan API Fonnte untuk pengiriman pesan.</div>
+        </div>
+        <div class="faq-item scroll-reveal delay-200">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Apakah data saya aman?</span>
+            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="faq-answer">Data Anda disimpan di Supabase dengan enkripsi dan Row-Level Security (RLS). Setiap pengguna hanya bisa mengakses data milik sendiri. Backup dilakukan secara otomatis setiap hari oleh Supabase.</div>
+        </div>
+        <div class="faq-item scroll-reveal delay-300">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Bisa diakses dari HP?</span>
+            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="faq-answer">Ya, Ledgerly didesain responsif dan bisa diakses dari browser ponsel, tablet, maupun laptop. Tidak perlu menginstal aplikasi apa pun. Cukup buka browser dan login ke akun Anda.</div>
+        </div>
+        <div class="faq-item scroll-reveal delay-400">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Bagaimana cara import data dari Excel?</span>
+            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="faq-answer">Di halaman Transaksi, klik tombol "Upload CSV/Excel". Seret & letakkan file Anda atau klik untuk memilih file. Sistem akan otomatis memproses data dan mencatatkan transaksi. Templat CSV tersedia untuk referensi format.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- final CTA -->
+  <section class="section-cta">
+    <div class="cta-radial"></div>
+    <div class="cta-inner scroll-reveal">
+      <h2>Siap Kelola Bisnis Lebih Cerdas?</h2>
+      <p>Bergabunglah dengan ratusan pemilik UMKM yang sudah merasakan kemudahan mengelola inventaris dan keuangan dengan Ledgerly.</p>
+      <div class="cta-buttons">
+        <a href="login.html" class="cta-btn-white">
+          Mulai Gratis Sekarang
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <a href="#fitur" class="cta-btn-outline">
+          Pelajari Fitur
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="m8 12 4 4 4-4"/></svg>
+        </a>
+      </div>
+      <div class="cta-bottom-trust">
+        <span>✓ Gratis selamanya</span>
+        <span>✓ Tanpa kartu kredit</span>
+        <span>✓ Setup 5 menit</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer class="landing-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div class="nav-logo-icon" style="width:32px; height:32px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+          </div>
+          <span style="font-size:16px; font-weight:700; color:#fff;">Ledgerly</span>
+        </div>
+        <p>Sistem manajemen inventaris dan keuangan terintegrasi untuk UMKM Indonesia. Capstone Project TP-G007.</p>
+        <div class="copy">© 2026 Tim TP-G007 • Tempa led by Dicoding</div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Produk</div>
+        <ul>
+          <li><a href="#fitur">Fitur</a></li>
+          <li><a href="#harga">Harga</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="login.html">Demo</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Tim</div>
+        <ul>
+          <li><a href="#">M. Rohid Rivaldi</a></li>
+          <li><a href="#">Anwar Fauzi</a></li>
+          <li><a href="#">Nathanael C.K.</a></li>
+          <li><a href="#">Bangkit A.N.</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Dibuat dengan ❤️ oleh Tim TP-G007</span>
+      <div class="footer-bottom-links">
+        <a href="#">Syarat & Ketentuan</a>
+        <a href="#">Kebijakan Privasi</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lenis Smooth Scroll CDN -->
+  <script src="https://unpkg.com/lenis@1.3.23/dist/lenis.min.js"></script>
+  <script>
+    // Inisialisasi Lenis Smooth Scroll
+    const lenis = new Lenis({
+      autoRaf: true
+    });
+
+    // Integrasi navigasi hash agar sinkron dengan Lenis
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          lenis.scrollTo(targetEl, {
+            offset: -100 // berikan ruang offset untuk floating navbar
+          });
+        }
+      });
+    });
+
+    // Toggle kelas .scrolled pada floating navbar
+    window.addEventListener('scroll', function() {
+      var nav = document.getElementById('nav-utama');
+      if (nav) {
+        if (window.scrollY > 20) {
+          nav.classList.add('scrolled');
+        } else {
+          nav.classList.remove('scrolled');
+        }
+      }
+    });
+
+    // IntersectionObserver untuk Scroll-Reveal animasi
+    document.addEventListener('DOMContentLoaded', function() {
+      var revealElements = document.querySelectorAll('.scroll-reveal');
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target); // Hanya animasi satu kali
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -40px 0px'
+      });
+
+      revealElements.forEach(function(el) {
+        observer.observe(el);
+      });
+    });
+
+    // toggle FAQ accordion
+    function toggleFaq(btn) {
+      var item = btn.parentElement;
+      // tutup yg lain dulu
+      document.querySelectorAll('.faq-item').forEach(function(el) {
+        if (el !== item) el.classList.remove('open');
+      });
+      item.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>
