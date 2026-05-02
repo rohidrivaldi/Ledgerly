@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Ledgerly</title>
+  <meta name="description" content="Masuk ke dashboard Ledgerly untuk mengelola inventaris dan keuangan toko Anda.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+
+  <div class="login-wrapper">
+    <div class="login-grid">
+
+      <!-- panel kiri - info -->
+      <div class="login-info">
+        <div class="blob-1"></div>
+        <div class="blob-2"></div>
+
+        <div class="login-brand">
+          <div class="login-brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+          </div>
+          <div>
+            <div class="login-brand-name">Ledgerly</div>
+            <div class="login-brand-sub">TP-G007 • Capstone Project</div>
+          </div>
+        </div>
+
+        <div class="login-content">
+          <h1>Kelola Bisnis Anda Lebih Cerdas</h1>
+          <p>Platform terintegrasi untuk monitoring inventaris, laporan keuangan otomatis, dan rekomendasi bisnis berbasis AI — dirancang khusus untuk UMKM Indonesia.</p>
+          <ul class="login-features">
+            <li><span class="dot"></span> Dashboard inventaris & keuangan real-time</li>
+            <li><span class="dot"></span> Chatbot AI untuk input data dan tanya jawab</li>
+            <li><span class="dot"></span> Notifikasi WhatsApp otomatis stok rendah</li>
+            <li><span class="dot"></span> Ekspor laporan ke PDF, CSV, Excel</li>
+          </ul>
+        </div>
+
+        <div class="login-footer-text">© 2026 Tim TP-G007 — Tempa led by Dicoding</div>
+      </div>
+
+      <!-- panel kanan - form -->
+      <div class="login-form-panel">
+        <div class="login-form-inner">
+
+          <div class="login-mobile-brand">
+            <div class="login-mobile-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+            </div>
+            <span class="login-mobile-name">Ledgerly</span>
+          </div>
+
+          <h2>Selamat Datang 👋</h2>
+          <p class="subtitle">Masukkan kredensial untuk mengakses dashboard</p>
+
+          <form class="login-form" id="form-login" onsubmit="handleLogin(event)">
+            <div>
+              <label class="form-label" for="email">Email</label>
+              <input class="form-input" type="email" id="email" placeholder="Masukkan email Anda" required>
+            </div>
+
+            <div>
+              <label class="form-label" for="password">Password</label>
+              <div class="login-input-group">
+                <input class="form-input" type="password" id="password" placeholder="Masukkan password" required>
+                <button type="button" class="login-toggle-pw" onclick="togglePassword()">
+                  <svg id="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg id="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div id="login-error" class="login-error" style="display:none;"></div>
+
+            <button type="submit" class="login-submit">
+              Masuk ke Dashboard
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- load data sama app js buat fungsi login -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // override initApp biar ga redirect loop
+    // di halaman login, kita ga perlu init dashboard
+    document.removeEventListener('DOMContentLoaded', initApp);
+
+    // cek klo udh login, langsung redirect ke dashboard
+    (function() {
+      let ud = localStorage.getItem('ledgerly_user');
+      if (ud) {
+        window.location.href = 'dasbor.html';
+      }
+    })();
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      var em = document.getElementById('email').value;
+      var pw = document.getElementById('password').value;
+      var errDiv = document.getElementById('login-error');
+
+      errDiv.textContent = 'Mencoba masuk...';
+      errDiv.style.display = 'block';
+      errDiv.style.color = 'var(--indigo-600)';
+
+      var result = await login(em, pw);
+      if (result.ok) {
+        window.location.href = 'dasbor.html';
+      } else {
+        errDiv.textContent = result.pesan;
+        errDiv.style.display = 'block';
+        errDiv.style.color = ''; // reset ke warna default error
+      }
+    }
+
+    function togglePassword() {
+      var input = document.getElementById('password');
+      var iconEye = document.getElementById('icon-eye');
+      var iconEyeOff = document.getElementById('icon-eye-off');
+      if (input.type === 'password') {
+        input.type = 'text';
+        iconEye.style.display = 'none';
+        iconEyeOff.style.display = 'block';
+      } else {
+        input.type = 'password';
+        iconEye.style.display = 'block';
+        iconEyeOff.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
