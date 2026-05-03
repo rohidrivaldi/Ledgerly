@@ -1,0 +1,92 @@
+<div class="page-header flex-between">
+  <div>
+    <h1 class="page-title">Riwayat Transaksi</h1>
+    <p class="page-desc">Pencatatan barang masuk dan keluar</p>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <button class="btn btn-primary" onclick="bukaModalTx()"><span id="tx-plus-icon"></span> Transaksi Baru</button>
+    <button class="btn btn-secondary" onclick="bukaUploadModal()"><span id="tx-upload-icon"></span> Upload CSV</button>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
+  <div class="summary-card masuk">
+    <div class="summary-label"><span id="tx-arrow-down-icon"></span> Barang Masuk</div>
+    <div class="summary-value" id="tx-total-masuk">Rp0</div>
+  </div>
+  <div class="summary-card keluar">
+    <div class="summary-label"><span id="tx-arrow-up-icon"></span> Barang Keluar</div>
+    <div class="summary-value" id="tx-total-keluar">Rp0</div>
+  </div>
+  <div class="summary-card bersih">
+    <div class="summary-label"><span id="tx-arrow-lfr-icon"></span> Bersih</div>
+    <div class="summary-value" id="tx-total-bersih">Rp0</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header flex-between">
+    <div>
+      <div class="card-title">Daftar Transaksi</div>
+      <div class="card-subtitle" id="tx-list-subtitle">0 transaksi</div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:center;">
+      <input class="form-input" type="text" id="cari-transaksi" placeholder="Cari transaksi..." style="max-width:200px; font-size:12px;">
+      <div class="period-selector" id="tx-period-selector"></div>
+    </div>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="tabel">
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>Tipe</th>
+          <th>Produk</th>
+          <th class="text-right">Jumlah</th>
+          <th class="text-right">Harga Satuan</th>
+          <th class="text-right">Total</th>
+          <th>Metode</th>
+          <th class="text-center" style="width:100px;">Aksi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-tx">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <div class="modal-title">Transaksi Baru</div>
+        <div class="modal-desc">Catat barang masuk atau keluar</div>
+      </div>
+      <button onclick="tutupModalTx()" style="padding:4px;" id="btn-tx-close"></button>
+    </div>
+    <form id="form-tx" style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" onsubmit="submitTx(event)">
+      <div>
+        <label class="form-label">Tipe</label>
+        <select class="form-select" id="tx-tipe">
+          <option value="MASUK">Barang Masuk</option>
+          <option value="KELUAR">Barang Keluar</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Produk</label>
+        <select class="form-select" id="tx-produk"></select>
+      </div>
+      <div>
+        <label class="form-label">Jumlah</label>
+        <input class="form-input" type="number" id="tx-jumlah" min="1" value="1" required>
+      </div>
+      <div>
+        <label class="form-label">Catatan (opsional)</label>
+        <input class="form-input" type="text" id="tx-catatan" placeholder="Catatan...">
+      </div>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button type="button" class="btn btn-secondary" onclick="tutupModalTx()" style="flex:1;">Batal</button>
+        <button type="submit" class="btn btn-primary" style="flex:1;">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
