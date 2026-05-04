@@ -1,0 +1,39 @@
+/* =============================================
+   transaksi.css — styles khusus halaman transaksi
+   ============================================= */
+
+/* -- summary cards (transaksi) -- */
+.summary-card {
+  padding: 16px;
+  border-radius: var(--radius-xl);
+}
+.summary-card.masuk {
+  background: var(--emerald-50);
+  border: 1px solid rgba(6,95,70,0.15);
+}
+.summary-card.keluar {
+  background: var(--rose-50);
+  border: 1px solid var(--rose-200);
+}
+.summary-card.bersih {
+  background: var(--indigo-50);
+  border: 1px solid rgba(99,102,241,0.15);
+}
+.summary-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.summary-card.masuk .summary-label { color: var(--emerald-700); }
+.summary-card.keluar .summary-label { color: var(--rose-700); }
+.summary-card.bersih .summary-label { color: var(--indigo-700); }
+.summary-value {
+  margin-top: 4px;
+  font-size: 20px;
+  font-weight: 600;
+}
+.summary-card.masuk .summary-value { color: var(--emerald-800); }
+.summary-card.keluar .summary-value { color: var(--rose-800); }
+.summary-card.bersih .summary-value { color: var(--indigo-800); }
