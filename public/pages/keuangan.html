@@ -1,0 +1,52 @@
+<div class="page-header">
+  <h1 class="page-title">Dashboard Keuangan</h1>
+  <p class="page-desc">Ringkasan performa keuangan bisnis</p>
+</div>
+
+<div style="margin-bottom:16px;">
+  <div class="period-selector" id="keu-period-selector"></div>
+</div>
+
+<div class="stats-row" id="keu-stats-row"></div>
+
+<div class="layout-1-1">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Omzet vs HPP</div>
+        <div class="card-subtitle">Perbandingan pendapatan dan biaya pokok</div>
+      </div>
+    </div>
+    <div class="chart-container"><canvas id="chart-omzet" class="chart-canvas"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Tren Penjualan Harian</div>
+        <div class="card-subtitle">Jumlah pesanan per hari</div>
+      </div>
+    </div>
+    <div class="chart-container"><canvas id="chart-tren" class="chart-canvas"></canvas></div>
+  </div>
+</div>
+
+<div class="layout-1-1">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Arus Kas 6 Bulan</div>
+        <div class="card-subtitle">Pemasukan vs pengeluaran bulanan</div>
+      </div>
+    </div>
+    <div class="chart-container"><canvas id="chart-arus" class="chart-canvas"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Ringkasan Laba Rugi</div>
+        <div class="card-subtitle" id="keu-pl-subtitle"></div>
+      </div>
+    </div>
+    <div class="pl-list" id="keu-pl-list"></div>
+  </div>
+</div>
