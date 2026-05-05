@@ -1,0 +1,65 @@
+<div class="page-header flex-between">
+  <div>
+    <h1 class="page-title">Dashboard Inventaris</h1>
+    <p class="page-desc">Monitoring stok barang secara real-time</p>
+  </div>
+  <button class="btn btn-primary flex-center" onclick="bukaModalProduk()" style="gap:6px;">
+    <span id="btn-plus-icon"></span>Tambah Produk
+  </button>
+</div>
+
+<!-- stat cards -->
+<div class="stats-row" id="inv-stats-row"></div>
+
+<!-- chart + peringatan -->
+<div class="layout-2-1">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Level Stok per Produk</div>
+        <div class="card-subtitle">Merah = di bawah reorder point</div>
+      </div>
+    </div>
+    <div class="chart-container">
+      <canvas id="chart-stok" class="chart-canvas"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Peringatan Stok Rendah</div>
+        <div class="card-subtitle" id="inv-warning-subtitle"></div>
+      </div>
+    </div>
+    <div class="alert-list" id="inv-alert-list"></div>
+  </div>
+</div>
+
+<!-- tabel katalog -->
+<div class="card">
+  <div class="card-header flex-between">
+    <div>
+      <div class="card-title">Katalog Produk</div>
+      <div class="card-subtitle" id="inv-katalog-subtitle"></div>
+    </div>
+    <input class="form-input" type="text" id="cari-produk" placeholder="Cari nama/SKU..." style="max-width:240px; font-size:12px;">
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="tabel" id="tabel-produk">
+      <thead>
+        <tr>
+          <th>SKU</th>
+          <th>Nama Produk</th>
+          <th>Kategori</th>
+          <th class="text-right">Stok</th>
+          <th class="text-right">Min</th>
+          <th class="text-right">Harga Beli</th>
+          <th class="text-right">Harga Jual</th>
+          <th>Status</th>
+          <th class="text-center" style="width:100px;">Aksi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
