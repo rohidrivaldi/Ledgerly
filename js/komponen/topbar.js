@@ -1,0 +1,164 @@
+/* =============================================
+   topbar.js — komponen top bar
+   search, chat toggle, notif bell, hamburger
+   ============================================= */
+
+var notifOpen = false;
+
+function renderTopbar() {
+  let el = document.getElementById('topbar');
+  if (!el) return;
+
+  let jmlNotif = store.notifikasi.length;
+
+  let isSuper = store.user && store.user.role === 'superadmin';
+  let placeholderText = isSuper ? 'Cari pemilik bisnis...' : 'Cari produk, transaksi...';
+
+  el.innerHTML = `
+    <button class="topbar-hamburger" onclick="bukaMobileNav()">${icon('menu')}</button>
+    <div class="topbar-search">
+      ${icon('search')}
+      <input type="text" id="topbar-search-input" placeholder="${placeholderText}" oninput="syncSearch(this.value)">
+    </div>
+    <div class="topbar-actions">
+      <div style="position:relative;">
+        <button class="topbar-btn" onclick="toggleNotif()" title="Notifikasi" id="btn-notif">
+          ${icon('bell')}
+          ${jmlNotif > 0 ? `<span class="topbar-badge">${jmlNotif}</span>` : ''}
+        </button>
+        <div class="notif-dropdown hidden" id="notif-dropdown">
+          ${renderNotifDropdown()}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderNotifDropdown() {
+  let notifs = store.notifikasi;
+  if (notifs.length === 0) {
+    return `
+      <div class="notif-header"><span class="title">Notifikasi</span></div>
+      <div class="notif-empty">Semua stok aman 👍</div>
+    `;
+  }
+
+  let items = notifs.map(function(n) {
+    return `
+      <div class="notif-item">
+        <div class="notif-wa-icon">${icon('whatsapp')}</div>
+        <div class="info">
+          <div class="produk-nama">${n.produkNama}</div>
+          <div class="stok-info">Stok: ${n.stok} / min: ${n.minStok}</div>
+          <div class="via">via WhatsApp • ${waktuLalu(n.dikirimPada)}</div>
+        </div>
+        <button class="close-btn" onclick="hapusNotif('${n.id}')">${icon('x')}</button>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="notif-header">
+      <span class="title">Notifikasi</span>
+      <span class="count">${notifs.length} alert</span>
+    </div>
+    <div class="notif-list">${items}</div>
+  `;
+}
+
+function toggleNotif() {
+  let dd = document.getElementById('notif-dropdown');
+  if (!dd) return;
+  notifOpen = !notifOpen;
+  dd.classList.toggle('hidden', !notifOpen);
+}
+
+function hapusNotif(id) {
+  tutupNotifikasi(id);
+  // update dropdown content
+  let dd = document.getElementById('notif-dropdown');
+  if (dd) dd.innerHTML = renderNotifDropdown();
+  // update badge count
+  renderTopbar();
+}
+
+function bukaMobileNav() {
+  let overlay = document.getElementById('mobile-nav');
+  if (!overlay) return;
+  overlay.classList.add('open');
+
+  // render mobile nav links
+  let panel = document.getElementById('mobile-nav-panel');
+  if (!panel) return;
+
+  let user = store.user || {};
+  let linksHtml = '';
+  if (user.role === 'superadmin') {
+    linksHtml += mobileLink('#dasbor-superadmin', 'Ikhtisar Sistem');
+    linksHtml += mobileLink('#kelola-pemilik', 'Kelola Pemilik');
+  } else {
+    linksHtml += mobileLink('#inventaris', 'Inventaris');
+    linksHtml += mobileLink('#keuangan', 'Keuangan');
+    linksHtml += mobileLink('#transaksi', 'Transaksi');
+    linksHtml += mobileLink('#laporan', 'Laporan');
+    linksHtml += mobileLink('#keputusan', 'Keputusan');
+    linksHtml += mobileLink('#pengaturan', 'Pengaturan');
+  }
+
+  panel.innerHTML = `
+    <div class="mobile-nav-header">
+      <span class="title">Ledgerly</span>
+      <button class="mobile-nav-close" onclick="tutupMobileNav()">${icon('x')}</button>
+    </div>
+    <div class="mobile-nav-links">
+      ${linksHtml}
+      <hr class="divider" style="margin:8px 0;">
+      <button class="mobile-nav-logout" onclick="logout()">Keluar</button>
+    </div>
+  `;
+}
+
+function tutupMobileNav() {
+  let overlay = document.getElementById('mobile-nav');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function mobileLink(hash, label) {
+  return `
+    <button class="mobile-nav-link" onclick="navigasi('${hash}')">${label}</button>
+  `;
+}
+
+// helper: waktu yg lalu
+function waktuLalu(iso) {
+  let diff = Date.now() - new Date(iso).getTime();
+  let menit = Math.floor(diff / 60000);
+  if (menit < 60) return menit + ' menit lalu';
+  let jam = Math.floor(menit / 60);
+  if (jam < 24) return jam + ' jam lalu';
+  return Math.floor(jam / 24) + ' hari lalu';
+}
+
+// Sync topbar search to current page search
+function syncSearch(val) {
+  // Sync to cari-produk (Inventaris)
+  let pageCari = document.getElementById('cari-produk');
+  if (pageCari) {
+    pageCari.value = val;
+    pageCari.dispatchEvent(new Event('input'));
+  }
+  
+  // Sync to cari-transaksi (Transaksi)
+  let txCari = document.getElementById('cari-transaksi');
+  if (txCari) {
+    txCari.value = val;
+    txCari.dispatchEvent(new Event('input'));
+  }
+  
+  // Sync to cari-pemilik (Kelola Pemilik)
+  let pemCari = document.getElementById('cari-pemilik');
+  if (pemCari) {
+    pemCari.value = val;
+    pemCari.dispatchEvent(new Event('input'));
+  }
+}
