@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Ledgerly</title>
+  <meta name="description" content="Dashboard Ledgerly — kelola inventaris dan keuangan toko kamu.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dasbor.css">
+</head>
+<body>
+
+  <div class="dasbor-shell">
+    <!-- sidebar (di-render js) -->
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <!-- area utama -->
+    <div class="main-content">
+      <!-- topbar (di-render js) -->
+      <header class="topbar" id="topbar"></header>
+
+      <!-- konten halaman yg di-swap sesuai route -->
+      <div class="page-content">
+        <div class="page-inner" id="konten-utama">
+          <!-- isinya di-render oleh router di app.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- mobile nav overlay -->
+  <div class="mobile-nav-overlay" id="mobile-nav">
+    <div class="mobile-nav-backdrop" onclick="tutupMobileNav()"></div>
+    <div class="mobile-nav-panel" id="mobile-nav-panel">
+      <!-- di-render js -->
+    </div>
+  </div>
+
+  <!-- chatbot panel (hidden by default) -->
+  <div class="chatbot-panel hidden" id="chatbot-panel">
+    <!-- di-render js -->
+  </div>
+
+  <!-- Chatbot Floating Action Button (Bouncing FAB) -->
+  <div class="chatbot-fab-container" id="chatbot-fab-container">
+    <div class="chatbot-fab-tip" id="chatbot-fab-tip">Tanya AI Ledgerly...</div>
+    <button type="button" class="chatbot-fab-btn" onclick="toggleChatbot()" title="Tanya AI Ledgerly">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+      <span class="chatbot-fab-dot"></span>
+    </button>
+  </div>
+
+  <!-- upload modal (hidden by default) -->
+  <div class="modal-overlay hidden" id="upload-modal">
+    <!-- di-render js -->
+  </div>
+
+  <!-- CDN libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- app modules -->
+  <script src="js/supabase.js?v=2"></script>
+  <script src="js/data.js?v=2"></script>
+  <script src="js/utils.js?v=2"></script>
+  <script src="js/export.js?v=2"></script>
+  <script src="js/komponen/sidebar.js?v=2"></script>
+  <script src="js/komponen/topbar.js?v=2"></script>
+  <script src="js/komponen/chatbot.js?v=2"></script>
+  <script src="js/komponen/upload.js?v=2"></script>
+  <script src="js/pages/inventaris.js?v=2"></script>
+  <script src="js/pages/keuangan.js?v=2"></script>
+  <script src="js/pages/transaksi.js?v=2"></script>
+  <script src="js/pages/laporan.js?v=2"></script>
+  <script src="js/pages/keputusan.js?v=2"></script>
+  <script src="js/pages/pengaturan.js?v=2"></script>
+  <script src="js/pages/kelola-pemilik.js?v=2"></script>
+  <script src="js/pages/dasbor-superadmin.js?v=2"></script>
+  <script src="js/app.js?v=2"></script>
+
+</body>
+</html>
