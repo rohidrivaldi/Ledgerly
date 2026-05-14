@@ -1,0 +1,88 @@
+/* =============================================
+   pengaturan.css — styles khusus halaman pengaturan
+   ============================================= */
+
+/* -- pengaturan: field readonly -- */
+.setting-field {
+  padding: 8px 12px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--slate-200);
+  background: var(--slate-50);
+  font-size: 14px;
+  color: var(--slate-900);
+  text-transform: capitalize;
+}
+.setting-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--slate-500);
+  margin-bottom: 6px;
+}
+
+/* -- toggle row (pengaturan) -- */
+.toggle-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--slate-100);
+}
+.toggle-row:first-child { border-top: none; }
+.toggle-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.toggle-icon {
+  display: grid;
+  place-items: center;
+  width: 36px; height: 36px;
+  border-radius: var(--radius-lg);
+  background: var(--slate-50);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.toggle-title { font-size: 14px; font-weight: 600; color: var(--slate-900); }
+.toggle-desc { font-size: 12px; color: var(--slate-500); }
+
+/* -- toggle track and knob (pengaturan) -- */
+.toggle-track {
+  width: 44px;
+  height: 24px;
+  background: var(--slate-200);
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+  align-self: center;
+}
+.toggle-track:hover {
+  box-shadow: 0 0 0 4px var(--slate-100);
+}
+.toggle-track.active {
+  background: var(--indigo-600);
+}
+.toggle-track.active:hover {
+  box-shadow: 0 0 0 4px var(--indigo-50);
+}
+.toggle-knob {
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+.toggle-track.active .toggle-knob {
+  transform: translateX(20px);
+}
+
