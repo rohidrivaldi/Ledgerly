@@ -1,0 +1,66 @@
+/* =============================================
+   laporan.css — styles khusus halaman laporan
+   ============================================= */
+
+/* -- export cards (laporan) -- */
+.export-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) { .export-grid { grid-template-columns: repeat(2, 1fr); } }
+.export-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+}
+.export-card-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.export-icon {
+  display: grid;
+  place-items: center;
+  width: 44px; height: 44px;
+  border-radius: var(--radius-xl);
+  background: var(--indigo-50);
+  color: var(--indigo-600);
+  flex-shrink: 0;
+}
+.export-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--slate-900);
+}
+.export-desc {
+  font-size: 12px;
+  color: var(--slate-500);
+  margin-top: 2px;
+}
+.export-format {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--slate-100);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--slate-600);
+}
+
+/* -- cloud sync card -- */
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--emerald-600);
+  font-size: 14px;
+}
+.sync-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--emerald-500);
+}
