@@ -1,0 +1,41 @@
+/* =============================================
+   keputusan.css — styles khusus halaman keputusan
+   ============================================= */
+
+/* -- keputusan: rekomendasi cards -- */
+.restock-card {
+  padding: 20px;
+  background: linear-gradient(135deg, var(--indigo-50), #fff);
+  border-color: var(--indigo-100);
+}
+
+/* -- ranking list (keputusan) -- */
+.rank-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--slate-100);
+}
+.rank-item:first-child { border-top: none; }
+.rank-num {
+  display: grid;
+  place-items: center;
+  width: 36px; height: 36px;
+  border-radius: var(--radius-lg);
+  background: var(--amber-50);
+  color: var(--amber-700);
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.rank-info { min-width: 0; flex: 1; }
+.rank-name {
+  font-size: 14px; font-weight: 500;
+  color: var(--slate-900);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.rank-cat { font-size: 12px; color: var(--slate-500); }
+.rank-stats { text-align: right; }
+.rank-units { font-size: 14px; font-weight: 600; color: var(--slate-900); }
+.rank-revenue { font-size: 12px; color: var(--emerald-600); }

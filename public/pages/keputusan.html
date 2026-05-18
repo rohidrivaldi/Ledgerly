@@ -1,0 +1,52 @@
+<div class="page-header">
+  <h1 class="page-title">Decision Support</h1>
+  <p class="page-desc">Analisis data dan rekomendasi bisnis</p>
+</div>
+
+<div class="stats-row" id="kep-stats-row"></div>
+
+<div class="layout-2-1">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Top Produk Terlaris</div>
+        <div class="card-subtitle">Berdasarkan unit terjual</div>
+      </div>
+    </div>
+    <div class="chart-container"><canvas id="chart-terlaris" class="chart-canvas"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Detail Penjualan</div>
+        <div class="card-subtitle">Ranking berdasarkan unit</div>
+      </div>
+    </div>
+    <div id="kep-ranking-list"></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:24px;">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Rekomendasi Restock</div>
+      <div class="card-subtitle">Produk dgn stok di bawah minimum</div>
+    </div>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="tabel" id="tabel-restock">
+      <thead>
+        <tr>
+          <th>Produk</th>
+          <th class="text-right">Stok</th>
+          <th class="text-right">Min</th>
+          <th class="text-right">Kurang</th>
+          <th class="text-right">Harga Beli</th>
+          <th class="text-right">Est. Biaya</th>
+          <th>Supplier</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
