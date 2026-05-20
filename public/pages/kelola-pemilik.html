@@ -1,0 +1,39 @@
+<div class="page-header flex-between">
+  <div>
+    <h1 class="page-title">Kelola Pemilik Bisnis</h1>
+    <p class="page-desc">Manajemen akun pemilik toko dan UMKM terdaftar</p>
+  </div>
+  <button class="btn btn-primary flex-center" onclick="bukaModalPemilik()" style="gap:6px;">
+    <span id="kp-plus-icon"></span>Tambah Pemilik
+  </button>
+</div>
+
+<div class="card">
+  <div class="card-header flex-between">
+    <div>
+      <div class="card-title">Daftar Pemilik Toko</div>
+      <div class="card-subtitle" id="sub-total-pemilik">Memuat data...</div>
+    </div>
+    <input class="form-input" type="text" id="cari-pemilik" placeholder="Cari nama/email..." style="max-width:240px; font-size:12px;" oninput="filterPemilik()">
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="tabel" id="tabel-pemilik">
+      <thead>
+        <tr>
+          <th>Nama Lengkap</th>
+          <th>Email</th>
+          <th>Nama Bisnis</th>
+          <th>Paket</th>
+          <th>Peran</th>
+          <th>No. WhatsApp</th>
+          <th class="text-center" style="width:120px;">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="body-tabel-pemilik">
+        <tr>
+          <td colspan="7" class="text-center" style="padding:40px; color:var(--slate-400);">Memuat data dari database cloud...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
