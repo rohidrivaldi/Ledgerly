@@ -1,14 +1,18 @@
+<!-- Header halaman keuangan -->
 <div class="page-header">
   <h1 class="page-title">Dashboard Keuangan</h1>
   <p class="page-desc">Ringkasan performa keuangan bisnis</p>
 </div>
 
-<div style="margin-bottom:16px;">
+<!-- Tombol pilih periode (7/30/60 hari) function di keuangan.js -->
+<div style="margin-bottom: 16px">
   <div class="period-selector" id="keu-period-selector"></div>
 </div>
 
+<!-- Statistik utama seperti omzet, laba bersih, dan total pesanan -->
 <div class="stats-row" id="keu-stats-row"></div>
 
+<!-- Chart: Omzet vs HPP dan Tren Penjualan -->
 <div class="layout-1-1">
   <div class="card">
     <div class="card-header">
@@ -17,6 +21,8 @@
         <div class="card-subtitle">Perbandingan pendapatan dan biaya pokok</div>
       </div>
     </div>
+
+    <!-- canvas container untuk chart omzet -->
     <div class="chart-container"><canvas id="chart-omzet" class="chart-canvas"></canvas></div>
   </div>
   <div class="card">
@@ -26,10 +32,13 @@
         <div class="card-subtitle">Jumlah pesanan per hari</div>
       </div>
     </div>
+
+    <!-- canvas container untuk chart tren penjualan -->
     <div class="chart-container"><canvas id="chart-tren" class="chart-canvas"></canvas></div>
   </div>
 </div>
 
+<!-- Chart Arus Kas dan Ringkasan Laba/Rugi -->
 <div class="layout-1-1">
   <div class="card">
     <div class="card-header">
@@ -38,6 +47,8 @@
         <div class="card-subtitle">Pemasukan vs pengeluaran bulanan</div>
       </div>
     </div>
+
+    <!-- canvas container untuk chart arus kas -->
     <div class="chart-container"><canvas id="chart-arus" class="chart-canvas"></canvas></div>
   </div>
   <div class="card">
@@ -47,6 +58,8 @@
         <div class="card-subtitle" id="keu-pl-subtitle"></div>
       </div>
     </div>
+
+    <!-- rangkuman laba rugi diisi di keuangan.js -->
     <div class="pl-list" id="keu-pl-list"></div>
   </div>
 </div>

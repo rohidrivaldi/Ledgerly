@@ -18,7 +18,9 @@
   color: var(--slate-600);
   transition: all 0.15s;
 }
-.period-btn:hover { background: var(--slate-50); }
+.period-btn:hover {
+  background: var(--slate-50);
+}
 .period-btn.active {
   background: var(--indigo-600);
   color: #fff;
@@ -34,8 +36,21 @@
   font-size: 14px;
   border-top: 1px solid var(--slate-100);
 }
-.pl-row:first-child { border-top: none; }
-.pl-label { color: var(--slate-900); font-weight: 500; }
-.pl-label.expense { color: var(--slate-500); font-weight: 400; }
-.pl-amount { font-weight: 600; color: var(--slate-900); }
-.pl-amount.negative { color: var(--rose-600); }
+.pl-row:first-child {
+  border-top: none;
+}
+.pl-label {
+  color: var(--slate-900);
+  font-weight: 500;
+}
+.pl-label.expense {
+  color: var(--slate-500);
+  font-weight: 400;
+}
+.pl-amount {
+  font-weight: 600;
+  color: var(--slate-900);
+}
+.pl-amount.negative {
+  color: var(--rose-600);
+}

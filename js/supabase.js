@@ -6,8 +6,8 @@
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
-// Inisialisasi client
+// Inisialisasi client (function dari Supabase Library)
 const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-// Tempel ke window biar bisa diakses di module lain
+// Tempel ke window biar global akses di module lain
 window.supabaseClient = db;
