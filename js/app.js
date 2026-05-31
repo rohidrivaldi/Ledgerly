@@ -134,6 +134,55 @@ async function login(email, password) {
   return { ok: false, pesan: 'Layanan database cloud tidak tersedia.' };
 }
 
+async function register(email, password, nama, bisnis) {
+  if (window.supabaseClient) {
+    try {
+      const { data, error } = await window.supabaseClient.auth.signUp({
+        email: email,
+        password: password
+      });
+      if (error) throw error;
+      
+      if (data && data.user) {
+        // Sisipkan data profil pengguna baru ke tabel Users di database
+        const { error: profileError } = await window.supabaseClient
+          .from('Users')
+          .insert({
+            email: email,
+            nama: nama,
+            bisnis: bisnis,
+            role: 'pemilik'
+          });
+        
+        if (profileError) {
+          console.warn("Gagal menyisipkan profil pengguna baru ke tabel Users:", profileError.message);
+        }
+        return { ok: true };
+      }
+    } catch (err) {
+      console.warn("Gagal mendaftar ke Supabase:", err.message);
+      return { ok: false, pesan: err.message || 'Pendaftaran gagal.' };
+    }
+  }
+  return { ok: false, pesan: 'Layanan database cloud tidak tersedia.' };
+}
+
+async function resetPassword(email) {
+  if (window.supabaseClient) {
+    try {
+      const { data, error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/login.html'
+      });
+      if (error) throw error;
+      return { ok: true };
+    } catch (err) {
+      console.warn("Gagal mengirim reset password ke Supabase:", err.message);
+      return { ok: false, pesan: err.message || 'Gagal mengirim email reset password.' };
+    }
+  }
+  return { ok: false, pesan: 'Layanan database cloud tidak tersedia.' };
+}
+
 function logout() {
   if (confirm("Apakah Anda yakin ingin keluar dari sistem Ledgerly?")) {
     localStorage.removeItem('ledgerly_user');
