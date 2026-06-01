@@ -173,6 +173,17 @@ async function handleRegister(e) {
   if (waClean.startsWith('0')) {
     waClean = waClean.substring(1);
   }
+  
+  // Validasi panjang digit nomor seluler Indonesia (9 hingga 13 digit)
+  if (waClean.length < 9 || waClean.length > 13) {
+    errDiv.textContent = 'Nomor WhatsApp tidak valid. Harap masukkan antara 9 hingga 13 digit (setelah kode negara +62).';
+    errDiv.style.display = 'block';
+    errDiv.style.color = 'var(--rose-700)';
+    errDiv.style.borderColor = 'var(--rose-200)';
+    errDiv.style.background = 'var(--rose-50)';
+    return; // Hentikan pendaftaran
+  }
+  
   if (!waClean.startsWith('62')) {
     waClean = '62' + waClean;
   }

@@ -84,7 +84,7 @@
               <label class="form-label" for="reg-wa">Nomor WhatsApp</label>
               <div class="login-input-group">
                 <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--slate-500); font-size: 14px;">+62</span>
-                <input class="form-input" type="tel" id="reg-wa" placeholder="81234567890" style="padding-left: 52px;" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input class="form-input" type="tel" id="reg-wa" placeholder="81234567890" style="padding-left: 52px;" required maxlength="13" minlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
               </div>
             </div>
 
