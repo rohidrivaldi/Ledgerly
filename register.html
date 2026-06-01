@@ -92,19 +92,28 @@
               <label class="form-label">Pilih Paket Layanan</label>
               <div class="plan-selectors-grid">
                 <!-- Starter Card -->
-                <div class="plan-card active" id="plan-card-starter" onclick="togglePlan('starter')">
-                  <input type="radio" id="plan-starter" name="plan" value="starter" checked>
-                  <div class="plan-title">Profesional (7 Hari Trial)</div>
-                  <div class="plan-price">Rp49rb / Bulan</div>
-                  <div class="plan-desc">Akses penuh fitur premium. Otomatis beralih ke Starter (Gratis) setelah 7 hari jika tidak berlangganan.</div>
+                <div class="plan-card" id="plan-card-starter" onclick="togglePlan('starter')">
+                  <input type="radio" id="plan-starter" name="plan" value="starter">
+                  <div class="plan-title">Starter</div>
+                  <div class="plan-price">Gratis Selamanya</div>
+                  <div class="plan-desc">Dasar, maks 50 produk, 10 kueri AI/hari.</div>
+                </div>
+
+                <!-- Profesional Card (Recommended / Default Active) -->
+                <div class="plan-card active" id="plan-card-professional" onclick="togglePlan('professional')">
+                  <input type="radio" id="plan-professional" name="plan" value="professional" checked>
+                  <span style="position: absolute; top: -8px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 800; background: var(--indigo-600); color: #fff; padding: 2px 6px; border-radius: var(--radius-full); text-transform: uppercase; white-space: nowrap;">Terfavorit</span>
+                  <div class="plan-title" style="margin-top: 2px;">Profesional</div>
+                  <div class="plan-price">7 Hari Trial</div>
+                  <div class="plan-desc">Akses premium, produk & laporan tanpa batas.</div>
                 </div>
 
                 <!-- Enterprise Card -->
                 <div class="plan-card" id="plan-card-enterprise" onclick="togglePlan('enterprise')">
                   <input type="radio" id="plan-enterprise" name="plan" value="enterprise">
                   <div class="plan-title">Enterprise</div>
-                  <div class="plan-price">Hubungi Admin</div>
-                  <div class="plan-desc">Hubungi admin untuk kustomisasi skala besar.</div>
+                  <div class="plan-price">Hubungi Sales</div>
+                  <div class="plan-desc">Kustomisasi skala besar & multi-cabang.</div>
                 </div>
               </div>
             </div>

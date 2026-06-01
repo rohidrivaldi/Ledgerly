@@ -13,24 +13,38 @@
 // Mengatur perpindahan kartu paket
 function togglePlan(plan) {
   var starterCard = document.getElementById('plan-card-starter');
+  var professionalCard = document.getElementById('plan-card-professional');
   var enterpriseCard = document.getElementById('plan-card-enterprise');
+  
   var starterFields = document.getElementById('starter-fields-area');
   var enterpriseContact = document.getElementById('enterprise-contact-area');
+  
   var radioStarter = document.getElementById('plan-starter');
+  var radioProfessional = document.getElementById('plan-professional');
   var radioEnterprise = document.getElementById('plan-enterprise');
+  
   var regPassword = document.getElementById('reg-password');
+  
+  // Reset kelas aktif
+  starterCard.classList.remove('active');
+  professionalCard.classList.remove('active');
+  enterpriseCard.classList.remove('active');
   
   if (plan === 'starter') {
     radioStarter.checked = true;
     starterCard.classList.add('active');
-    enterpriseCard.classList.remove('active');
+    starterFields.style.display = 'block';
+    enterpriseContact.style.display = 'none';
+    regPassword.setAttribute('required', 'required');
+  } else if (plan === 'professional') {
+    radioProfessional.checked = true;
+    professionalCard.classList.add('active');
     starterFields.style.display = 'block';
     enterpriseContact.style.display = 'none';
     regPassword.setAttribute('required', 'required');
   } else {
     radioEnterprise.checked = true;
     enterpriseCard.classList.add('active');
-    starterCard.classList.remove('active');
     starterFields.style.display = 'none';
     enterpriseContact.style.display = 'block';
     regPassword.removeAttribute('required');
@@ -164,10 +178,10 @@ async function handleRegister(e) {
   }
   var waNum = parseInt(waClean);
   
-  // Peta pilihan paket: Starter Card -> 'professional' (Uji Coba 7 Hari Premium)
+  // Peta pilihan paket: starter -> 'starter', professional -> 'professional', enterprise -> 'enterprise'
   var planRadio = document.querySelector('input[name="plan"]:checked');
-  var planValue = planRadio ? planRadio.value : 'starter';
-  var paketDb = planValue === 'starter' ? 'professional' : 'enterprise';
+  var planValue = planRadio ? planRadio.value : 'professional';
+  var paketDb = planValue;
   
   errDiv.textContent = 'Mendaftarkan akun Anda...';
   errDiv.style.display = 'block';

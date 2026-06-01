@@ -199,21 +199,23 @@
 /* Plan Selector Premium Cards */
 .plan-selectors-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
   margin-top: 6px;
 }
 .plan-card {
   border: 1px solid var(--slate-200);
   border-radius: var(--radius-lg);
-  padding: 14px;
+  padding: 12px 8px;
   cursor: pointer;
   background: #fff;
   transition: all 0.2s ease;
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  align-items: center;
+  text-align: center;
 }
 .plan-card:hover {
   border-color: var(--indigo-300);
@@ -225,23 +227,20 @@
   background: rgba(79, 70, 229, 0.04) !important;
 }
 .plan-card input[type="radio"] {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  accent-color: var(--indigo-600);
+  display: none;
 }
 .plan-title {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--slate-900);
 }
 .plan-price {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--indigo-600);
   font-weight: 600;
 }
 .plan-desc {
-  font-size: 11px;
+  font-size: 9px;
   color: var(--slate-500);
   line-height: 1.3;
 }
