@@ -209,3 +209,6 @@
 .login-demo-box code {
   font-family: var(--font-mono);
 }
+.btn-back-home:hover {
+  color: var(--indigo-600) !important;
+}

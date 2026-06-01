@@ -149,9 +149,25 @@ async function handleRegister(e) {
   var name = document.getElementById('reg-name').value.trim();
   var bisnis = document.getElementById('reg-bisnis').value.trim();
   var email = document.getElementById('reg-email').value.trim();
+  var waInput = document.getElementById('reg-wa').value.trim();
   var password = document.getElementById('reg-password').value;
   var errDiv = document.getElementById('register-error');
   var btn = document.getElementById('reg-submit-btn');
+  
+  // Sanitasi nomor WhatsApp (harus numeric dan diawali 62)
+  var waClean = waInput.replace(/[^0-9]/g, '');
+  if (waClean.startsWith('0')) {
+    waClean = waClean.substring(1);
+  }
+  if (!waClean.startsWith('62')) {
+    waClean = '62' + waClean;
+  }
+  var waNum = parseInt(waClean);
+  
+  // Peta pilihan paket: Starter Card -> 'professional' (Uji Coba 7 Hari Premium)
+  var planRadio = document.querySelector('input[name="plan"]:checked');
+  var planValue = planRadio ? planRadio.value : 'starter';
+  var paketDb = planValue === 'starter' ? 'professional' : 'enterprise';
   
   errDiv.textContent = 'Mendaftarkan akun Anda...';
   errDiv.style.display = 'block';
@@ -181,7 +197,9 @@ async function handleRegister(e) {
             email: email,
             nama: name,
             bisnis: bisnis,
-            role: 'pemilik'
+            role: 'pemilik',
+            noTelp: waNum,
+            paket: paketDb
           });
         
         if (profileError) {

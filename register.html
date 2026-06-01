@@ -56,6 +56,11 @@
             <span class="login-mobile-name">Ledgerly</span>
           </div>
 
+          <a href="index.html" class="btn-back-home" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--slate-500); text-decoration: none; font-weight: 500; margin-bottom: 20px; transition: color 0.15s;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+            Kembali ke Beranda
+          </a>
+
           <h2>Buat Akun Baru 🚀</h2>
           <p class="subtitle">Mulai kelola keuangan UMKM Anda lebih cerdas hari ini</p>
 
@@ -76,14 +81,22 @@
             </div>
 
             <div>
+              <label class="form-label" for="reg-wa">Nomor WhatsApp</label>
+              <div class="login-input-group">
+                <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--slate-500); font-size: 14px;">+62</span>
+                <input class="form-input" type="tel" id="reg-wa" placeholder="81234567890" style="padding-left: 52px;" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+              </div>
+            </div>
+
+            <div>
               <label class="form-label">Pilih Paket Layanan</label>
               <div class="plan-selectors-grid">
                 <!-- Starter Card -->
                 <div class="plan-card active" id="plan-card-starter" onclick="togglePlan('starter')">
                   <input type="radio" id="plan-starter" name="plan" value="starter" checked>
-                  <div class="plan-title">Starter (7 Hari)</div>
-                  <div class="plan-price">Gratis Trial</div>
-                  <div class="plan-desc">Gratis 7 hari pertama, bayar setelah trial selesai.</div>
+                  <div class="plan-title">Profesional (7 Hari Trial)</div>
+                  <div class="plan-price">Rp49rb / Bulan</div>
+                  <div class="plan-desc">Akses penuh fitur premium. Otomatis beralih ke Starter (Gratis) setelah 7 hari jika tidak berlangganan.</div>
                 </div>
 
                 <!-- Enterprise Card -->

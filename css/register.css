@@ -324,3 +324,6 @@
   line-height: 1.4;
   margin-top: 8px;
 }
+.btn-back-home:hover {
+  color: var(--indigo-600) !important;
+}
