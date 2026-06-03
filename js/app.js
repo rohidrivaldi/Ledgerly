@@ -33,9 +33,10 @@ var store = {
 
 // -- fungsi auth (pake localStorage) --
 function cekLogin() {
+  // Cek localStorage untuk data user yang sudah login sebelum nya
   let userData = localStorage.getItem('ledgerly_user');
   if (userData) {
-    store.user = JSON.parse(userData);
+    store.user = JSON.parse(userData); // simpan data user
     
     // Muat riwayat chat spesifik user
     let chatKey = dapatkanChatKey();
@@ -52,40 +53,53 @@ function cekLogin() {
       ];
     }
     
-    // Sinkronisasi profil user terbaru dari database Supabase secara asinkron
+    // Sinkronisasi profil user terbaru dari database Supabase
     if (window.supabaseClient) {
       window.supabaseClient
         .from('Users')
         .select('role, nama, bisnis')
-        .eq('email', store.user.email)
-        .maybeSingle()
-        .then(function(res) {
+        .eq('email', store.user.email) // eq = WHERE
+        .maybeSingle() // ambil index pertama
+        .then(function(res) { // hasil query -> object { data: {...}, error: null }
           if (res.data) {
+            // update value role dari lokalStorage
             let updated = false;
             if (store.user.role !== res.data.role) {
               store.user.role = res.data.role;
               updated = true;
             }
+
+            // update value nama 
             if (store.user.nama !== res.data.nama) {
               store.user.nama = res.data.nama;
               updated = true;
             }
+
+            // update value nama bisnis
             if (store.user.bisnis !== res.data.bisnis) {
               store.user.bisnis = res.data.bisnis;
               updated = true;
             }
+
+            // jika ada perubahan data user, update localStorage dan re-render layout
             if (updated) {
               localStorage.setItem('ledgerly_user', JSON.stringify(store.user));
               // Re-render layout agar sesuai dengan hak akses yang baru
               if (typeof renderSidebar === 'function') renderSidebar();
               if (typeof renderTopbar === 'function') renderTopbar();
-              // Jika peran berubah dan tidak lagi memiliki hak ke halaman aktif, redirect
+              
+              // check posisi halaman saat ini
               let hash = window.location.hash || '#inventaris';
+              
+              // kalo bukan superadmin redirect ke halaman default
               if (hash === '#kelola-pemilik' && store.user.role !== 'superadmin') {
                 navigasi('#inventaris');
               } else if (hash === '#dasbor-superadmin' && store.user.role !== 'superadmin') {
                 navigasi('#inventaris');
-              } else if (store.user.role === 'superadmin' && ['#inventaris', '#keuangan', '#transaksi', '#laporan', '#keputusan', '#pengaturan'].includes(hash)) {
+              } 
+              
+              // kalo superadmin redirect ke dasbor-superadmin
+              else if (store.user.role === 'superadmin' && ['#inventaris', '#keuangan', '#transaksi', '#laporan', '#keputusan', '#pengaturan'].includes(hash)) {
                 navigasi('#dasbor-superadmin');
               }
             }
@@ -98,9 +112,9 @@ function cekLogin() {
 }
 
 async function login(email, password) {
-  // Hubungkan otentikasi ke database Supabase
   if (window.supabaseClient) {
     try {
+      // authentikasi user pakai function signInWithPassword dari Supabase Library
       const { data, error } = await window.supabaseClient.auth.signInWithPassword({
         email: email,
         password: password
@@ -134,6 +148,7 @@ async function login(email, password) {
   return { ok: false, pesan: 'Layanan database cloud tidak tersedia.' };
 }
 
+// delete user data session saat logout
 function logout() {
   if (confirm("Apakah Anda yakin ingin keluar dari sistem Ledgerly?")) {
     localStorage.removeItem('ledgerly_user');
@@ -146,14 +161,18 @@ function logout() {
 
 async function tambahTransaksi(tx) {
   // 1. Update local state terlebih dahulu (instant UI feedback)
-  store.transaksi.unshift(tx);
+  store.transaksi.unshift(tx); // unshift() = tambah di awal array
+
+  // Update stok produk di local state (pr = setiap item di store.produk -> global variable)
   var p = store.produk.find(function(pr) { return pr.id === tx.produkId; });
   if (p) {
-    if (tx.tipe === 'MASUK') p.stok += tx.jumlah;
-    else p.stok -= tx.jumlah;
+    if (tx.tipe === 'MASUK') p.stok += tx.jumlah; // transaksi masuk
+    else p.stok -= tx.jumlah; // transaksi keluar
+
+    // Update tanggal produk
     p.updatedAt = new Date().toISOString().slice(0, 10);
   }
-  store.notifikasi = buatNotifikasi();
+  store.notifikasi = buatNotifikasi(); // function dari data.js
   hitungStatistikDariTransaksi();
   
   // Re-render halaman aktif jika sedang berada di inventaris, keuangan, transaksi, keputusan
@@ -165,15 +184,15 @@ async function tambahTransaksi(tx) {
       // Pastikan format UUID valid untuk foreign key
       let dbProdukId = (tx.produkId && tx.produkId.length > 10) ? tx.produkId : null;
 
-      // Ambil atau map ID metode pembayaran
+      // Ambil atau map ID metode pembayaran (UUID dari supabase tabel Metode)
       let metodeId = 'b1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d'; // default Cash
       if (tx.metode) {
         let mLower = tx.metode.toLowerCase();
-        if (mLower === 'transfer') metodeId = 'b2b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d';
-        else if (mLower === 'qris') metodeId = 'b3b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d';
+        if (mLower === 'transfer') metodeId = 'b2b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d'; // Transfer Bank
+        else if (mLower === 'qris') metodeId = 'b3b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d'; // QRIS
       }
 
-      // 1. Insert into "Transactions"
+      // 2a. Add new "Transactions" (asychronous insert / wait for result)
       const { data: txData, error: txErr } = await window.supabaseClient
         .from('Transactions')
         .insert({
@@ -188,7 +207,7 @@ async function tambahTransaksi(tx) {
       
       if (txErr) throw txErr;
 
-      // 2. Insert into "Detail_Transactions"
+      // 2b. Add new "Detail_Transactions" (isi trasaksi -> produk apa, jumlah berapa)
       if (txData && dbProdukId) {
         const { error: detErr } = await window.supabaseClient
           .from('Detail_Transactions')
@@ -201,8 +220,8 @@ async function tambahTransaksi(tx) {
         if (detErr) throw detErr;
       }
 
-      // 3. Update stok di "Products"
-      if (p && p.id && p.id.length > 10) {
+      // 2c. Update stok di "Products"
+      if (p && p.id && p.id.length > 10) { // check id valid tidak
         const { error: prodErr } = await window.supabaseClient
           .from('Products')
           .update({
@@ -219,10 +238,12 @@ async function tambahTransaksi(tx) {
   }
 }
 
+// hapus notifikasi dari list berdasarkan id nya
 function tutupNotifikasi(id) {
   store.notifikasi = store.notifikasi.filter(function(n) { return n.id !== id; });
 }
 
+// tambah pesan chat baru ke state dan simpan ke localStorage (per user)
 function tambahChatMsg(msg) {
   store.chatMessages.push(msg);
   localStorage.setItem(dapatkanChatKey(), JSON.stringify(store.chatMessages));
@@ -231,8 +252,10 @@ function tambahChatMsg(msg) {
 // -- hitung-hitungan keuangan --
 
 function hitungRingkasan(hari) {
-  let data = (store.penjualanHarian || []).slice(-hari);
+  let data = (store.penjualanHarian || []).slice(-hari); // ambil data sesuai hari
   let totalOmzet = 0, totalHpp = 0, totalPesanan = 0;
+
+  // hitung total omzet, hpp dan jumlah pesanan dari data harian
   for (let i = 0; i < data.length; i++) {
     totalOmzet += data[i].omzet;
     totalHpp += data[i].hpp;
@@ -241,6 +264,7 @@ function hitungRingkasan(hari) {
   let labaKotor = totalOmzet - totalHpp;
   let biayaOps = Math.round(totalOmzet * 0.08);
   let labaBersih = labaKotor - biayaOps;
+  
   return {
     omzet: totalOmzet,
     hpp: totalHpp,
@@ -253,13 +277,17 @@ function hitungRingkasan(hari) {
   };
 }
 
+// update stok produk, total nilai inventaris dan jumlah SKU
 function hitungInventaris() {
   let totalUnit = 0, totalNilai = 0, rendah = 0;
+
+  // hitung total unit, nilai dan stok rendah dari data produk di store
   store.produk.forEach(function(p) {
     totalUnit += p.stok;
     totalNilai += p.stok * p.hargaBeli;
     if (p.stok < p.minStok) rendah++;
   });
+
   return {
     totalUnit: totalUnit,
     totalNilai: totalNilai,
@@ -272,6 +300,7 @@ function hitungInventaris() {
 
 // daftar halaman yg tersedia
 var ROUTES = {
+  // format: '#hash': { title: 'Judul Halaman', init: namaFungsiInitHalaman ? jika tidak ada, function kosong } 
   '#inventaris': { title: 'Inventaris', init: typeof initInventaris !== 'undefined' ? initInventaris : function(){} },
   '#keuangan': { title: 'Keuangan', init: typeof initKeuangan !== 'undefined' ? initKeuangan : function(){} },
   '#transaksi': { title: 'Transaksi', init: typeof initTransaksi !== 'undefined' ? initTransaksi : function(){} },
@@ -284,10 +313,12 @@ var ROUTES = {
 
 var halamanSkrg = '#inventaris'; // default
 
+// function untuk pindah css kustom sesuai halaman nya
 function muatStylesHalaman(pageName) {
   let oldLink = document.getElementById('dynamic-page-stylesheet');
-  if (oldLink) oldLink.remove();
+  if (oldLink) oldLink.remove(); // hapus link stylesheet lama
 
+  // link stylesheet baru untuk halaman nya
   let link = document.createElement('link');
   link.id = 'dynamic-page-stylesheet';
   link.rel = 'stylesheet';
@@ -295,13 +326,15 @@ function muatStylesHalaman(pageName) {
   document.head.appendChild(link);
 }
 
+// function untuk pindah / navigasi antar halaman
 async function navigasi(hash) {
   let userRole = (store.user && store.user.role) ? store.user.role : 'pemilik';
   let defaultHash = (userRole === 'superadmin') ? '#dasbor-superadmin' : '#inventaris';
 
+  // jika hash tidak valid atau tidak ada di ROUTES, pakai default
   if (!hash || !ROUTES[hash]) hash = defaultHash;
 
-  // Proteksi hak akses rute
+  // jika user bukan superadmin, tidak boleh akses halaman superadmin
   if (userRole !== 'superadmin') {
     if (hash === '#kelola-pemilik' || hash === '#dasbor-superadmin') {
       hash = '#inventaris';
@@ -312,32 +345,38 @@ async function navigasi(hash) {
     }
   }
 
+  // update halamanSkrg sebelum render + update global halaman apa yang sedang aktif
   halamanSkrg = hash;
   window.location.hash = hash;
 
-  // render halaman
-  let route = ROUTES[hash];
-  let konten = document.getElementById('konten-utama');
+  // ambil info halaman dari ROUTES
+  let route = ROUTES[hash]; 
+  
+  // render html dari route di slot konten-utama
+  let konten = document.getElementById('konten-utama'); 
   if (konten) {
     konten.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:200px; color:var(--slate-400);">Memuat halaman...</div>';
     try {
-      let pageName = hash.substring(1); // 'inventaris'
+      // ambil nama halaman dari hash, misal '#inventaris' -> 'inventaris'
+      let pageName = hash.substring(1); 
       
       // muat stylesheet halaman secara dinamis dr folder public
       muatStylesHalaman(pageName);
       
+      // fetch file HTML halaman dari folder public/pages
       let response = await fetch(`pages/${pageName}.html`);
       if (!response.ok) throw new Error(`Gagal memuat halaman: ${response.statusText}`);
       
+      // tampilkan HTML halaman di slot konten
       let html = await response.text();
       konten.innerHTML = html;
       
-      // kasih waktu buat DOM siap trus init event listener
+      // kasih waktu buat DOM siap trus jalanin fungsi init halaman (jika ada)
       setTimeout(function() { 
-        if (typeof route.init === 'function') {
-          route.init(); 
+        if (typeof route.init === 'function') { // check jika fungsi init ada
+          route.init(); // excute function init utk selected page
         }
-      }, 50);
+      }, 50); // delay 50ms
     } catch (err) {
       console.error("Gagal memuat halaman:", err.message);
       konten.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:200px; color:var(--rose-600);">Gagal memuat halaman: ${err.message}</div>`;
@@ -359,41 +398,44 @@ async function navigasi(hash) {
 
 // -- hitung statistik harian, bulanan & terlaris dari data transaksi --
 function hitungStatistikDariTransaksi() {
-  // 1. Hitung Penjualan Harian (60 hari terakhir)
+  // 1. Hitung Penjualan Harian (60 hari terakhir) -----------------------------
   let harian = [];
   let mapHarian = {};
   
-  // Inisialisasi 60 hari terakhir dengan nilai 0
+  // Inisialisasi object untuk menyimpan data harian (60 hari terakhir)
   for (let i = 59; i >= 0; i--) {
-    let d = new Date();
-    d.setDate(d.getDate() - i);
-    let tglStr = d.toISOString().slice(0, 10);
+    let d = new Date(); // tanggal hari ini
+    d.setDate(d.getDate() - i); // mundur 1 setiap loop
+    let tglStr = d.toISOString().slice(0, 10); // ambil tanggal saja "YYYY-MM-DD"
     mapHarian[tglStr] = { tanggal: tglStr, omzet: 0, hpp: 0, pesanan: 0 };
     harian.push(tglStr);
   }
 
-  // Scan semua transaksi
+  // Scan setiap transaksi
   if (store.transaksi) {
     store.transaksi.forEach(function(t) {
-      let tglStr = t.tanggal.slice(0, 10);
-      if (mapHarian[tglStr]) {
-        if (t.tipe === 'KELUAR') {
+      let tglStr = t.tanggal.slice(0, 10); // ambil bagian tanggal saja
+
+      if (mapHarian[tglStr]) { // apakah transaksi masuk dalam 60 hari terakhir
+        if (t.tipe === 'KELUAR') { // hanya transaksi keluar (penjualan) yang dihitung untuk omzet dan HPP
           mapHarian[tglStr].omzet += t.total;
           mapHarian[tglStr].pesanan += 1;
+
           // Cari modal produk untuk hitung HPP
           let p = store.produk.find(function(pr) { return pr.id === t.produkId; });
-          let modal = p ? p.hargaBeli : Math.round(t.hargaSatuan * 0.85); // fallback
-          mapHarian[tglStr].hpp += t.jumlah * modal;
+          let modal = p ? p.hargaBeli : Math.round(t.hargaSatuan * 0.85); // kalau tidak ada, estimasi modal 85% dari harga jual
+          mapHarian[tglStr].hpp += t.jumlah * modal; // hitung HPP berdasarkan jumlah dan modal produk
         }
       }
     });
   }
 
+  // update store.penjualanHarian dengan data yang sudah dihitung
   store.penjualanHarian = harian.map(function(tgl) {
     return mapHarian[tgl];
   });
 
-  // 2. Hitung Arus Kas Bulanan (6 bulan terakhir)
+  // 2. Hitung Arus Kas Bulanan (6 bulan terakhir) --------------------------------
   let arusKas = [];
   let mapArusKas = {};
   let namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -414,7 +456,7 @@ function hitungStatistikDariTransaksi() {
       let d = new Date(t.tanggal);
       let key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
       if (mapArusKas[key]) {
-        if (t.tipe === 'KELUAR') {
+        if (t.tipe === 'KELUAR') { // tipe = status barang keluar (penjualan)
           // Penjualan -> Uang MASUK ke kas
           mapArusKas[key].masuk += t.total;
         } else {
@@ -425,31 +467,37 @@ function hitungStatistikDariTransaksi() {
     });
   }
 
+  // hitung arus kas bersih untuk setiap bulan
   store.arusKas = arusKas.map(function(key) {
     let item = mapArusKas[key];
     item.bersih = item.masuk - item.keluar;
     return item;
   });
 
-  // 3. Hitung Produk Terlaris
+  // 3. Hitung Produk Terlaris -------------------------------------------------
   let mapLaris = {};
   if (store.transaksi) {
     store.transaksi.forEach(function(t) {
+      // hanya hitung transaksi keluar (penjualan) untuk produk terlaris
       if (t.tipe === 'KELUAR') {
         if (!mapLaris[t.produkId]) {
           mapLaris[t.produkId] = { produkId: t.produkId, unit: 0, omzet: 0 };
         }
+
+        // update total unit terjual dan omzet untuk produk ini
         mapLaris[t.produkId].unit += t.jumlah;
         mapLaris[t.produkId].omzet += t.total;
       }
     });
   }
 
+  // ubah mapLaris jadi array dan sort berdasarkan unit terjual terbanyak
   let listLaris = Object.values(mapLaris);
   listLaris.sort(function(a, b) { return b.unit - a.unit; });
   
   // Jika data transaksi kosong, berikan default dari produk yang ada agar chart tidak kosong
   if (listLaris.length === 0 && store.produk && store.produk.length > 0) {
+    // buat data dummy berdasarkan produk yang ada, dengan unit dan omzet menurun
     listLaris = store.produk.slice(0, 5).map(function(p, idx) {
       return {
         produkId: p.id,
@@ -459,16 +507,19 @@ function hitungStatistikDariTransaksi() {
     });
   }
   
+  // update store.produkTerlaris dengan 5 produk terlaris berdasarkan unit terjual
   store.produkTerlaris = listLaris.slice(0, 5);
 }
 
-// -- sinkronisasi data dari supabase --
+// -- sinkronisasi data dari supabase ke lokal -- (supaya tidak komunikasi berkali-kali ke supabase)
 async function sinkronisasiSupabase() {
+  // jika tidak ada koneksi ke Supabase, hitung statistik dari data yang ada di local
   if (!window.supabaseClient) {
     hitungStatistikDariTransaksi();
     return;
   }
 
+  // kalo ada koneksi, coba ambil data dari Supabase dan update state global
   try {
     // 1. Ambil data kategori
     let { data: kategori } = await window.supabaseClient
@@ -476,6 +527,8 @@ async function sinkronisasiSupabase() {
       .select('*');
 
     let katMap = {};
+
+    // simpan id ke nama kategori di map untuk referensi nanti
     if (kategori) {
       store.kategoriList = kategori;
       kategori.forEach(function(k) {
@@ -490,6 +543,7 @@ async function sinkronisasiSupabase() {
 
     if (errProduk) throw errProduk;
 
+    // map data produk dari Supabase ke lokal storage
     if (produk && produk.length > 0) {
       store.produk = produk.map(function(p) {
         return {
@@ -513,6 +567,8 @@ async function sinkronisasiSupabase() {
       .select('*');
 
     let metMap = {};
+
+    // simpan id ke nama metode pembayaran di map untuk referensi nanti
     if (metodes) {
       metodes.forEach(function(m) {
         metMap[m.metode_id] = m.metode_pembayaran;
@@ -525,6 +581,8 @@ async function sinkronisasiSupabase() {
       .select('*');
 
     let detailMap = {};
+
+    // simpan detail transaksi di map dengan key transaction_id untuk referensi nanti
     if (details) {
       details.forEach(function(d) {
         detailMap[d.transaction_id] = d;
@@ -545,6 +603,7 @@ async function sinkronisasiSupabase() {
 
     if (errTransaksi) throw errTransaksi;
 
+    // Map data transaksi dari Supabase ke format yang digunakan di aplikasi
     if (transaksi && transaksi.length > 0) {
       store.transaksi = transaksi.map(function(t) {
         let det = detailMap[t.transaction_id];
@@ -573,7 +632,7 @@ async function sinkronisasiSupabase() {
     // Hitung statistik
     hitungStatistikDariTransaksi();
 
-    // Update notifikasi
+    // Update notifikasi 
     store.notifikasi = buatNotifikasi();
 
     // Re-render halaman aktif setelah data berhasil dimuat
@@ -627,6 +686,8 @@ function initChatbotFabTips() {
     "Tanya AI Ledgerly..."
   ];
   let tipIndex = 0;
+
+  // Update teks tips setiap 6 detik jika FAB tidak disembunyikan
   setInterval(function() {
     let tipEl = document.getElementById('chatbot-fab-tip');
     let container = document.getElementById('chatbot-fab-container');
