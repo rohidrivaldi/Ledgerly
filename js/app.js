@@ -39,7 +39,7 @@ function cekLogin() {
     store.user = JSON.parse(userData); // simpan data user
     
     // Muat riwayat chat spesifik user
-    let chatKey = dapatkanChatKey();
+    let chatKey = dapatkanChatKey(); // function dari utils.js
     let savedChat = localStorage.getItem(chatKey);
     if (savedChat) {
       try {
@@ -85,8 +85,8 @@ function cekLogin() {
             if (updated) {
               localStorage.setItem('ledgerly_user', JSON.stringify(store.user));
               // Re-render layout agar sesuai dengan hak akses yang baru
-              if (typeof renderSidebar === 'function') renderSidebar();
-              if (typeof renderTopbar === 'function') renderTopbar();
+              if (typeof renderSidebar === 'function') renderSidebar(); // function dari sidebar.js
+              if (typeof renderTopbar === 'function') renderTopbar(); // function dari topbar.js
               
               // check posisi halaman saat ini
               let hash = window.location.hash || '#inventaris';
@@ -633,7 +633,7 @@ async function sinkronisasiSupabase() {
     hitungStatistikDariTransaksi();
 
     // Update notifikasi 
-    store.notifikasi = buatNotifikasi();
+    store.notifikasi = buatNotifikasi(); // function dari data.js
 
     // Re-render halaman aktif setelah data berhasil dimuat
     navigasi(window.location.hash || '#inventaris');
