@@ -15,7 +15,11 @@
   grid-template-columns: 1fr;
 }
 @media (min-width: 1024px) {
-  .login-grid { grid-template-columns: 1fr 1fr; }
+  .login-grid { 
+    grid-template-columns: 1fr 1fr; 
+    height: 100vh;
+    overflow: hidden;
+  }
 }
 
 /* -- panel kiri (info) -- */
@@ -32,6 +36,8 @@
   .login-info { 
     display: flex; 
     padding: 64px 80px 64px 48px;
+    height: 100vh;
+    overflow: hidden;
   } 
 }
 .login-info .blob-1 {
@@ -119,6 +125,8 @@
 @media (min-width: 1024px) { 
   .login-form-panel { 
     padding: 64px 48px 64px 80px; 
+    height: 100vh;
+    overflow-y: auto;
   } 
 }
 .login-info-inner {
