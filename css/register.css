@@ -1,5 +1,5 @@
 /* =============================================
-   login.css — halaman login aja
+   register.css — halaman registrasi terpisah
    ============================================= */
 
 .login-wrapper {
@@ -111,16 +111,16 @@
   justify-content: center;
   padding: 24px 24px;
 }
-@media (min-width: 640px) { .login-form-panel { padding: 48px; } }
+@media (min-width: 640px) { .login-form-panel { padding: 40px; } }
 .login-form-inner {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
 }
 .login-mobile-brand {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 @media (min-width: 1024px) { .login-mobile-brand { display: none; } }
 .login-mobile-icon {
@@ -146,10 +146,10 @@
   color: var(--slate-500);
 }
 .login-form {
-  margin-top: 32px;
+  margin-top: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 .login-input-group { position: relative; }
 .login-input-group .form-input {
@@ -167,12 +167,13 @@
 .login-toggle-pw:hover { color: var(--slate-600); }
 
 .login-error {
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--rose-200);
   background: var(--rose-50);
   color: var(--rose-700);
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 1.4;
 }
 .login-submit {
   display: flex;
@@ -180,34 +181,147 @@
   justify-content: center;
   gap: 8px;
   width: 100%;
-  padding: 10px 16px;
+  padding: 11px 16px;
   border-radius: var(--radius-lg);
   background: var(--indigo-600);
   color: #fff;
   font-size: 14px;
   font-weight: 600;
   box-shadow: var(--shadow-sm);
-  transition: background 0.15s;
+  transition: background 0.15s, opacity 0.15s;
 }
-.login-submit:hover { background: var(--indigo-700); }
+.login-submit:hover:not(:disabled) { background: var(--indigo-700); }
 .login-submit svg { transition: transform 0.15s; }
-.login-submit:hover svg { transform: translateX(2px); }
+.login-submit:hover:not(:disabled) svg { transform: translateX(2px); }
 
-.login-demo-box {
-  padding: 12px;
+/* ============ REGISTER SPECIFIC STYLES ============ */
+
+/* Plan Selector Premium Cards */
+.plan-selectors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+.plan-card {
+  border: 1px solid var(--slate-200);
   border-radius: var(--radius-lg);
-  border: 1px dashed var(--slate-300);
-  background: var(--slate-50);
+  padding: 12px 8px;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
   text-align: center;
+}
+.plan-card:hover {
+  border-color: var(--indigo-300);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.plan-card.active {
+  border: 2px solid var(--indigo-600) !important;
+  background: rgba(79, 70, 229, 0.04) !important;
+}
+.plan-card input[type="radio"] {
+  display: none;
+}
+.plan-title {
   font-size: 12px;
-  color: var(--slate-600);
+  font-weight: 700;
+  color: var(--slate-900);
 }
-.login-demo-box .label {
+.plan-price {
+  font-size: 11px;
+  color: var(--indigo-600);
+  font-weight: 600;
+}
+.plan-desc {
+  font-size: 9px;
+  color: var(--slate-500);
+  line-height: 1.3;
+}
+
+/* Password Strength Indicator */
+.password-strength-container {
+  margin-top: 8px;
+}
+.password-strength-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+.password-strength-label-text {
+  color: var(--slate-500);
+}
+.password-strength-value {
+  font-weight: 600;
+}
+.password-strength-bars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+.strength-bar {
+  height: 4px;
+  background: var(--slate-200);
+  border-radius: var(--radius-full);
+  transition: background-color 0.25s ease;
+}
+
+/* Password Criteria Checklist */
+.password-criteria-list {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.criterion-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
   font-weight: 500;
-  color: var(--slate-700);
+  transition: color 0.15s ease;
 }
-.login-demo-box code {
-  font-family: var(--font-mono);
+
+/* WhatsApp Enterprise CTA */
+.enterprise-cta-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--emerald-600);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.15s;
+  text-decoration: none;
+  text-align: center;
+  margin-top: 8px;
+}
+.enterprise-cta-button:hover {
+  background: var(--emerald-700);
+}
+.enterprise-notice {
+  font-size: 12px;
+  color: var(--slate-500);
+  text-align: center;
+  line-height: 1.4;
+  margin-top: 8px;
 }
 .btn-back-home:hover {
   color: var(--indigo-600) !important;

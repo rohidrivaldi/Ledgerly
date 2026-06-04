@@ -4,6 +4,13 @@
    ============================================= */
 
 function toggleChatbot() {
+  if (store && store.user && store.user.role === 'superadmin') {
+    let fab = document.getElementById('chatbot-fab-container');
+    if (fab) fab.style.display = 'none';
+    let panel = document.getElementById('chatbot-panel');
+    if (panel) panel.classList.add('hidden');
+    return;
+  }
   let panel = document.getElementById('chatbot-panel');
   let fabContainer = document.getElementById('chatbot-fab-container');
   if (!panel) return;
@@ -395,3 +402,28 @@ function konfirmasiHapusChat() {
     renderChatPanel();
   }
 }
+
+// Menonaktifkan Chatbot AI secara total untuk akun Superadmin
+document.addEventListener('DOMContentLoaded', function() {
+  function checkSuperadminChatbot() {
+    if (store && store.user && store.user.role === 'superadmin') {
+      let fab = document.getElementById('chatbot-fab-container');
+      if (fab) {
+        fab.style.display = 'none';
+      }
+      let panel = document.getElementById('chatbot-panel');
+      if (panel) {
+        panel.style.display = 'none';
+        panel.classList.add('hidden');
+      }
+    }
+  }
+  
+  // Jalankan langsung setelah DOM load
+  checkSuperadminChatbot();
+  
+  // Interval berkala untuk mengantisipasi sinkronisasi data Supabase pasca-login
+  setTimeout(checkSuperadminChatbot, 100);
+  setTimeout(checkSuperadminChatbot, 500);
+  setTimeout(checkSuperadminChatbot, 1500);
+});
