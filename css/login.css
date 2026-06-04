@@ -118,13 +118,14 @@
 /* -- panel kanan (form) -- */
 .login-form-panel {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 24px 24px;
 }
 @media (min-width: 1024px) { 
   .login-form-panel { 
-    padding: 64px 48px 64px 80px; 
+    padding: 48px 48px 48px 80px; 
     height: 100vh;
     overflow-y: auto;
   } 
@@ -148,7 +149,10 @@
 .login-form-inner {
   width: 100%;
   max-width: 440px;
-  margin: 0 auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-top: 16px;
+  padding-bottom: 16px;
 }
 @media (min-width: 1024px) {
   .login-form-inner {
@@ -160,7 +164,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 @media (min-width: 1024px) { .login-mobile-brand { display: none; } }
 .login-mobile-icon {
@@ -186,10 +190,10 @@
   color: var(--slate-500);
 }
 .login-form {
-  margin-top: 32px;
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 .login-input-group { position: relative; }
 .login-input-group .form-input {
