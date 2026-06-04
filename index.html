@@ -38,6 +38,26 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </a>
       </div>
+      <button class="nav-toggle" id="btn-toggle-menu" aria-label="Toggle Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    
+    <div class="mobile-menu" id="overlay-menu">
+      <div class="mobile-menu-links">
+        <a href="#fitur">Fitur</a>
+        <a href="#harga">Harga</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="mobile-menu-actions">
+        <a href="login.html" class="mobile-menu-btn-login">Masuk</a>
+        <a href="register.html" class="mobile-menu-btn-cta">
+          Mulai Gratis
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
     </div>
   </nav>
 
@@ -700,6 +720,32 @@
 
     // IntersectionObserver untuk Scroll-Reveal animasi
     document.addEventListener('DOMContentLoaded', function() {
+      // Toggle mobile hamburger menu
+      const btnToggle = document.getElementById('btn-toggle-menu');
+      const navUtama = document.getElementById('nav-utama');
+      
+      if (btnToggle && navUtama) {
+        btnToggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          navUtama.classList.toggle('menu-open');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+          if (!navUtama.contains(event.target)) {
+            navUtama.classList.remove('menu-open');
+          }
+        });
+        
+        // Close menu when clicking any link inside
+        const mobileLinks = navUtama.querySelectorAll('.mobile-menu a');
+        mobileLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            navUtama.classList.remove('menu-open');
+          });
+        });
+      }
+
       var revealElements = document.querySelectorAll('.scroll-reveal');
       var observer = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
