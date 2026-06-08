@@ -87,60 +87,6 @@ function cekLogin() {
         { from: 'bot', text: 'Halo! Saya asisten AI Ledgerly. Saya bisa bantu kamu:\n- Cek stok barang\n- Tambah stok masuk/keluar\n- Lihat produk terlaris\n\nSilakan tanya apa saja!' }
       ];
     }
-    
-    // Sinkronisasi profil user terbaru dari database Supabase
-    if (window.supabaseClient) {
-      window.supabaseClient
-        .from('Users')
-        .select('role, nama, bisnis')
-        .eq('email', store.user.email) // eq = WHERE
-        .maybeSingle() // ambil index pertama
-        .then(function(res) { // hasil query -> object { data: {...}, error: null }
-          if (res.data) {
-            // update value role dari lokalStorage
-            let updated = false;
-            if (store.user.role !== res.data.role) {
-              store.user.role = res.data.role;
-              updated = true;
-            }
-
-            // update value nama 
-            if (store.user.nama !== res.data.nama) {
-              store.user.nama = res.data.nama;
-              updated = true;
-            }
-
-            // update value nama bisnis
-            if (store.user.bisnis !== res.data.bisnis) {
-              store.user.bisnis = res.data.bisnis;
-              updated = true;
-            }
-
-            // jika ada perubahan data user, update localStorage dan re-render layout
-            if (updated) {
-              localStorage.setItem('ledgerly_user', JSON.stringify(store.user));
-              // Re-render layout agar sesuai dengan hak akses yang baru
-              if (typeof renderSidebar === 'function') renderSidebar(); // function dari sidebar.js
-              if (typeof renderTopbar === 'function') renderTopbar(); // function dari topbar.js
-              
-              // check posisi halaman saat ini
-              let hash = window.location.hash || '#inventaris';
-              
-              // kalo bukan superadmin redirect ke halaman default
-              if (hash === '#kelola-pemilik' && store.user.role !== 'superadmin') {
-                navigasi('#inventaris');
-              } else if (hash === '#dasbor-superadmin' && store.user.role !== 'superadmin') {
-                navigasi('#inventaris');
-              } 
-              
-              // kalo superadmin redirect ke dasbor-superadmin
-              else if (store.user.role === 'superadmin' && ['#inventaris', '#keuangan', '#transaksi', '#laporan', '#keputusan', '#pengaturan'].includes(hash)) {
-                navigasi('#dasbor-superadmin');
-              }
-            }
-          }
-        });
-    }
     return true;
   }
   return false;
@@ -233,8 +179,15 @@ async function resetPassword(email) {
 }
 
 // delete user data session saat logout
-function logout() {
+async function logout() {
   if (confirm("Apakah Anda yakin ingin keluar dari sistem Ledgerly?")) {
+    if (window.supabaseClient) {
+      try {
+        await window.supabaseClient.auth.signOut();
+      } catch (err) {
+        console.warn("Gagal logout dari Supabase session:", err.message);
+      }
+    }
     localStorage.removeItem('ledgerly_user');
     store.user = null;
     window.location.href = 'login.html';
@@ -729,6 +682,20 @@ async function sinkronisasiSupabase() {
 
 // inisialisasi app pas DOM ready
 function initApp() {
+  // Pasang listener status autentikasi Supabase secara real-time
+  if (window.supabaseClient) {
+    window.supabaseClient.auth.onAuthStateChange(function(event, session) {
+      if (event === 'SIGNED_OUT' || !session) {
+        localStorage.removeItem('ledgerly_user');
+        store.user = null;
+        // Hanya redirect jika sedang di dalam dashboard/dasbor.html
+        if (!window.location.pathname.endsWith('login.html') && !window.location.pathname.endsWith('register.html')) {
+          window.location.href = 'login.html';
+        }
+      }
+    });
+  }
+
   // cek login dulu
   if (!cekLogin()) {
     window.location.href = 'login.html';
