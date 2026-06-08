@@ -266,7 +266,9 @@ function levenshtein(a, b) {
 }
 
 async function tanyaGeminiAI(pesan) {
-  // ambil api key gemini secara aman dr env biar gak kena leak pas di-push ke github
+  // Gunakan proxy serverless Vercel untuk produksi demi keamanan API Key.
+  // Jika lokal dan memiliki VITE_GEMINI_API_KEY, gunakan pemanggilan langsung untuk kemudahan pengembangan.
+  let isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   let apiKey = '';
   if (typeof window !== 'undefined' && window.process && window.process.env && window.process.env.VITE_GEMINI_API_KEY) {
     apiKey = window.process.env.VITE_GEMINI_API_KEY;
@@ -274,10 +276,12 @@ async function tanyaGeminiAI(pesan) {
     apiKey = process.env.VITE_GEMINI_API_KEY;
   }
 
-  if (!apiKey) {
-    return "Maaf, API Key Gemini belum dikonfigurasi. Silakan atur VITE_GEMINI_API_KEY di file .env terlebih dahulu.";
+  let url = '/api/chatbot';
+  let useDirectCall = isLocal && apiKey;
+
+  if (useDirectCall) {
+    url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey;
   }
-  let url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey;
 
   // Format data produk sebagai konteks
   let produkContext = store.produk.map(function(p) {
@@ -297,17 +301,29 @@ async function tanyaGeminiAI(pesan) {
     + "Jawablah dengan profesional, ramah, solutif, singkat padat (maksimal 2-3 paragraf), serta gunakan Bahasa Indonesia formal tanpa singkatan seperti yg, utk, dgn. Gunakan format markdown tebal (**) untuk poin penting dan angka rupiah.";
 
   try {
-    let response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: prompt }]
-        }]
-      })
-    });
+    let response;
+    if (useDirectCall) {
+      response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: prompt }]
+          }]
+        })
+      });
+    } else {
+      // Panggil proxy serverless Vercel
+      response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt: prompt })
+      });
+    }
 
     let data = await response.json();
     if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
