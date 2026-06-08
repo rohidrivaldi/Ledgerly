@@ -9,6 +9,12 @@ function renderSidebar() {
   let user = store.user || {};
   let inisial = (user.nama || 'U').split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().slice(0, 2);
 
+  let isCollapsed = localStorage.getItem('ledgerly_sidebar_collapsed') === 'true';
+  let shell = document.querySelector('.dasbor-shell');
+  if (shell) {
+    shell.classList.toggle('sidebar-collapsed', isCollapsed);
+  }
+
   let navHtml = '';
   if (user.role === 'superadmin') {
     navHtml += navLink('#dasbor-superadmin', icon('fileBarChart'), 'Ikhtisar Sistem');
@@ -31,10 +37,13 @@ function renderSidebar() {
           <line x1="12" y1="22" x2="12" y2="12"/>
         </svg>
       </div>
-      <div>
+      <div class="sidebar-brand-text">
         <div class="sidebar-app-name">Ledgerly</div>
         <div class="sidebar-app-sub">Sistem UMKM</div>
       </div>
+      <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" onclick="toggleSidebarCollapse()" title="${isCollapsed ? 'Expand Sidebar' : 'Minimize Sidebar'}">
+        ${isCollapsed ? icon('chevronRight', 16) : icon('chevronLeft', 16)}
+      </button>
     </div>
     <nav class="sidebar-nav">
       ${navHtml}
@@ -63,8 +72,26 @@ function renderSidebar() {
 function navLink(hash, iconSvg, label) {
   let isActive = halamanSkrg === hash ? ' active' : '';
   return `
-    <button class="sidebar-link${isActive}" data-hash="${hash}">
+    <button class="sidebar-link${isActive}" data-hash="${hash}" title="${label}">
       ${iconSvg}<span>${label}</span>
     </button>
   `;
+}
+
+function toggleSidebarCollapse() {
+  let isCollapsed = localStorage.getItem('ledgerly_sidebar_collapsed') === 'true';
+  isCollapsed = !isCollapsed;
+  localStorage.setItem('ledgerly_sidebar_collapsed', isCollapsed);
+
+  let shell = document.querySelector('.dasbor-shell');
+  if (shell) {
+    shell.classList.toggle('sidebar-collapsed', isCollapsed);
+  }
+
+  // Update button icon & title
+  let btn = document.getElementById('sidebar-toggle-btn');
+  if (btn) {
+    btn.innerHTML = isCollapsed ? icon('chevronRight', 16) : icon('chevronLeft', 16);
+    btn.title = isCollapsed ? 'Expand Sidebar' : 'Minimize Sidebar';
+  }
 }
