@@ -5,7 +5,7 @@
    ============================================= */
 
 // -- state global -- simpan data aplikasi disini
-var store = {
+var _storeObj = {
   user: null,
   produk: JSON.parse(JSON.stringify(PRODUK)),  // copy biar bisa diubah
   transaksi: JSON.parse(JSON.stringify(TRANSAKSI)),
@@ -30,6 +30,41 @@ var store = {
     nomorWA: '628123456789'
   }
 };
+
+let renderTimeout;
+function jadwalkanRender() {
+  if (renderTimeout) clearTimeout(renderTimeout);
+  renderTimeout = setTimeout(function() {
+    if (typeof navigasi === 'function') {
+      navigasi(window.location.hash || '#inventaris');
+    }
+  }, 10); // debounce 10ms untuk mencegah re-render berlebihan
+}
+
+var store = new Proxy(_storeObj, {
+  set(target, key, value) {
+    target[key] = value;
+    
+    // Auto re-render jika data inti aplikasi berubah
+    if (key === 'produk' || key === 'transaksi' || key === 'notifikasi') {
+      if (key === 'transaksi' && typeof hitungStatistikDariTransaksi === 'function') {
+        hitungStatistikDariTransaksi();
+      }
+      jadwalkanRender();
+    }
+    
+    // Auto re-render layout jika status user login berubah
+    if (key === 'user') {
+      if (typeof renderSidebar === 'function') renderSidebar();
+      if (typeof renderTopbar === 'function') renderTopbar();
+    }
+    
+    return true;
+  },
+  get(target, key) {
+    return target[key];
+  }
+});
 
 // -- fungsi auth (pake localStorage) --
 function cekLogin() {
@@ -210,7 +245,7 @@ function logout() {
 
 async function tambahTransaksi(tx) {
   // 1. Update local state terlebih dahulu (instant UI feedback)
-  store.transaksi.unshift(tx); // unshift() = tambah di awal array
+  store.transaksi = [tx, ...store.transaksi];
 
   // Update stok produk di local state (pr = setiap item di store.produk -> global variable)
   var p = store.produk.find(function(pr) { return pr.id === tx.produkId; });
@@ -221,11 +256,10 @@ async function tambahTransaksi(tx) {
     // Update tanggal produk
     p.updatedAt = new Date().toISOString().slice(0, 10);
   }
-  store.notifikasi = buatNotifikasi(); // function dari data.js
-  hitungStatistikDariTransaksi();
   
-  // Re-render halaman aktif jika sedang berada di inventaris, keuangan, transaksi, keputusan
-  navigasi(window.location.hash || '#inventaris');
+  // Reassign array produk dan notifikasi untuk memicu reaktifitas Proxy
+  store.produk = [...store.produk];
+  store.notifikasi = buatNotifikasi(); // function dari data.js
 
   // 2. Kirim ke Supabase jika terhubung
   if (window.supabaseClient) {
@@ -294,7 +328,7 @@ function tutupNotifikasi(id) {
 
 // tambah pesan chat baru ke state dan simpan ke localStorage (per user)
 function tambahChatMsg(msg) {
-  store.chatMessages.push(msg);
+  store.chatMessages = [...store.chatMessages, msg];
   localStorage.setItem(dapatkanChatKey(), JSON.stringify(store.chatMessages));
 }
 
