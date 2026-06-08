@@ -103,15 +103,41 @@ async function kirimChat(pesan) {
     return;
   }
 
-  // 3. Jika bukan command, panggil Gemini AI dengan loading state
-  tambahChatMsg({ from: 'bot', text: 'Ledgerly AI sedang memproses...' });
+  // 3. Jika bukan command, panggil Gemini AI dengan streaming
+  tambahChatMsg({ from: 'bot', text: 'Menganalisis data...' });
   renderChatPanel();
 
-  let jawaban = await tanyaGeminiAI(pesan);
-  
-  // Ganti loading text dengan jawaban riil dari Gemini
-  store.chatMessages[store.chatMessages.length - 1].text = jawaban;
+  // Ambil element chat bubble bot terakhir untuk rendering instan
+  let messagesContainer = document.getElementById('chat-messages');
+  let bubbles = messagesContainer ? messagesContainer.querySelectorAll('.chat-bubble.bot') : [];
+  let lastBubble = bubbles[bubbles.length - 1];
+
+  let jawaban = await tanyaGeminiAI(pesan, function(text) {
+    // Update local state text
+    if (store.chatMessages.length > 0) {
+      store.chatMessages[store.chatMessages.length - 1].text = text;
+    }
+    // Update DOM secara langsung untuk efek mengetik instan
+    if (lastBubble) {
+      lastBubble.innerHTML = formatMarkdown(text);
+      if (messagesContainer) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    }
+  });
+
+  // Jika gagal mendapat jawaban
+  if (!jawaban) {
+    jawaban = "Maaf, asisten AI sedang mengalami gangguan koneksi. Silakan coba tanyakan kembali beberapa saat lagi.";
+  }
+
+  // Pastikan state final dan localStorage tersimpan
+  if (store.chatMessages.length > 0) {
+    store.chatMessages[store.chatMessages.length - 1].text = jawaban;
+  }
   localStorage.setItem(dapatkanChatKey(), JSON.stringify(store.chatMessages));
+  
+  // Render ulang panel penuh di akhir
   renderChatPanel();
 }
 
@@ -265,7 +291,7 @@ function levenshtein(a, b) {
   return row[a.length];
 }
 
-async function tanyaGeminiAI(pesan) {
+async function tanyaGeminiAI(pesan, onChunk) {
   // Gunakan proxy serverless Vercel untuk produksi demi keamanan API Key.
   // Jika lokal dan memiliki VITE_GEMINI_API_KEY, gunakan pemanggilan langsung untuk kemudahan pengembangan.
   let isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -280,7 +306,7 @@ async function tanyaGeminiAI(pesan) {
   let useDirectCall = isLocal && apiKey;
 
   if (useDirectCall) {
-    url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey;
+    url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=' + apiKey;
   }
 
   // Format data produk sebagai konteks
@@ -315,7 +341,7 @@ async function tanyaGeminiAI(pesan) {
         })
       });
     } else {
-      // Panggil proxy serverless Vercel
+      // Panggil proxy serverless Vercel (yang mengembalikan stream)
       response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -325,12 +351,46 @@ async function tanyaGeminiAI(pesan) {
       });
     }
 
-    let data = await response.json();
-    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
-      return data.candidates[0].content.parts[0].text;
-    } else {
-      throw new Error("Response API tidak dikenal");
+    if (!response.ok) {
+      throw new Error(`Response API error status ${response.status}`);
     }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let accumulatedText = "";
+    let fullResponseText = "";
+    const regex = /"text":\s*"((?:[^"\\]|\\.)*)"/g;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      accumulatedText += chunk;
+
+      let match;
+      let tempText = "";
+      regex.lastIndex = 0; // reset regex state
+      while ((match = regex.exec(accumulatedText)) !== null) {
+        let content = match[1];
+        // decode escape characters
+        content = content
+          .replace(/\\n/g, '\n')
+          .replace(/\\"/g, '"')
+          .replace(/\\t/g, '\t')
+          .replace(/\\\\/g, '\\');
+        tempText += content;
+      }
+
+      if (tempText) {
+        fullResponseText = tempText;
+        if (typeof onChunk === 'function') {
+          onChunk(fullResponseText);
+        }
+      }
+    }
+
+    return fullResponseText;
   } catch (err) {
     console.error("Gagal memanggil API Gemini:", err.message);
     return "Maaf, asisten AI sedang mengalami gangguan koneksi. Silakan coba tanyakan kembali beberapa saat lagi.";
