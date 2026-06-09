@@ -37,7 +37,9 @@ async function login(email, password) {
           nama: profil ? profil.nama : 'Pemilik Toko',
           email: email,
           bisnis: profil ? profil.bisnis : 'Toko Sejahtera',
-          role: profil ? profil.role : 'pemilik'
+          role: profil ? profil.role : 'pemilik',
+          paket: profil ? profil.paket : 'starter',
+          tglDaftar: data.user.created_at
         };
         localStorage.setItem('ledgerly_user', JSON.stringify(userData));
         if (typeof store !== 'undefined') {

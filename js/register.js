@@ -189,10 +189,10 @@ async function handleRegister(e) {
   }
   var waNum = parseInt(waClean);
   
-  // Peta pilihan paket: starter -> 'starter', professional -> 'professional', enterprise -> 'enterprise'
+  // Peta pilihan paket: starter -> 'starter', professional -> 'business' (untuk database), enterprise -> 'enterprise'
   var planRadio = document.querySelector('input[name="plan"]:checked');
   var planValue = planRadio ? planRadio.value : 'professional';
-  var paketDb = planValue;
+  var paketDb = planValue === 'professional' ? 'business' : planValue;
   
   errDiv.textContent = 'Mendaftarkan akun Anda...';
   errDiv.style.display = 'block';
