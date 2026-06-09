@@ -101,11 +101,16 @@ function renderInventarisTable() {
   let tbody = document.querySelector('#tabel-produk tbody');
   if (tbody) {
     tbody.innerHTML = slice.length === 0
-      ? '<tr><td colspan="9" style="text-align:center; padding:32px; color:var(--slate-400);">Tidak ada produk yang cocok dengan filter.</td></tr>'
+      ? '<tr><td colspan="10" style="text-align:center; padding:32px; color:var(--slate-400);">Tidak ada produk yang cocok dengan filter.</td></tr>'
       : slice.map(function(p) {
           let isRendah = p.stok < p.minStok;
+          // isi QR: pake barcode klo ada, fallback ke SKU. dipake buat scan di kasir
+          let kodeQR = p.barcode || p.sku || '';
           return `
             <tr>
+              <td class="text-center">
+                <canvas class="qr-thumb" data-qr="${kodeQR}" data-nama="${(p.nama || '').replace(/"/g, '&quot;')}" width="40" height="40" title="Klik utk perbesar & unduh" style="cursor:pointer; vertical-align:middle;"></canvas>
+              </td>
               <td class="td-mono">${p.sku}</td>
               <td class="td-bold">${p.nama}</td>
               <td>${p.kategori}</td>
@@ -132,7 +137,8 @@ function renderInventarisTable() {
         }).join('');
   }
 
-  // Render pagination
+  // gambar QR kecil di tiap baris + pasang klik buat preview/unduh
+  renderQrThumbnails();
   let pgEl = document.getElementById('inv-pagination-placeholder');
   if (pgEl) {
     if (totalHalaman <= 1) {
@@ -231,6 +237,92 @@ function initInventarisSearch() {
     if (cariInput.value) {
       cariInput.dispatchEvent(new Event('input'));
     }
+  }
+}
+
+// ============ QR CODE KATALOG ============
+
+// gambar QR kecil di tiap canvas.qr-thumb + pasang klik buat preview/unduh
+function renderQrThumbnails() {
+  if (typeof QRious === 'undefined') return; // library blm ke-load
+  let thumbs = document.querySelectorAll('canvas.qr-thumb');
+  thumbs.forEach(function(cv) {
+    let kode = cv.getAttribute('data-qr') || '';
+    if (!kode) {
+      // produk tanpa barcode/sku — kasih placeholder strip
+      let ctx = cv.getContext('2d');
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('—', 16, 24);
+      return;
+    }
+    try {
+      // render di resolusi 80px biar tajam, padding dibiarkan default (null)
+      // spy QRious AUTO-CENTER. klo dikasih padding:0 malah nempel pojok kiri-atas.
+      new QRious({ element: cv, value: kode, size: 80 });
+      // tampilin kecil 38px via CSS (canvas internal 80 -> crisp pas di-scale)
+      cv.style.width = '38px';
+      cv.style.height = '38px';
+    } catch (err) { console.warn('QR gagal:', err); }
+    cv.onclick = function() {
+      bukaPreviewQR(kode, cv.getAttribute('data-nama') || '');
+    };
+  });
+}
+
+// modal preview QR besar + tombol unduh PNG
+function bukaPreviewQR(kode, nama) {
+  let lama = document.getElementById('modal-qr-preview');
+  if (lama) lama.remove();
+
+  let modalHtml = '<div class="modal-overlay" id="modal-qr-preview" onclick="if(event.target.id===\'modal-qr-preview\') tutupPreviewQR()">'
+    + '<div class="modal-box" style="max-width:340px; text-align:center;">'
+    + '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">'
+    + '<div style="text-align:left;">'
+    + '<div class="modal-title">QR Produk</div>'
+    + '<div class="modal-desc">' + (nama || '') + '</div>'
+    + '</div>'
+    + '<button class="modal-close-btn" onclick="tutupPreviewQR()">' + icon('x', 18) + '</button>'
+    + '</div>'
+    + '<div style="display:flex; justify-content:center; padding:8px 0 16px;"><canvas id="qr-preview-besar"></canvas></div>'
+    + '<div style="font-size:12px; color:var(--slate-400); margin-bottom:16px; word-break:break-all;">Kode: ' + kode + '</div>'
+    + '<button class="btn btn-primary" style="width:100%; justify-content:center; gap:6px;" onclick="unduhQR(\'' + encodeURIComponent(kode) + '\', \'' + encodeURIComponent(nama) + '\')">' + icon('download', 16) + ' Unduh PNG</button>'
+    + '</div></div>';
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  // gambar QR besar di modal
+  let cv = document.getElementById('qr-preview-besar');
+  if (cv && typeof QRious !== 'undefined') {
+    try {
+      new QRious({ element: cv, value: kode, size: 220, padding: 4 });
+    } catch (err) { console.warn('QR besar gagal:', err); }
+  }
+}
+
+function tutupPreviewQR() {
+  let modal = document.getElementById('modal-qr-preview');
+  if (modal) modal.remove();
+}
+
+// unduh QR sbg file PNG (resolusi gede biar tajam pas dicetak)
+function unduhQR(kodeEnc, namaEnc) {
+  let kode = decodeURIComponent(kodeEnc);
+  let nama = decodeURIComponent(namaEnc || '');
+  if (typeof QRious === 'undefined') return;
+  try {
+    let qr = new QRious({ value: kode, size: 512, padding: 16 });
+    let url = qr.toDataURL('image/png');
+    let a = document.createElement('a');
+    a.href = url;
+    // nama file: dari nama produk (bersihin karakter aneh) atau kodenya
+    let namaFile = (nama || kode).replace(/[^a-zA-Z0-9-_ ]/g, '').trim().replace(/\s+/g, '-') || 'qr';
+    a.download = 'qr-' + namaFile + '.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (err) {
+    alert('Gagal membuat QR: ' + err.message);
   }
 }
 
