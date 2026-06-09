@@ -507,8 +507,20 @@ async function sinkronisasiSupabase() {
           bisnis: profil.bisnis,
           role: profil.role,
           paket: profil.paket || 'starter',
+          noTelp: profil.noTelp,
           tglDaftar: authUser.created_at
         };
+
+        // Sinkronisasi noTelp profil ke nomorWA settings secara otomatis
+        if (profil.noTelp) {
+          let s = store.settings || {};
+          let dbNoTelp = String(profil.noTelp);
+          if (!s.nomorWA || s.nomorWA === '628123456789' || s.nomorWA !== dbNoTelp) {
+            s.nomorWA = dbNoTelp;
+            store.settings = { ...s };
+            localStorage.setItem('ledgerly_settings', JSON.stringify(s));
+          }
+        }
 
         // Cek masa berlaku trial (untuk paket 'business')
         if (updatedUser.paket === 'business' && updatedUser.tglDaftar) {

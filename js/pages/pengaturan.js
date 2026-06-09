@@ -12,15 +12,41 @@ function initPengaturan() {
   let userIcon = document.getElementById('set-user-icon');
   if (userIcon) userIcon.innerHTML = icon('user', 14);
 
-  // 2. Populate User details
-  let elName = document.getElementById('set-user-name');
-  if (elName) elName.innerText = user.nama || '-';
-  let elEmail = document.getElementById('set-user-email');
-  if (elEmail) elEmail.innerText = user.email || '-';
-  let elBisnis = document.getElementById('set-user-bisnis');
-  if (elBisnis) elBisnis.innerText = user.bisnis || '-';
-  let elRole = document.getElementById('set-user-role');
-  if (elRole) elRole.innerText = user.role || '-';
+  // 2. Render Profil Form Dinamis
+  let setProfilContainer = document.getElementById('set-profil-container');
+  if (setProfilContainer) {
+    let roleText = 'Pemilik Toko';
+    if (user.role === 'superadmin') roleText = 'Superadmin';
+    else if (user.role === 'admin') roleText = 'Admin';
+
+    setProfilContainer.innerHTML = `
+      <form id="form-edit-profil" onsubmit="window.simpanProfil(event)" style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div>
+            <label class="setting-label" style="display:block; margin-bottom:6px;"><span id="set-user-icon"></span> Nama Pemilik</label>
+            <input class="form-input" type="text" id="edit-user-nama" value="${user.nama || ''}" required style="font-size:13px; font-weight:500;">
+          </div>
+          <div>
+            <label class="setting-label" style="display:block; margin-bottom:6px;">Email (ID Akun)</label>
+            <input class="form-input" type="text" value="${user.email || ''}" readonly disabled style="text-transform:none; font-size:13px; background:var(--slate-50); color:var(--slate-400); cursor:not-allowed;">
+          </div>
+          <div>
+            <label class="setting-label" style="display:block; margin-bottom:6px;">Nama Bisnis / Toko</label>
+            <input class="form-input" type="text" id="edit-user-bisnis" value="${user.bisnis || ''}" required style="font-size:13px; font-weight:500;">
+          </div>
+          <div>
+            <label class="setting-label" style="display:block; margin-bottom:6px;">Peran (Hak Akses)</label>
+            <input class="form-input" type="text" value="${roleText}" readonly disabled style="font-size:13px; background:var(--slate-50); color:var(--slate-400); cursor:not-allowed;">
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+          <button type="submit" class="btn btn-primary" id="btn-save-profile" style="padding:10px 20px; font-size:13px; border-radius:10px; display:inline-flex; align-items:center; gap:8px;">
+            ${icon('save', 16)} Simpan Perubahan Profil
+          </button>
+        </div>
+      </form>
+    `;
+  }
 
   // 3. Render Informasi Paket & Bantuan (Gabungan)
   let setPaketContainer = document.getElementById('set-paket-container');
@@ -119,9 +145,15 @@ function initPengaturan() {
           ${toggleRow('whatsapp', icon('whatsapp', 18), 'Notifikasi WhatsApp', 'Kirim alert otomatis saat stok di bawah minimum', s.waEnabled, 'var(--emerald-600)')}
           
           ${s.waEnabled ? `
-            <div style="margin-left: 36px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1px dashed var(--slate-100);">
-              <div style="font-size: 13px; font-weight: 500; color: var(--slate-600);">Nomor WhatsApp Penerima Alert:</div>
-              <input class="form-input" type="text" value="${s.nomorWA || ''}" id="input-wa-nomor" style="max-width:200px; font-size:13px;" placeholder="Contoh: 628123456789" onchange="ubahNomorWA(this.value)">
+            <div style="margin-left: 36px; display: flex; flex-direction: column; gap: 6px; padding-top: 12px; border-top: 1px dashed var(--slate-100);">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                <div style="font-size: 13px; font-weight: 500; color: var(--slate-600);">Nomor WhatsApp Anda:</div>
+                <div style="position: relative; display: flex; align-items: center; max-width: 200px; width: 100%;">
+                  <input class="form-input" type="text" value="${s.nomorWA || ''}" id="input-wa-nomor" style="width: 100%; font-size: 13px; padding-right: 30px;" placeholder="Contoh: 6285750917686" oninput="window.tanganiInputWA(this.value)">
+                  <span id="wa-indicator" style="position: absolute; right: 10px; display: flex; align-items: center; pointer-events: none;"></span>
+                </div>
+              </div>
+              <div id="wa-error-msg" style="font-size: 11px; text-align: right; margin-top: 2px; display: none;"></div>
             </div>
           ` : ''}
 
@@ -129,6 +161,16 @@ function initPengaturan() {
         </div>
       `;
     }
+  }
+
+  // Jalankan validasi awal untuk menampilkan indikator centang/silang jika WhatsApp aktif
+  if (s.waEnabled && user.paket !== 'starter') {
+    setTimeout(function() {
+      let inputEl = document.getElementById('input-wa-nomor');
+      if (inputEl) {
+        window.tanganiInputWA(inputEl.value);
+      }
+    }, 10);
   }
 }
 
@@ -166,12 +208,128 @@ function toggleSetting(key) {
   initPengaturan(); // re-render untuk memperbarui layout nested WA input
 }
 
-function ubahNomorWA(val) {
-  let s = store.settings || {};
-  s.nomorWA = val;
-  store.settings = { ...s };
-  salinSettingsKeLocalStorage();
-}
+window.tanganiInputWA = async function(val) {
+  let inputEl = document.getElementById('input-wa-nomor');
+  let indicatorEl = document.getElementById('wa-indicator');
+  let errorEl = document.getElementById('wa-error-msg');
+  
+  if (!inputEl || !indicatorEl || !errorEl) return;
+
+  // Bersihkan karakter non-angka
+  let clean = val.replace(/[^0-9]/g, '');
+  if (inputEl.value !== clean) {
+    inputEl.value = clean;
+  }
+
+  // Ambil nomor dasar (base number) tanpa kode negara atau 0
+  let base = clean;
+  if (clean.startsWith('62')) {
+    base = clean.substring(2);
+  } else if (clean.startsWith('0')) {
+    base = clean.substring(1);
+  }
+
+  // Cek apakah kosong
+  if (clean.length === 0) {
+    indicatorEl.innerHTML = '';
+    errorEl.style.display = 'none';
+    return;
+  }
+
+  // Validasi panjang base (10-13 digit)
+  let isValid = base.length >= 10 && base.length <= 13;
+
+  if (isValid) {
+    indicatorEl.innerHTML = '<span style="color: var(--emerald-500); font-weight: bold; font-size: 14px;">✓</span>';
+    errorEl.style.display = 'none';
+
+    // Format nomor untuk disimpan: jika berawalan 0, ubah ke 62
+    let waFormatted = clean;
+    if (waFormatted.startsWith('0')) {
+      waFormatted = '62' + waFormatted.substring(1);
+    } else if (!waFormatted.startsWith('62')) {
+      waFormatted = '62' + waFormatted;
+    }
+
+    // Simpan ke settings
+    let s = store.settings || {};
+    s.nomorWA = waFormatted;
+    store.settings = { ...s };
+    localStorage.setItem('ledgerly_settings', JSON.stringify(s));
+
+    // Sinkronkan ke database Supabase
+    if (window.supabaseClient && store.user && store.user.id) {
+      try {
+        let waNum = parseInt(waFormatted);
+        if (store.user.noTelp !== waNum) {
+          const { error } = await window.supabaseClient
+            .from('Users')
+            .update({ noTelp: waNum })
+            .eq('user_id', store.user.id);
+
+          if (error) throw error;
+          
+          store.user.noTelp = waNum;
+          localStorage.setItem('ledgerly_user', JSON.stringify(store.user));
+          console.log("Nomor WhatsApp berhasil diperbarui ke database!");
+        }
+      } catch (err) {
+        console.warn("Gagal memperbarui nomor WhatsApp ke database:", err.message);
+      }
+    }
+  } else {
+    indicatorEl.innerHTML = '<span style="color: var(--rose-500); font-weight: bold; font-size: 14px;">✗</span>';
+    errorEl.textContent = 'Nomor harus 10 hingga 13 digit (diluar kode negara/0)';
+    errorEl.style.color = 'var(--rose-600)';
+    errorEl.style.display = 'block';
+  }
+};
+
+window.simpanProfil = async function(e) {
+  e.preventDefault();
+  
+  let user = store.user || {};
+  let namaBaru = document.getElementById('edit-user-nama').value.trim();
+  let bisnisBaru = document.getElementById('edit-user-bisnis').value.trim();
+  let btn = document.getElementById('btn-save-profile');
+  
+  if (!namaBaru || !bisnisBaru) return;
+  if (!window.supabaseClient || !user.id) return;
+  
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+  btn.style.cursor = 'wait';
+  btn.innerHTML = `${icon('loader', 16)} Menyimpan...`;
+  
+  try {
+    const { error } = await window.supabaseClient
+      .from('Users')
+      .update({
+        nama: namaBaru,
+        bisnis: bisnisBaru
+      })
+      .eq('user_id', user.id);
+      
+    if (error) throw error;
+    
+    // Update local store
+    user.nama = namaBaru;
+    user.bisnis = bisnisBaru;
+    store.user = { ...user };
+    localStorage.setItem('ledgerly_user', JSON.stringify(user));
+    
+    alert("Profil dan nama bisnis Anda berhasil diperbarui!");
+  } catch (err) {
+    console.error("Gagal memperbarui profil:", err.message);
+    alert("Gagal memperbarui profil: " + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+    btn.innerHTML = `${icon('save', 16)} Simpan Perubahan Profil`;
+    initPengaturan(); // re-render
+  }
+};
 
 function ubahBiayaOpsPersen(val) {
   let persen = parseInt(val);
