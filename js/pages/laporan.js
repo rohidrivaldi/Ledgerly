@@ -11,7 +11,7 @@ function initLaporan() {
   if (statsRow) {
     statsRow.innerHTML = `
       ${statCard('Total Produk', store.produk.length + ' SKU', icon('package'), 'Tersedia utk export')}
-      ${statCard('Total Transaksi', store.transaksi.length + ' record', icon('arrowLeftRight'), 'Semua riwayat')}
+      ${statCard('Total Transaksi', store.transaksi.length + ' Transaksi', icon('arrowLeftRight'), 'Semua riwayat')}
       ${statCard('Laba Bersih 30hr', formatRupiah(ring.labaBersih), icon('trendingUp'), 'Utk laporan P&L', 'success')}
     `;
   }

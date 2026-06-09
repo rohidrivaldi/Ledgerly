@@ -99,9 +99,7 @@ function initInventarisChart() {
 
   if (chartStok) chartStok.destroy();
 
-  let labels = store.produk.map(function(p) {
-    return p.nama.length > 15 ? p.nama.slice(0, 14) + '…' : p.nama;
-  });
+  let labels = store.produk.map(function(p) { return p.nama; });
   let stokData = store.produk.map(function(p) { return p.stok; });
   let minData = store.produk.map(function(p) { return p.minStok; });
   let colors = store.produk.map(function(p) {
@@ -139,7 +137,7 @@ function initInventarisChart() {
       },
       scales: {
         y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' } },
-        x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45, minRotation: 45 } }
       }
     }
   });
