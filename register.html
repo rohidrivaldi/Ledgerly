@@ -67,27 +67,27 @@
           <h2>Buat Akun Baru 🚀</h2>
           <p class="subtitle">Mulai kelola keuangan UMKM Anda lebih cerdas hari ini</p>
 
-          <form class="login-form" id="form-register" onsubmit="handleRegister(event)">
+          <form class="login-form" id="form-register" onsubmit="handleRegister(event)" autocomplete="on">
             <div>
               <label class="form-label" for="reg-name">Nama Lengkap</label>
-              <input class="form-input" type="text" id="reg-name" placeholder="Masukkan nama pemilik bisnis" required>
+              <input class="form-input" type="text" id="reg-name" name="name" autocomplete="name" placeholder="Masukkan nama pemilik bisnis" required>
             </div>
 
             <div>
               <label class="form-label" for="reg-bisnis">Nama Bisnis / Toko</label>
-              <input class="form-input" type="text" id="reg-bisnis" placeholder="Masukkan nama bisnis Anda" required>
+              <input class="form-input" type="text" id="reg-bisnis" name="organization" autocomplete="organization" placeholder="Masukkan nama bisnis Anda" required>
             </div>
 
             <div>
               <label class="form-label" for="reg-email">Email Aktif</label>
-              <input class="form-input" type="email" id="reg-email" placeholder="Masukkan email aktif Anda" required>
+              <input class="form-input" type="email" id="reg-email" name="email" autocomplete="email" placeholder="Masukkan email aktif Anda" required>
             </div>
 
             <div>
               <label class="form-label" for="reg-wa">Nomor WhatsApp</label>
               <div class="login-input-group">
                 <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--slate-500); font-size: 14px;">+62</span>
-                <input class="form-input" type="tel" id="reg-wa" placeholder="81234567890" style="padding-left: 52px;" required maxlength="13" minlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input class="form-input" type="tel" id="reg-wa" name="tel" autocomplete="tel-national" placeholder="81234567890" style="padding-left: 52px;" required maxlength="13" minlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
               </div>
             </div>
 
@@ -126,7 +126,7 @@
               <div>
                 <label class="form-label" for="reg-password">Kata Sandi</label>
                 <div class="login-input-group">
-                  <input class="form-input" type="password" id="reg-password" placeholder="Minimal 8 karakter" required oninput="validatePasswordStrength()">
+                  <input class="form-input" type="password" id="reg-password" name="new-password" autocomplete="new-password" placeholder="Minimal 8 karakter" required oninput="validatePasswordStrength()">
                   <button type="button" class="login-toggle-pw" onclick="togglePasswordVisibility('reg-password', 'reg-icon-eye', 'reg-icon-eye-off')">
                     <svg id="reg-icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
                     <svg id="reg-icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
