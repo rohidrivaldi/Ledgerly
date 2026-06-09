@@ -329,22 +329,10 @@ function levenshtein(a, b) {
 }
 
 async function tanyaGeminiAI(pesan, onChunk) {
-  // Gunakan proxy serverless Vercel untuk produksi demi keamanan API Key.
-  // Jika lokal dan memiliki VITE_GEMINI_API_KEY, gunakan pemanggilan langsung untuk kemudahan pengembangan.
-  let isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  let apiKey = '';
-  if (typeof window !== 'undefined' && window.process && window.process.env && window.process.env.VITE_GEMINI_API_KEY) {
-    apiKey = window.process.env.VITE_GEMINI_API_KEY;
-  } else if (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) {
-    apiKey = process.env.VITE_GEMINI_API_KEY;
-  }
-
+  // SELALU lewat proxy /api/chatbot (server-side) — baik di localhost (dev middleware
+  // di vite.config.js) maupun produksi (serverless function Vercel).
+  // API key Gemini gak pernah dikirim ke browser, jadi gak keliatan di Network/console.
   let url = '/api/chatbot';
-  let useDirectCall = isLocal && apiKey;
-
-  if (useDirectCall) {
-    url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=' + apiKey;
-  }
 
   // Format data produk sebagai konteks
   let produkContext = store.produk.map(function(p) {
@@ -365,27 +353,24 @@ async function tanyaGeminiAI(pesan, onChunk) {
 
   try {
     let response;
-    if (useDirectCall) {
+    // retry max 5x klo kena 503/429 (Gemini lagi overload, ini transient).
+    // backoff naik tiap percobaan biar gak ngegas. 5x ~ total 8 detik worst case
+    let percobaan = 0;
+    while (true) {
+      percobaan++;
       response = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{ text: prompt }]
-          }]
-        })
-      });
-    } else {
-      // Panggil proxy serverless Vercel (yang mengembalikan stream)
-      response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: prompt })
       });
+
+      // 503 = overload, 429 = rate limit — dua2nya transient, layak diulang
+      if ((response.status === 503 || response.status === 429) && percobaan < 5) {
+        // tunggu sebentar (backoff): 800, 1600, 2400, 3200 ms
+        await new Promise(function(r) { setTimeout(r, 800 * percobaan); });
+        continue;
+      }
+      break;
     }
 
     if (!response.ok) {

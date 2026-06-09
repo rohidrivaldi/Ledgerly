@@ -278,6 +278,12 @@ input, select, textarea { font-family: inherit; }
 
 /* ============ BADGES ============ */
 
+/* animasi muter buat ikon loader (dipake di tombol2 yg lagi loading) */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 .badge {
   display: inline-flex;
   align-items: center;

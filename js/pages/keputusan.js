@@ -34,6 +34,10 @@ function initKeputusan() {
     `;
   }
 
+  // set ikon tombol prediksi AI
+  let btnPrediksi = document.getElementById('btn-prediksi-ai');
+  if (btnPrediksi) btnPrediksi.innerHTML = icon('sparkles', 16) + ' Analisis Sekarang';
+
   // 4. Render ranking items
   let rankingList = document.getElementById('kep-ranking-list');
   if (rankingList) {
@@ -125,4 +129,75 @@ function initKeputusan() {
       }
     }
   });
+}
+
+// ============ PREDIKSI KEBUTUHAN STOK (DEMAND FORECASTING AI) ============
+
+async function jalankanPrediksiStok() {
+  let btn = document.getElementById('btn-prediksi-ai');
+  let hasilEl = document.getElementById('kep-prediksi-hasil');
+  if (!hasilEl) return;
+
+  // 1. Hitung penjualan per produk dr 30 hari terakhir (transaksi KELUAR)
+  let batas = new Date();
+  batas.setDate(batas.getDate() - 30);
+
+  let jualPerProduk = {};
+  (store.transaksi || []).forEach(function(t) {
+    if (t.tipe !== 'KELUAR') return;
+    if (new Date(t.tanggal) < batas) return;
+    if (!jualPerProduk[t.produkId]) jualPerProduk[t.produkId] = 0;
+    jualPerProduk[t.produkId] += t.jumlah;
+  });
+
+  // 2. Bangun ringkasan per produk: rata2 harian + estimasi hari sampai habis
+  let baris = (store.produk || []).map(function(p) {
+    let totalJual = jualPerProduk[p.id] || 0;
+    let rataHarian = totalJual / 30;
+    let estHari = rataHarian > 0 ? Math.floor(p.stok / rataHarian) : null;
+    return {
+      nama: p.nama,
+      stok: p.stok,
+      minStok: p.minStok,
+      totalJual30: totalJual,
+      rataHarian: rataHarian,
+      estHari: estHari
+    };
+  });
+
+  // klo gak ada penjualan sama sekali, kasih tau user
+  let adaPenjualan = baris.some(function(b) { return b.totalJual30 > 0; });
+  if (!adaPenjualan) {
+    hasilEl.innerHTML = '<div style="text-align:center; color:var(--slate-400); padding:24px 0; font-size:13px;">Belum ada data penjualan dalam 30 hari terakhir untuk dianalisis.</div>';
+    return;
+  }
+
+  // 3. Format jadi teks konteks buat AI
+  let konteks = baris.map(function(b) {
+    let estTxt = b.estHari === null ? 'belum ada penjualan' : ('diperkirakan habis dalam ~' + b.estHari + ' hari');
+    return '- ' + b.nama + ': stok ' + b.stok + ' unit (min ' + b.minStok + '), terjual ' + b.totalJual30
+      + ' unit/30hari (rata2 ' + b.rataHarian.toFixed(1) + '/hari), ' + estTxt;
+  }).join('\n');
+
+  let pertanyaan = 'Berdasarkan data tren penjualan 30 hari terakhir berikut:\n' + konteks
+    + '\n\nBuatkan analisis prediksi kebutuhan stok untuk toko ini. Untuk tiap produk yang berisiko habis dalam waktu dekat, '
+    + 'sebutkan estimasi kapan habis dan rekomendasikan jumlah unit yang sebaiknya direstock sebelum kehabisan. '
+    + 'Prioritaskan produk paling mendesak. Jawab ringkas dengan poin-poin, gunakan format markdown tebal untuk nama produk dan angka penting.';
+
+  // 4. Loading state + panggil Gemini (reuse fungsi chatbot, support lokal & proxy)
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; btn.innerHTML = icon('loader', 16) + ' Menganalisis...'; }
+  hasilEl.innerHTML = '<div style="color:var(--slate-400); font-size:13px; padding:8px 0;">AI sedang menganalisis tren penjualan...</div>';
+
+  try {
+    if (typeof tanyaGeminiAI !== 'function') throw new Error('Fungsi AI tidak tersedia');
+    let jawaban = await tanyaGeminiAI(pertanyaan, function(teksSementara) {
+      // streaming: update hasil tiap chunk masuk
+      hasilEl.innerHTML = (typeof formatMarkdown === 'function') ? formatMarkdown(teksSementara) : teksSementara;
+    });
+    hasilEl.innerHTML = (typeof formatMarkdown === 'function') ? formatMarkdown(jawaban) : jawaban;
+  } catch (err) {
+    hasilEl.innerHTML = '<div style="color:var(--rose-600); font-size:13px;">Gagal menganalisis: ' + err.message + '</div>';
+  } finally {
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.innerHTML = icon('sparkles', 16) + ' Analisis Ulang'; }
+  }
 }

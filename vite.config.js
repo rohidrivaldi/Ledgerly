@@ -16,15 +16,18 @@ export default defineConfig(({ mode }) => {
       {
         name: 'html-env-injection',
         transformIndexHtml(html, ctx) {
-          // 1. inject env supabase/gemini ke window.process
+          // 1. inject env ke window.process.
+          // CATATAN KEAMANAN: cuma key publik yg boleh di sini.
+          // Supabase anon/publishable key memang dirancang publik (dilindungi RLS).
+          // VITE_GEMINI_API_KEY TIDAK di-inject ke client — itu rahasia, dipanggil
+          // lewat proxy /api/chatbot (server-side) biar gak keliatan di Network/console.
           let out = html.replace(
             '</head>',
             `  <script>
     window.process = {
       env: {
         VITE_SUPABASE_URL: ${JSON.stringify(env.VITE_SUPABASE_URL || '')},
-        VITE_SUPABASE_ANON_KEY: ${JSON.stringify(env.VITE_SUPABASE_ANON_KEY || '')},
-        VITE_GEMINI_API_KEY: ${JSON.stringify(env.VITE_GEMINI_API_KEY || '')}
+        VITE_SUPABASE_ANON_KEY: ${JSON.stringify(env.VITE_SUPABASE_ANON_KEY || '')}
       }
     };
   </script>
@@ -49,16 +52,59 @@ export default defineConfig(({ mode }) => {
           cpSync(resolve(__dirname, 'js'), resolve(__dirname, 'dist/js'), { recursive: true })
           cpSync(resolve(__dirname, 'assets'), resolve(__dirname, 'dist/assets'), { recursive: true })
         }
+      },
+      {
+        // Dev proxy buat /api/chatbot — biar pas `npm run dev` (localhost) pemanggilan
+        // Gemini tetep lewat server (key gak keliatan di browser), sama persis kayak
+        // serverless function Vercel di produksi. Jadi gak ada lagi direct-call yg bocorin key.
+        name: 'dev-api-chatbot',
+        configureServer(server) {
+          server.middlewares.use('/api/chatbot', async function(req, res) {
+            if (req.method !== 'POST') {
+              res.statusCode = 405; res.end('Method Not Allowed'); return;
+            }
+            // baca body JSON
+            let body = '';
+            req.on('data', function(c) { body += c; });
+            req.on('end', async function() {
+              try {
+                let prompt = '';
+                try { prompt = JSON.parse(body || '{}').prompt || ''; } catch (e) {}
+                if (!prompt) { res.statusCode = 400; res.end('Prompt is required'); return; }
+
+                let apiKey = env.VITE_GEMINI_API_KEY;
+                if (!apiKey) { res.statusCode = 500; res.end('Gemini API Key belum diset di .env'); return; }
+
+                let url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=' + apiKey;
+                let r = await fetch(url, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                if (!r.ok) { res.statusCode = r.status; res.end(await r.text()); return; }
+
+                res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+                let reader = r.body.getReader();
+                let dec = new TextDecoder();
+                while (true) {
+                  let { done, value } = await reader.read();
+                  if (done) break;
+                  res.write(dec.decode(value, { stream: true }));
+                }
+                res.end();
+              } catch (err) {
+                res.statusCode = 500; res.end('Internal Server Error: ' + err.message);
+              }
+            });
+          });
+        }
       }
     ],
     // aktifin folder public biar pages/ dan css/pages/ ke-load statis dgn mime type yg bener
     publicDir: 'public',
     define: {
       'process.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL || ''),
-      'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY || ''),
-      'process.env.VITE_GEMINI_API_KEY': JSON.stringify(env.VITE_GEMINI_API_KEY || ''),
-      'process.env.VITE_WHATSAPP_API_URL': JSON.stringify(env.VITE_WHATSAPP_API_URL || ''),
-      'process.env.VITE_WHATSAPP_TOKEN': JSON.stringify(env.VITE_WHATSAPP_TOKEN || '')
+      'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY || '')
     },
     build: {
       rollupOptions: {
