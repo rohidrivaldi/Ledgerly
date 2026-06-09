@@ -6,6 +6,8 @@
 var chartStok = null; // simpan instance chart biar bisa di-destroy
 var invHalamanSkrg = 1;
 var invPerHalaman  = 10;
+var _skuManualEdit = false;   // true klo user ngetik SKU sendiri (jgn di-overwrite saran)
+var _modeTambahProduk = false; // true klo lg nambah produk baru (bukan edit)
 
 function initInventaris() {
   let inv = hitungInventaris();
@@ -344,11 +346,62 @@ function statCard(label, value, iconSvg, delta, colorClass) {
 
 // ============ FUNGSI CRUD PRODUK MODAL ============
 
+// ============ AUTO-SUGGEST SKU ============
+
+// bikin saran SKU dari nama produk: PREFIX-NNN
+// prefix = 3 huruf pertama nama (huruf aja, uppercase), nomor = global lanjut dr yg tertinggi
+function buatSaranSKU(nama) {
+  // ambil huruf doang dr nama, buang spasi/angka/simbol, upper, ambil 3 pertama
+  let hurufSaja = (nama || '').replace(/[^a-zA-Z]/g, '').toUpperCase();
+  let prefix = hurufSaja.slice(0, 3);
+  if (prefix.length < 3) {
+    // klo nama kependekan (mis "AB"), padding pake X biar tetep 3 huruf
+    prefix = (prefix + 'XXX').slice(0, 3);
+  }
+
+  // cari nomor tertinggi dr semua SKU yg ada (format apapun yg ada angkanya),
+  // lalu +1. ini bikin penomoran global berurutan (sesuai data BMS-001..TEL-006)
+  let maxNomor = 0;
+  (store.produk || []).forEach(function(p) {
+    if (!p.sku) return;
+    let m = p.sku.match(/(\d+)\s*$/); // angka di akhir SKU
+    if (m) {
+      let n = parseInt(m[1]);
+      if (n > maxNomor) maxNomor = n;
+    }
+  });
+
+  let nomorBaru = maxNomor + 1;
+  // format jadi 3 digit minimal: 7 -> "007"
+  let nomorStr = ('000' + nomorBaru).slice(-3);
+  return prefix + '-' + nomorStr;
+}
+
+// dipanggil pas user ngetik nama (oninput). update SKU otomatis selama
+// user belum ngetik SKU sendiri, dan cuma pas mode tambah produk baru
+function saranSKUdariNama() {
+  if (!_modeTambahProduk || _skuManualEdit) return;
+  let namaEl = document.getElementById('pr-nama');
+  let skuEl = document.getElementById('pr-sku');
+  if (!namaEl || !skuEl) return;
+  let nama = namaEl.value.trim();
+  skuEl.value = nama ? buatSaranSKU(nama) : '';
+}
+
+// dipanggil pas user ngetik di field SKU sendiri — tandai biar saran gak nimpa
+function tandaiSKUManual() {
+  _skuManualEdit = true;
+}
+
 function bukaModalProduk(produkId) {
   tutupModalProduk();
 
   let target = store.produk.find(function(p) { return p.id === produkId; }) || {};
   let title = produkId ? 'Ubah Informasi Produk' : 'Tambah Produk Baru';
+
+  // reset flag auto-SKU: mode tambah = produkId kosong, & reset penanda edit manual
+  _modeTambahProduk = !produkId;
+  _skuManualEdit = false;
 
   let katList = store.kategoriList || [
     { kategori_id: 'c1c2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d', nama_kategori: 'Sembako' },
@@ -372,11 +425,11 @@ function bukaModalProduk(produkId) {
           <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
             <div>
               <label class="form-label">Nama Produk</label>
-              <input class="form-input" type="text" id="pr-nama" value="${target.nama || ''}" required>
+              <input class="form-input" type="text" id="pr-nama" value="${target.nama || ''}" required oninput="saranSKUdariNama()">
             </div>
             <div>
-              <label class="form-label">SKU</label>
-              <input class="form-input" type="text" id="pr-sku" value="${target.sku || ''}" required>
+              <label class="form-label">SKU ${produkId ? '' : '<span style="font-weight:400; text-transform:none; color:var(--slate-400);">(saran otomatis, bisa diedit)</span>'}</label>
+              <input class="form-input" type="text" id="pr-sku" value="${target.sku || ''}" required oninput="tandaiSKUManual()">
             </div>
             <div>
               <label class="form-label">Kategori</label>
