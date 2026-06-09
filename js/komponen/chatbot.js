@@ -6,9 +6,15 @@
 function toggleChatbot() {
   if (store && store.user && store.user.role === 'superadmin') {
     let fab = document.getElementById('chatbot-fab-container');
-    if (fab) fab.style.display = 'none';
+    if (fab) {
+      fab.style.display = 'none';
+      fab.classList.add('hidden');
+    }
     let panel = document.getElementById('chatbot-panel');
-    if (panel) panel.classList.add('hidden');
+    if (panel) {
+      panel.style.display = 'none';
+      panel.classList.add('hidden');
+    }
     return;
   }
   let panel = document.getElementById('chatbot-panel');
@@ -17,14 +23,18 @@ function toggleChatbot() {
 
   if (panel.classList.contains('hidden')) {
     panel.classList.remove('hidden');
+    panel.style.display = 'flex';
     renderChatPanel();
     if (fabContainer) {
       fabContainer.classList.add('hidden');
+      fabContainer.style.display = 'none';
     }
   } else {
     panel.classList.add('hidden');
+    panel.style.display = 'none';
     if (fabContainer) {
       fabContainer.classList.remove('hidden');
+      fabContainer.style.display = 'flex';
     }
   }
 }
@@ -479,27 +489,50 @@ function konfirmasiHapusChat() {
   }
 }
 
-// Menonaktifkan Chatbot AI secara total untuk akun Superadmin
-document.addEventListener('DOMContentLoaded', function() {
-  function checkSuperadminChatbot() {
-    if (store && store.user && store.user.role === 'superadmin') {
-      let fab = document.getElementById('chatbot-fab-container');
+// Mengatur visibilitas Chatbot AI (FAB & Panel) berdasarkan role dan pengaturan pengguna
+function checkChatbotVisibility() {
+  let isSuper = store && store.user && store.user.role === 'superadmin';
+  let isEnabled = store && store.settings && store.settings.chatbotEnabled !== false; // default to true if undefined
+  
+  let fab = document.getElementById('chatbot-fab-container');
+  let panel = document.getElementById('chatbot-panel');
+  
+  if (isSuper || !isEnabled) {
+    if (fab) {
+      fab.style.display = 'none';
+      fab.classList.add('hidden');
+    }
+    if (panel) {
+      panel.style.display = 'none';
+      panel.classList.add('hidden');
+    }
+  } else {
+    // Tampilkan jika diaktifkan dan bukan superadmin
+    if (panel && !panel.classList.contains('hidden')) {
+      // Jika panel sedang terbuka, FAB disembunyikan
       if (fab) {
         fab.style.display = 'none';
+        fab.classList.add('hidden');
       }
-      let panel = document.getElementById('chatbot-panel');
+      panel.style.display = 'flex';
+    } else {
+      if (fab) {
+        fab.style.display = 'flex';
+        fab.classList.remove('hidden');
+      }
       if (panel) {
         panel.style.display = 'none';
-        panel.classList.add('hidden');
       }
     }
   }
-  
-  // Jalankan langsung setelah DOM load
-  checkSuperadminChatbot();
+}
+
+// Jalankan pengecekan visibilitas chatbot pada load halaman
+document.addEventListener('DOMContentLoaded', function() {
+  checkChatbotVisibility();
   
   // Interval berkala untuk mengantisipasi sinkronisasi data Supabase pasca-login
-  setTimeout(checkSuperadminChatbot, 100);
-  setTimeout(checkSuperadminChatbot, 500);
-  setTimeout(checkSuperadminChatbot, 1500);
+  setTimeout(checkChatbotVisibility, 100);
+  setTimeout(checkChatbotVisibility, 500);
+  setTimeout(checkChatbotVisibility, 1500);
 });

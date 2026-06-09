@@ -52,18 +52,40 @@ function toggleRow(key, iconSvg, title, desc, isActive, color) {
           <div class="toggle-desc">${desc}</div>
         </div>
       </div>
-      <div class="toggle-track${isActive ? ' active' : ''}" onclick="toggleSetting('${key}')">
+      <div class="toggle-track${isActive ? ' active' : ''}" id="toggle-${key}" onclick="toggleSetting('${key}')">
         <span class="toggle-knob"></span>
       </div>
     </div>`;
 }
 
 function toggleSetting(key) {
-  if (key === 'whatsapp') store.settings.waEnabled = !store.settings.waEnabled;
-  else if (key === 'chatbot') store.settings.chatbotEnabled = !store.settings.chatbotEnabled;
-  navigasi('#pengaturan');
+  if (key === 'whatsapp') {
+    store.settings.waEnabled = !store.settings.waEnabled;
+    let track = document.getElementById('toggle-whatsapp');
+    if (track) track.classList.toggle('active', store.settings.waEnabled);
+    
+    // Perbarui topbar notifikasi agar perubahan setelan WhatsApp langsung tercermin
+    if (typeof renderTopbar === 'function') {
+      renderTopbar();
+    }
+  } else if (key === 'chatbot') {
+    store.settings.chatbotEnabled = !store.settings.chatbotEnabled;
+    let track = document.getElementById('toggle-chatbot');
+    if (track) track.classList.toggle('active', store.settings.chatbotEnabled);
+    
+    // Perbarui visibilitas chatbot secara real-time
+    if (typeof checkChatbotVisibility === 'function') {
+      checkChatbotVisibility();
+    }
+  }
+  salinSettingsKeLocalStorage();
 }
 
 function ubahNomorWA(val) {
   store.settings.nomorWA = val;
+  salinSettingsKeLocalStorage();
+}
+
+function salinSettingsKeLocalStorage() {
+  localStorage.setItem('ledgerly_settings', JSON.stringify(store.settings));
 }
