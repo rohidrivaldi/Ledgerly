@@ -75,6 +75,13 @@ function initPengaturan() {
       showCta = false;
     }
 
+    let deskripsiAkun = 'Akun Anda saat ini menggunakan paket <strong>Starter</strong>. Silakan hubungi Admin untuk memperpanjang langganan atau upgrade ke paket <strong>Profesional/Enterprise</strong> untuk membuka semua fitur pembukuan tanpa batasan.';
+    if (user.paket === 'business') {
+      deskripsiAkun = `Akun Anda saat ini menggunakan paket <strong>Profesional (Trial 7 Hari)</strong>. Anda memiliki sisa waktu <strong>${sisaHari} hari</strong> untuk menggunakan semua fitur premium. Silakan hubungi Admin jika ingin berlangganan bulanan secara penuh.`;
+    } else if (user.paket === 'enterprise') {
+      deskripsiAkun = 'Akun <strong>Enterprise</strong> Anda aktif dengan akses prioritas 24/7. Hubungi Admin jika memerlukan kustomisasi sistem tambahan.';
+    }
+
     setPaketContainer.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--slate-100); padding-bottom:18px;">
@@ -87,9 +94,7 @@ function initPengaturan() {
         
         <div>
           <div style="font-size:13px; color:var(--slate-500); line-height:1.6; margin-bottom:16px;">
-            ${showCta 
-              ? 'Akun Anda saat ini menggunakan paket <strong>Starter</strong>. Silakan hubungi Admin untuk memperpanjang langganan atau upgrade ke paket <strong>Profesional/Enterprise</strong> untuk membuka semua fitur pembukuan tanpa batasan.' 
-              : 'Akun <strong>Enterprise</strong> Anda aktif dengan akses prioritas 24/7. Hubungi Admin jika memerlukan kustomisasi sistem tambahan.'}
+            ${deskripsiAkun}
           </div>
           <div style="display:flex; flex-wrap:wrap; gap:10px;">
             ${showCta ? `
