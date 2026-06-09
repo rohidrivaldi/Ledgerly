@@ -99,6 +99,33 @@ function kirimDariInput() {
 }
 
 async function kirimChat(pesan) {
+  // 0. Cek batas harian kueri chatbot AI untuk paket Starter (maks 10 kueri/hari)
+  if (store.user && store.user.paket === 'starter') {
+    let today = new Date().toISOString().slice(0, 10);
+    let countKey = 'ledgerly_chat_count_' + store.user.id;
+    let chatCountInfo = { date: today, count: 0 };
+    let savedInfo = localStorage.getItem(countKey);
+    if (savedInfo) {
+      try {
+        let parsed = JSON.parse(savedInfo);
+        if (parsed.date === today) {
+          chatCountInfo = parsed;
+        }
+      } catch (e) {}
+    }
+    if (chatCountInfo.count >= 10) {
+      tambahChatMsg({ from: 'user', text: pesan });
+      tambahChatMsg({
+        from: 'bot',
+        text: 'Batas harian kueri Chatbot AI tercapai! Paket Starter gratis hanya mendukung hingga 10 kueri per hari.\n\nSilakan kunjungi menu Pengaturan untuk menghubungi Admin jika Anda ingin upgrade ke paket Profesional untuk menikmati akses Chatbot AI tanpa batas.'
+      });
+      renderChatPanel();
+      return;
+    }
+    chatCountInfo.count++;
+    localStorage.setItem(countKey, JSON.stringify(chatCountInfo));
+  }
+
   // 1. Tambah pesan user ke panel chat
   tambahChatMsg({ from: 'user', text: pesan });
   renderChatPanel();

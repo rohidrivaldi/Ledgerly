@@ -297,6 +297,12 @@ async function simpanProduk(e, produkId) {
       if (error) throw error;
       console.log("Berhasil mengubah data produk!");
     } else {
+      // Pengecekan limit 50 produk untuk paket Starter
+      if (store.user && store.user.paket === 'starter' && store.produk && store.produk.length >= 50) {
+        alert("Batas produk tercapai! Paket Starter hanya mendukung hingga 50 produk. Silakan upgrade ke paket Profesional untuk menambah lebih banyak produk.");
+        return;
+      }
+
       // Insert produk baru ke Supabase
       const { error } = await window.supabaseClient
         .from('Products')

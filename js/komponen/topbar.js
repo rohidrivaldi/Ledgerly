@@ -43,7 +43,7 @@ function renderNotifDropdown() {
     `;
   }
 
-  let waEnabled = store.settings && store.settings.waEnabled;
+  let waEnabled = store.settings && store.settings.waEnabled && (store.user && store.user.paket !== 'starter');
   let nomorWA = (store.settings && store.settings.nomorWA) || '628123456789';
 
   let items = notifs.map(function(n) {

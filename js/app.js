@@ -36,7 +36,8 @@ var _storeObj = {
       waEnabled: true,
       chatbotEnabled: true,
       cloudSync: true,
-      nomorWA: '628123456789'
+      nomorWA: '628123456789',
+      biayaOpsPersen: 8
     };
   })()
 };
@@ -225,7 +226,8 @@ function hitungRingkasan(hari) {
     totalPesanan += data[i].pesanan;
   }
   let labaKotor = totalOmzet - totalHpp;
-  let biayaOps = Math.round(totalOmzet * 0.08);
+  let persenBiaya = (store.settings && store.settings.biayaOpsPersen !== undefined) ? store.settings.biayaOpsPersen : 8;
+  let biayaOps = Math.round(totalOmzet * (persenBiaya / 100));
   let labaBersih = labaKotor - biayaOps;
   
   return {
@@ -485,6 +487,62 @@ async function sinkronisasiSupabase() {
   if (!window.supabaseClient) {
     hitungStatistikDariTransaksi();
     return;
+  }
+
+  // 0. Ambil profile user terbaru & cek masa berlaku Trial 7 hari
+  try {
+    const { data: { user: authUser } } = await window.supabaseClient.auth.getUser();
+    if (authUser) {
+      let { data: profil } = await window.supabaseClient
+        .from('Users')
+        .select('*')
+        .eq('email', authUser.email)
+        .maybeSingle();
+
+      if (profil) {
+        let updatedUser = {
+          id: authUser.id,
+          nama: profil.nama,
+          email: authUser.email,
+          bisnis: profil.bisnis,
+          role: profil.role,
+          paket: profil.paket || 'starter',
+          tglDaftar: authUser.created_at
+        };
+
+        // Cek masa berlaku trial (untuk paket 'business')
+        if (updatedUser.paket === 'business' && updatedUser.tglDaftar) {
+          let tglDaftar = new Date(updatedUser.tglDaftar);
+          let tglSekarang = new Date();
+          let diffTime = tglSekarang - tglDaftar;
+          let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+          if (diffDays >= 7) {
+            // Downgrade ke starter
+            updatedUser.paket = 'starter';
+            await window.supabaseClient
+              .from('Users')
+              .update({ paket: 'starter' })
+              .eq('email', authUser.email);
+
+            // Tambahkan notifikasi alert bahwa trial habis
+            let notifList = store.notifikasi || [];
+            notifList.unshift({
+              id: 'notif-trial-habis-' + Date.now(),
+              tipe: 'warning',
+              pesan: 'Masa trial 7 hari paket Profesional Anda telah habis. Akun diturunkan ke paket Starter.',
+              waktu: new Date().toISOString()
+            });
+            store.notifikasi = notifList;
+          }
+        }
+
+        store.user = updatedUser;
+        localStorage.setItem('ledgerly_user', JSON.stringify(updatedUser));
+      }
+    }
+  } catch (err) {
+    console.warn("Gagal mensinkronkan data profil pengguna:", err.message);
   }
 
   // kalo ada koneksi, coba ambil data dari Supabase dan update state global
