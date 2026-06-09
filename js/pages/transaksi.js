@@ -7,10 +7,10 @@ var filterTipeTx = 'semua';
 function initTransaksi() {
   let masuk = 0, keluar = 0;
   store.transaksi.forEach(function(t) {
-    if (t.tipe === 'MASUK') masuk += t.total;
-    else keluar += t.total;
+    if (t.tipe === 'MASUK') masuk += t.total; // Pengeluaran (Beli Stok)
+    else keluar += t.total; // Pemasukan (Jual Barang)
   });
-  let bersih = masuk - keluar;
+  let bersih = keluar - masuk; // Arus kas bersih = Pemasukan - Pengeluaran
 
   let txFiltered = filterTipeTx === 'semua'
     ? store.transaksi
@@ -38,6 +38,18 @@ function initTransaksi() {
   if (elTotalKeluar) elTotalKeluar.innerText = formatRupiah(keluar);
   let elTotalBersih = document.getElementById('tx-total-bersih');
   if (elTotalBersih) elTotalBersih.innerText = formatRupiah(bersih);
+
+  let cardBersih = document.getElementById('tx-card-bersih');
+  if (cardBersih) {
+    cardBersih.className = 'summary-card';
+    if (bersih > 0) {
+      cardBersih.classList.add('bersih-positif');
+    } else if (bersih < 0) {
+      cardBersih.classList.add('bersih-negatif');
+    } else {
+      cardBersih.classList.add('bersih-netral');
+    }
+  }
 
   let txSubtitle = document.getElementById('tx-list-subtitle');
   if (txSubtitle) txSubtitle.innerText = `${txFiltered.length} transaksi`;
@@ -75,7 +87,7 @@ function renderRowsTransaksi(list) {
     return `
       <tr>
         <td>${formatTanggalWaktu(t.tanggal)}</td>
-        <td><span class="badge ${t.tipe === 'MASUK' ? 'badge-success' : 'badge-danger'}">${t.tipe}</span></td>
+        <td><span class="badge ${t.tipe === 'MASUK' ? 'badge-danger' : 'badge-success'}">${t.tipe}</span></td>
         <td class="td-bold">${t.produkNama}</td>
         <td class="td-right">${t.jumlah}</td>
         <td class="td-right">${formatRupiah(t.hargaSatuan)}</td>
