@@ -22,11 +22,12 @@ function initPengaturan() {
   let elRole = document.getElementById('set-user-role');
   if (elRole) elRole.innerText = user.role || '-';
 
-  // 3. Render Informasi Paket & Bantuan
+  // 3. Render Informasi Paket & Bantuan (Gabungan)
   let setPaketContainer = document.getElementById('set-paket-container');
   if (setPaketContainer) {
     let paketLabel = 'Starter (Gratis Selamanya)';
-    let paketStatus = 'Aktif — Gratis selamanya';
+    let paketStatus = 'Aktif';
+    let badgeClass = 'badge-neutral';
     let showCta = true;
     let sisaHari = 7;
 
@@ -39,38 +40,39 @@ function initPengaturan() {
         let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         sisaHari = Math.max(0, 7 - diffDays);
       }
-      paketStatus = `Aktif — Sisa ${sisaHari} hari trial`;
+      paketStatus = `Trial • Sisa ${sisaHari} Hari`;
+      badgeClass = 'badge-info';
     } else if (user.paket === 'enterprise') {
       paketLabel = 'Enterprise (Kustom)';
-      paketStatus = 'Aktif';
+      paketStatus = 'Premium Aktif';
+      badgeClass = 'badge-success';
       showCta = false;
     }
 
     setPaketContainer.innerHTML = `
-      <div style="display:flex; flex-direction:column; gap:16px;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; border-bottom:1px solid var(--slate-100); padding-bottom:16px;">
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--slate-100); padding-bottom:18px;">
           <div>
-            <div style="font-size:12px; font-weight:600; color:var(--slate-400); text-transform:uppercase; letter-spacing:0.05em;">Paket Aktif</div>
+            <div style="font-size:11px; font-weight:700; color:var(--slate-400); text-transform:uppercase; letter-spacing:0.05em;">Status Akun</div>
             <div style="font-size:16px; font-weight:700; color:var(--slate-800); margin-top:4px;">${paketLabel}</div>
           </div>
-          <div>
-            <div style="font-size:12px; font-weight:600; color:var(--slate-400); text-transform:uppercase; letter-spacing:0.05em;">Status</div>
-            <div style="font-size:14px; font-weight:600; color:var(--indigo-600); margin-top:6px;">${paketStatus}</div>
-          </div>
+          <span class="badge ${badgeClass}" style="padding:6px 12px; font-size:12px; font-weight:600;">${paketStatus}</span>
         </div>
         
         <div>
-          <div style="font-size:13px; color:var(--slate-500); line-height:1.5; margin-bottom:12px;">
-            ${showCta ? 'Untuk memperpanjang langganan, upgrade paket, atau berkonsultasi mengenai kebutuhan Enterprise, silakan hubungi admin. Jika Anda mengalami kendala aplikasi, silakan hubungi Layanan Bantuan/CS.' : 'Akun Enterprise memiliki dukungan prioritas 24/7. Untuk kendala atau penyesuaian sistem, silakan hubungi admin.'}
+          <div style="font-size:13px; color:var(--slate-500); line-height:1.6; margin-bottom:16px;">
+            ${showCta 
+              ? 'Akun Anda saat ini menggunakan paket <strong>Starter</strong>. Silakan hubungi Admin untuk memperpanjang langganan atau upgrade ke paket <strong>Profesional/Enterprise</strong> untuk membuka semua fitur pembukuan tanpa batasan.' 
+              : 'Akun <strong>Enterprise</strong> Anda aktif dengan akses prioritas 24/7. Hubungi Admin jika memerlukan kustomisasi sistem tambahan.'}
           </div>
-          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; flex-wrap:wrap; gap:10px;">
             ${showCta ? `
-              <a href="https://wa.me/6285750917686?text=Halo%20Admin%20Ledgerly,%20saya%20ingin%20upgrade%20atau%20memperpanjang%20paket%20langganan%20toko%20saya." target="_blank" class="btn btn-primary btn-sm" style="display:inline-flex; align-items:center; gap:6px; text-decoration:none; font-size:13px;">
-                ${icon('whatsapp', 14)} Hubungi Admin
+              <a href="https://wa.me/6285750917686?text=Halo%20Admin%20Ledgerly,%20saya%20tertarik%20untuk%20melakukan%20upgrade%20atau%20memperpanjang%20paket%20langganan%20toko%20saya." target="_blank" class="btn btn-primary" style="padding:10px 20px; font-size:13px; border-radius:10px; display:inline-flex; align-items:center; gap:8px;">
+                ${icon('whatsapp', 16)} Hubungi Admin (Upgrade)
               </a>
             ` : ''}
-            <a href="https://wa.me/6285750917686?text=Halo%20CS%20Ledgerly,%20saya%20butuh%20bantuan%20mengenai%20kendala%20di%20aplikasi%20Ledgerly." target="_blank" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px; text-decoration:none; font-size:13px;">
-              ${icon('helpCircle', 14)} Hubungi CS Bantuan
+            <a href="https://wa.me/6285750917686?text=Halo%20CS%20Ledgerly,%20saya%20mengalami%20kendala%20di%20aplikasi%20Ledgerly%20dan%20memerlukan%20bantuan." target="_blank" class="btn btn-secondary" style="padding:10px 20px; font-size:13px; border-radius:10px; display:inline-flex; align-items:center; gap:8px;">
+              ${icon('helpCircle', 16)} Hubungi CS Bantuan (Lapor Kendala)
             </a>
           </div>
         </div>
@@ -83,14 +85,14 @@ function initPengaturan() {
   if (setKeuanganContainer) {
     let biayaPersen = s.biayaOpsPersen !== undefined ? s.biayaOpsPersen : 8;
     setKeuanganContainer.innerHTML = `
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px;">
         <div>
-          <div style="font-size:14px; font-weight:600; color:var(--slate-700);">Persentase Biaya Operasional</div>
-          <div style="font-size:12px; color:var(--slate-500); margin-top:2px;">Digunakan untuk mengestimasi pengeluaran operasional bulanan berdasarkan omzet</div>
+          <div style="font-size:14px; font-weight:600; color:var(--slate-800);">Persentase Estimasi Biaya Operasional</div>
+          <div style="font-size:12px; color:var(--slate-400); margin-top:4px; line-height:1.4;">Diperlukan untuk memperkirakan biaya operasional warung secara dinamis pada perhitungan Laba Bersih berdasarkan total omzet.</div>
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <input class="form-input" type="number" min="0" max="100" value="${biayaPersen}" id="input-biaya-ops-persen" style="max-width:80px; text-align:center; font-size:14px;" onchange="ubahBiayaOpsPersen(this.value)">
-          <span style="font-size:14px; font-weight:600; color:var(--slate-600);">%</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <input class="form-input" type="number" min="0" max="100" value="${biayaPersen}" id="input-biaya-ops-persen" style="width:70px; text-align:center; font-size:14px; font-weight:600; border-radius:8px;" onchange="ubahBiayaOpsPersen(this.value)">
+          <span style="font-size:14px; font-weight:600; color:var(--slate-500);">%</span>
         </div>
       </div>
     `;
@@ -100,12 +102,18 @@ function initPengaturan() {
   let integrationsCard = document.getElementById('set-integrations-card');
   let togglesContainer = document.getElementById('set-toggles-container');
   
-  if (user.paket === 'starter') {
-    // Sembunyikan bagian integrasi jika menggunakan paket Starter
-    if (integrationsCard) integrationsCard.style.display = 'none';
-  } else {
-    if (integrationsCard) integrationsCard.style.display = 'block';
-    if (togglesContainer) {
+  if (integrationsCard && togglesContainer) {
+    integrationsCard.style.display = 'block';
+    
+    if (user.paket === 'starter') {
+      // Paket Starter: HANYA tampilkan Chatbot AI (tidak ada WhatsApp Notifikasi)
+      togglesContainer.innerHTML = `
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+          ${toggleRow('chatbot', icon('sparkles', 18), 'Chatbot AI', 'Input data dan tanya jawab lewat chat', s.chatbotEnabled, 'var(--indigo-600)')}
+        </div>
+      `;
+    } else {
+      // Paket Profesional/Enterprise: Tampilkan kedua-duanya (WhatsApp nested + Chatbot)
       togglesContainer.innerHTML = `
         <div style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
           ${toggleRow('whatsapp', icon('whatsapp', 18), 'Notifikasi WhatsApp', 'Kirim alert otomatis saat stok di bawah minimum', s.waEnabled, 'var(--emerald-600)')}
@@ -144,7 +152,7 @@ function toggleSetting(key) {
   let s = store.settings || {};
   if (key === 'whatsapp') {
     s.waEnabled = !s.waEnabled;
-    store.settings = { ...s }; // memicu trigger render
+    store.settings = { ...s };
   } else if (key === 'chatbot') {
     s.chatbotEnabled = !s.chatbotEnabled;
     store.settings = { ...s };
@@ -155,7 +163,7 @@ function toggleSetting(key) {
     }
   }
   salinSettingsKeLocalStorage();
-  initPengaturan(); // re-render bagian pengaturan untuk memperbarui form WA nested
+  initPengaturan(); // re-render untuk memperbarui layout nested WA input
 }
 
 function ubahNomorWA(val) {

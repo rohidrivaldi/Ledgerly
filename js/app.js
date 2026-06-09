@@ -517,7 +517,8 @@ async function sinkronisasiSupabase() {
           let diffTime = tglSekarang - tglDaftar;
           let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-          if (diffDays >= 7) {
+          // Jangan paksa downgrade akun testing rohid@ledgerly.id
+          if (diffDays >= 7 && authUser.email !== 'rohid@ledgerly.id') {
             // Downgrade ke starter
             updatedUser.paket = 'starter';
             await window.supabaseClient

@@ -3,25 +3,16 @@
   <p class="page-desc">Konfigurasi workspace dan integrasi</p>
 </div>
 
-<!-- Informasi Paket & Bantuan -->
-<div class="card" id="set-paket-card" style="margin-bottom:24px;">
+<!-- Informasi Workspace & Paket (Gabungan) -->
+<div class="card" id="set-akun-card" style="margin-bottom:24px;">
   <div class="card-header">
     <div>
-      <div class="card-title">Informasi Paket & Dukungan</div>
-      <div class="card-subtitle">Detail lisensi akun dan kontak bantuan</div>
+      <div class="card-title">Informasi Workspace & Paket</div>
+      <div class="card-subtitle">Detail profil, bisnis, lisensi akun, dan kontak bantuan</div>
     </div>
   </div>
-  <div id="set-paket-container" style="padding:20px;"></div>
-</div>
-
-<!-- Informasi Workspace -->
-<div class="card" style="margin-bottom:24px;">
-  <div class="card-header">
-    <div>
-      <div class="card-title">Informasi Workspace</div>
-      <div class="card-subtitle">Detail akun dan bisnis</div>
-    </div>
-  </div>
+  
+  <!-- Info Workspace Grid -->
   <div style="padding:20px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
     <div>
       <div class="setting-label"><span id="set-user-icon"></span> Nama</div>
@@ -40,6 +31,9 @@
       <div class="setting-field" id="set-user-role">-</div>
     </div>
   </div>
+  
+  <!-- Info Paket Container -->
+  <div id="set-paket-container" style="padding: 0 20px 20px 20px; border-top: 1px solid var(--slate-100); padding-top: 20px;"></div>
 </div>
 
 <!-- Pengaturan Keuangan -->
