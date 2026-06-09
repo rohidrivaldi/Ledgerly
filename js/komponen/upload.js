@@ -98,8 +98,10 @@ function prosesFile(file) {
   Papa.parse(file, {
     header: true,
     skipEmptyLines: true,
-    complete: function(results) {
-      let count = 0;
+    complete: async function(results) {
+      let validRows = [];
+      
+      // 1. Validasi baris dan kumpulkan data
       results.data.forEach(function(row) {
         // cari produk berdasarkan nama
         let produk = store.produk.find(function(p) {
@@ -114,23 +116,123 @@ function prosesFile(file) {
 
         if (jumlah <= 0) return;
 
-        let tx = {
-          id: buatId('t'),
-          tanggal: row.tanggal ? new Date(row.tanggal).toISOString() : new Date().toISOString(),
+        validRows.push({
+          produk: produk,
           tipe: tipe,
-          produkId: produk.id,
-          produkNama: produk.nama,
           jumlah: jumlah,
           hargaSatuan: harga,
-          total: jumlah * harga,
-          metode: 'csv',
-          catatan: 'Import dari CSV'
-        };
-        tambahTransaksi(tx);
-        count++;
+          tanggal: row.tanggal ? new Date(row.tanggal).toISOString() : new Date().toISOString()
+        });
       });
 
-      uploadResult = { jumlah: count };
+      if (validRows.length === 0) {
+        alert('Tidak ada baris transaksi valid yang ditemukan di CSV.');
+        return;
+      }
+
+      // 2. Kirim secara bulk jika terhubung ke Supabase
+      if (window.supabaseClient) {
+        try {
+          // 2a. Siapkan insert bulk Transactions
+          let txsToInsert = validRows.map(function(r) {
+            return {
+              isPenjualan: r.tipe === 'KELUAR',
+              user_id: (store.user && store.user.id && store.user.id.length > 10) ? store.user.id : 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+              metode_id: 'b1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d', // default Cash
+              catatan: 'Import dari CSV',
+              created_at: r.tanggal
+            };
+          });
+
+          const { data: insertedTxs, error: txErr } = await window.supabaseClient
+            .from('Transactions')
+            .insert(txsToInsert)
+            .select();
+
+          if (txErr) throw txErr;
+
+          // 2b. Siapkan insert bulk Detail_Transactions
+          let detailsToInsert = [];
+          for (let i = 0; i < insertedTxs.length; i++) {
+            let txData = insertedTxs[i];
+            let r = validRows[i];
+            detailsToInsert.push({
+              transaction_id: txData.transaction_id,
+              product_id: r.produk.id,
+              jumlah: r.jumlah
+            });
+          }
+
+          const { error: detErr } = await window.supabaseClient
+            .from('Detail_Transactions')
+            .insert(detailsToInsert);
+
+          if (detErr) throw detErr;
+
+          // 2c. Hitung akumulasi perubahan stok produk dan lakukan update
+          let stokUpdates = {};
+          validRows.forEach(function(r) {
+            let p = r.produk;
+            if (!stokUpdates[p.id]) {
+              stokUpdates[p.id] = { id: p.id, stok: p.stok };
+            }
+            if (r.tipe === 'MASUK') {
+              stokUpdates[p.id].stok += r.jumlah;
+            } else {
+              stokUpdates[p.id].stok -= r.jumlah;
+            }
+          });
+
+          // Jalankan update stok secara paralel
+          let updatePromises = Object.values(stokUpdates).map(function(u) {
+            return window.supabaseClient
+              .from('Products')
+              .update({ current_stok: u.stok })
+              .eq('product_id', u.id);
+          });
+
+          await Promise.all(updatePromises);
+
+          // 2d. Sinkronisasi ulang data di state local (hanya pemicu render 1 kali)
+          await sinkronisasiSupabase();
+
+        } catch (err) {
+          console.error("Gagal melakukan bulk import ke Supabase:", err.message);
+          alert("Gagal melakukan import ke database cloud: " + err.message);
+          return;
+        }
+      } else {
+        // Fallback offline/local state update (tanpa Supabase)
+        let newLocalTxs = [];
+        validRows.forEach(function(r) {
+          let p = r.produk;
+          if (r.tipe === 'MASUK') {
+            p.stok += r.jumlah;
+          } else {
+            p.stok -= r.jumlah;
+          }
+
+          newLocalTxs.push({
+            id: buatId('t'),
+            tanggal: r.tanggal,
+            tipe: r.tipe,
+            produkId: p.id,
+            produkNama: p.nama,
+            jumlah: r.jumlah,
+            hargaSatuan: r.hargaSatuan,
+            total: r.jumlah * r.hargaSatuan,
+            metode: 'csv',
+            catatan: 'Import dari CSV (Offline)'
+          });
+        });
+
+        // Update local state secara langsung untuk reaktivitas Proxy
+        store.transaksi = [...newLocalTxs, ...store.transaksi];
+        store.produk = [...store.produk];
+        store.notifikasi = buatNotifikasi();
+      }
+
+      uploadResult = { jumlah: validRows.length };
       renderUploadModal();
 
       // refresh halaman transaksi klo lg di situ
