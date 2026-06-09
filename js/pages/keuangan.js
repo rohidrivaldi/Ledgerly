@@ -41,11 +41,12 @@ function initKeuangan() {
 
   let plList = document.getElementById("keu-pl-list");
   if (plList) {
+    let persenBiaya = (store.settings && store.settings.biayaOpsPersen !== undefined) ? store.settings.biayaOpsPersen : 8;
     plList.innerHTML = `
       ${plRow("Omzet (Pendapatan)", ring.omzet, false)}
       ${plRow("Harga Pokok Penjualan", ring.hpp, true)}
       ${plRow("Laba Kotor", ring.labaKotor, false)}
-      ${plRow("Biaya Operasional (~8%)", ring.biaya, true)}
+      ${plRow(`Biaya Operasional (~${persenBiaya}%)`, ring.biaya, true)}
       <div class="pl-row" style="background:var(--slate-50);">
         <span class="pl-label" style="font-weight:700;">Laba Bersih</span>
         <span class="pl-amount" style="color:var(--emerald-600); font-weight:700;">${formatRupiah(ring.labaBersih)}</span>
