@@ -131,16 +131,12 @@
     </div>
   </div>
 
-  <!-- load data sama app js buat fungsi login -->
+  <!-- load data sama supabase js buat fungsi login -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/data.js"></script>
   <script src="js/utils.js"></script>
-  <script src="js/app.js"></script>
   <script>
-    // override initApp biar ga redirect loop
-    // di halaman login, kita ga perlu init dashboard
-    document.removeEventListener('DOMContentLoaded', initApp);
 
     // cek klo udh login, langsung redirect ke dashboard
     (function() {
