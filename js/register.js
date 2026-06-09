@@ -219,6 +219,7 @@ async function handleRegister(e) {
         const { error: profileError } = await window.supabaseClient
           .from('Users')
           .insert({
+            user_id: data.user.id,
             email: email,
             nama: name,
             bisnis: bisnis,
