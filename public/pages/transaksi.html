@@ -80,6 +80,14 @@
         <input class="form-input" type="number" id="tx-jumlah" min="1" value="1" required>
       </div>
       <div>
+        <label class="form-label">Metode Pembayaran</label>
+        <select class="form-select" id="tx-metode">
+          <option value="cash">Tunai (Cash)</option>
+          <option value="transfer">Transfer Bank</option>
+          <option value="qris">QRIS</option>
+        </select>
+      </div>
+      <div>
         <label class="form-label">Catatan (opsional)</label>
         <input class="form-input" type="text" id="tx-catatan" placeholder="Catatan...">
       </div>

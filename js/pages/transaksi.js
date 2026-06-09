@@ -127,6 +127,7 @@ function submitTx(e) {
   let tipe = document.getElementById('tx-tipe').value;
   let produkId = document.getElementById('tx-produk').value;
   let jumlah = parseInt(document.getElementById('tx-jumlah').value);
+  let metode = document.getElementById('tx-metode').value;
   let catatan = document.getElementById('tx-catatan').value;
 
   let produk = store.produk.find(function(p) { return p.id === produkId; });
@@ -143,7 +144,7 @@ function submitTx(e) {
     jumlah: jumlah,
     hargaSatuan: harga,
     total: jumlah * harga,
-    metode: 'manual',
+    metode: metode,
     catatan: catatan || ''
   };
 
