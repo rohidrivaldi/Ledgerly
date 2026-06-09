@@ -172,3 +172,112 @@ function exportLaporanKeuangan(ringkasan) {
 
   doc.save('laporan-keuangan-' + Date.now() + '.pdf');
 }
+
+// export laporan laba rugi ke EXCEL BERFORMULA DINAMIS (pakai exceljs).
+// beda dgn xlsx biasa: cell Laba Kotor & Laba Bersih diisi FORMULA asli excel
+// (mis. =B6-B7), jadi pas pemilik ubah angka Omzet/HPP di excel, hasilnya
+// otomatis ke-recalc. cocok buat pembukuan yg dimodif manual.
+async function exportLaporanExcel(ringkasan) {
+  if (typeof ExcelJS === 'undefined') {
+    alert('Library ExcelJS belum dimuat. Coba refresh halaman.');
+    return;
+  }
+
+  var wb = new ExcelJS.Workbook();
+  wb.creator = 'Ledgerly';
+  var ws = wb.addWorksheet('Laba Rugi');
+
+  ws.columns = [
+    { width: 28 }, // A: posisi
+    { width: 20 }  // B: jumlah
+  ];
+
+  // -- judul (row 1) + periode (row 2) --
+  ws.mergeCells('A1:B1');
+  var judul = ws.getCell('A1');
+  judul.value = 'Laporan Laba Rugi - Ledgerly';
+  judul.font = { bold: true, size: 14, color: { argb: 'FF4F46E5' } };
+  judul.alignment = { vertical: 'middle' };
+  ws.getRow(1).height = 24;
+
+  ws.mergeCells('A2:B2');
+  var periode = ws.getCell('A2');
+  periode.value = 'Periode: ' + (ringkasan.periode || '-');
+  periode.font = { size: 10, color: { argb: 'FF64748B' } };
+
+  // -- header tabel (row 4) --
+  var hRow = ws.getRow(4);
+  hRow.getCell(1).value = 'Posisi';
+  hRow.getCell(2).value = 'Jumlah (IDR)';
+  hRow.eachCell(function(cell) {
+    cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4F46E5' } };
+    cell.alignment = { horizontal: cell.col === 2 ? 'right' : 'left' };
+  });
+
+  // -- baris data: row 5=Omzet, 6=HPP, 7=Laba Kotor, 8=Biaya, 9=Laba Bersih --
+  // angka mentah dimasukin sbg value, yg turunan dimasukin sbg FORMULA
+  ws.getCell('A5').value = 'Omzet (Pendapatan)';
+  ws.getCell('B5').value = ringkasan.omzet || 0;
+
+  ws.getCell('A6').value = 'Harga Pokok Penjualan (HPP)';
+  ws.getCell('B6').value = ringkasan.hpp || 0;
+
+  ws.getCell('A7').value = 'Laba Kotor';
+  ws.getCell('B7').value = { formula: 'B5-B6' };          // <-- reaktif
+
+  ws.getCell('A8').value = 'Biaya Operasional';
+  ws.getCell('B8').value = ringkasan.biaya || 0;
+
+  ws.getCell('A9').value = 'Laba Bersih';
+  ws.getCell('B9').value = { formula: 'B7-B8' };          // <-- reaktif
+
+  // format angka rupiah + style buat kolom B baris data
+  for (var r = 5; r <= 9; r++) {
+    var cellB = ws.getCell('B' + r);
+    cellB.numFmt = '"Rp"#,##0';
+    cellB.alignment = { horizontal: 'right' };
+    // baris laba kotor & laba bersih ditebelin biar nonjol
+    if (r === 7 || r === 9) {
+      ws.getCell('A' + r).font = { bold: true };
+      cellB.font = { bold: true, color: { argb: 'FF4F46E5' } };
+      ws.getRow(r).eachCell(function(c) {
+        c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEF2FF' } };
+      });
+    }
+  }
+
+  // garis tepi tipis semua sel tabel
+  for (var rr = 4; rr <= 9; rr++) {
+    ['A', 'B'].forEach(function(col) {
+      ws.getCell(col + rr).border = {
+        top:    { style: 'thin', color: { argb: 'FFC7D2FE' } },
+        bottom: { style: 'thin', color: { argb: 'FFC7D2FE' } },
+        left:   { style: 'thin', color: { argb: 'FFC7D2FE' } },
+        right:  { style: 'thin', color: { argb: 'FFC7D2FE' } }
+      };
+    });
+  }
+
+  // catatan kecil bahwa angka reaktif
+  ws.mergeCells('A11:B11');
+  var note = ws.getCell('A11');
+  note.value = '* Sel Laba Kotor & Laba Bersih berisi formula otomatis. Ubah angka Omzet/HPP/Biaya, hasilnya ikut berubah.';
+  note.font = { size: 9, italic: true, color: { argb: 'FF94A3B8' } };
+  note.alignment = { wrapText: true };
+
+  // generate buffer -> blob -> download
+  try {
+    var buf = await wb.xlsx.writeBuffer();
+    var blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'laba-rugi-' + Date.now() + '.xlsx';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  } catch (err) {
+    alert('Gagal membuat file Excel: ' + err.message);
+  }
+}

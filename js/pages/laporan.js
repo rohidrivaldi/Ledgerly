@@ -34,6 +34,7 @@ function initLaporan() {
       ${exportCard('Inventaris CSV', 'Download daftar produk dan stok ke CSV', 'CSV', 'exportProdukCSV(store.produk)')}
       ${exportCard('Transaksi CSV', 'Download riwayat transaksi (sesuai periode) ke CSV', 'CSV', 'exportTransaksiCSVFiltered()')}
       ${exportCard('Transaksi Excel', 'Download riwayat transaksi (sesuai periode) ke Excel rapi', 'XLSX', 'exportTransaksiExcelFiltered()')}
+      ${exportCard('Laba Rugi Excel (Berformula)', 'Download laba rugi ke Excel dgn formula reaktif (bisa diedit)', 'XLSX', 'exportLaporanExcelFiltered()')}
       ${exportCard('Laporan Laba Rugi', 'Download laporan keuangan (sesuai periode) ke PDF', 'PDF', 'exportLaporanPDF()')}
     `;
   }
@@ -93,6 +94,18 @@ function exportTransaksiCSVFiltered() {
 
 function exportTransaksiExcelFiltered() {
   exportTransaksiExcel(getDaftarTxLaporan());
+}
+
+function exportLaporanExcelFiltered() {
+  let ring = hitungRingkasanLaporan();
+  exportLaporanExcel({
+    periode: getLabelPeriodeLaporan(),
+    omzet: ring.omzet,
+    hpp: ring.hpp,
+    labaKotor: ring.labaKotor,
+    biaya: ring.biaya,
+    labaBersih: ring.labaBersih
+  });
 }
 
 function exportLaporanPDF() {
