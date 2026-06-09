@@ -425,11 +425,11 @@ function bukaModalProduk(produkId) {
           <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
             <div>
               <label class="form-label">Nama Produk</label>
-              <input class="form-input" type="text" id="pr-nama" value="${target.nama || ''}" required oninput="saranSKUdariNama()">
+              <input class="form-input" type="text" id="pr-nama" value="${target.nama || ''}" required autocomplete="off" oninput="saranSKUdariNama()">
             </div>
             <div>
               <label class="form-label">SKU ${produkId ? '' : '<span style="font-weight:400; text-transform:none; color:var(--slate-400);">(saran otomatis, bisa diedit)</span>'}</label>
-              <input class="form-input" type="text" id="pr-sku" value="${target.sku || ''}" required oninput="tandaiSKUManual()">
+              <input class="form-input" type="text" id="pr-sku" value="${target.sku || ''}" required autocomplete="off" oninput="tandaiSKUManual()">
             </div>
             <div>
               <label class="form-label">Kategori</label>
@@ -594,6 +594,16 @@ async function simpanProduk(e, produkId) {
       if (errEl) errEl.style.display = 'block';
       return;
     }
+  }
+
+  // Validasi SKU gak boleh duplikat (kecuali produk yg lagi diedit itu sendiri).
+  // ini nyegah BMS-001 dobel kayak yg pernah kejadian
+  let skuDuplikat = (store.produk || []).some(function(p) {
+    return p.id !== produkId && (p.sku || '').toLowerCase() === sku.toLowerCase();
+  });
+  if (skuDuplikat) {
+    alert('Kode SKU "' + sku + '" sudah dipakai produk lain. Gunakan kode SKU yang berbeda.');
+    return;
   }
 
   if (!window.supabaseClient) return;
