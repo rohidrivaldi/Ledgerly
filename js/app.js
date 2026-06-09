@@ -637,6 +637,7 @@ async function sinkronisasiSupabase() {
           supplierNama: p.supplier_nama || '',
           supplierWa: p.supplier_wa || '',
           supplier: p.supplier_nama || '',
+          barcode: p.barcode || '',
           updatedAt: p.updated_at || new Date().toISOString().slice(0, 10)
         };
       });

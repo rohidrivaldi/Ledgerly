@@ -90,7 +90,12 @@
       </div>
       <div>
         <label class="form-label">Produk</label>
-        <select class="form-select" id="tx-produk"></select>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <select class="form-select" id="tx-produk" style="flex:1;"></select>
+          <button type="button" class="btn btn-secondary" style="padding:8px 12px; white-space:nowrap;" id="btn-tx-scan" onclick="scanBarcodeTx()"></button>
+        </div>
+        <div id="tx-barcode-scanner" style="display:none; margin-top:10px; border-radius:10px; overflow:hidden;"></div>
+        <div id="tx-scan-msg" style="font-size:11px; margin-top:4px; display:none;"></div>
       </div>
       <div>
         <label class="form-label">Jumlah</label>

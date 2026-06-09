@@ -317,6 +317,15 @@ function bukaModalProduk(produkId) {
             </div>
             <!-- Separator supplier -->
             <div style="border-top:1px solid var(--slate-100); padding-top:12px; margin-top:4px;">
+              <div style="font-size:12px; font-weight:600; color:var(--slate-500); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Barcode <span style="font-weight:400; text-transform:none; color:var(--slate-400);">(opsional)</span></div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <input class="form-input" type="text" id="pr-barcode" value="${target.barcode || ''}" placeholder="Scan atau ketik kode EAN-13" style="flex:1;" inputmode="numeric">
+                <button type="button" class="btn btn-secondary" style="padding:8px 12px; white-space:nowrap;" onclick="scanBarcodeProduk()">${icon('camera', 16)} Scan</button>
+              </div>
+              <div id="pr-barcode-scanner" style="display:none; margin-top:10px; border-radius:10px; overflow:hidden;"></div>
+            </div>
+            <!-- Separator supplier -->
+            <div style="border-top:1px solid var(--slate-100); padding-top:12px; margin-top:4px;">
               <div style="font-size:12px; font-weight:600; color:var(--slate-500); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Info Supplier <span style="font-weight:400; text-transform:none; color:var(--slate-400);">(opsional)</span></div>
               <div style="display:flex; flex-direction:column; gap:10px;">
                 <div>
@@ -344,6 +353,7 @@ function bukaModalProduk(produkId) {
 }
 
 function tutupModalProduk() {
+  if (typeof stopScannerProduk === 'function') stopScannerProduk(); // matiin kamera klo lg nyala
   let modal = document.getElementById('modal-produk-container');
   if (modal) modal.remove();
 }
@@ -367,6 +377,55 @@ function validasiWaSupplier(input) {
   input.style.borderColor = valid ? '' : 'var(--rose-400)';
 }
 
+// scanner barcode buat form produk — pake library html5-qrcode (akses kamera HP)
+var _scannerProduk = null;
+
+function scanBarcodeProduk() {
+  let box = document.getElementById('pr-barcode-scanner');
+  if (!box) return;
+
+  // klo scanner lagi jalan, anggap ini tombol stop
+  if (_scannerProduk) {
+    stopScannerProduk();
+    return;
+  }
+
+  if (typeof Html5Qrcode === 'undefined') {
+    alert('Library scanner belum termuat. Coba refresh halaman.');
+    return;
+  }
+
+  box.style.display = 'block';
+  box.innerHTML = '<div id="pr-barcode-reader" style="width:100%;"></div>'
+    + '<div style="font-size:11px; color:var(--slate-400); text-align:center; margin-top:6px;">Arahkan kamera ke barcode produk</div>';
+
+  _scannerProduk = new Html5Qrcode('pr-barcode-reader');
+  _scannerProduk.start(
+    { facingMode: 'environment' }, // kamera belakang HP
+    { fps: 10, qrbox: { width: 250, height: 120 } },
+    function(decodedText) {
+      // berhasil scan → isi input, lalu matiin kamera
+      let input = document.getElementById('pr-barcode');
+      if (input) input.value = decodedText.replace(/[^0-9]/g, '');
+      stopScannerProduk();
+    },
+    function() { /* abaikan error per-frame (gagal decode itu wajar) */ }
+  ).catch(function(err) {
+    box.innerHTML = '<div style="font-size:12px; color:var(--rose-600); padding:8px;">Gagal akses kamera: ' + err + '<br>Pastikan izin kamera diberikan & pakai HTTPS/localhost.</div>';
+    _scannerProduk = null;
+  });
+}
+
+function stopScannerProduk() {
+  if (!_scannerProduk) return;
+  _scannerProduk.stop().then(function() {
+    _scannerProduk.clear();
+    _scannerProduk = null;
+    let box = document.getElementById('pr-barcode-scanner');
+    if (box) { box.style.display = 'none'; box.innerHTML = ''; }
+  }).catch(function() { _scannerProduk = null; });
+}
+
 async function simpanProduk(e, produkId) {
   e.preventDefault();
 
@@ -379,6 +438,7 @@ async function simpanProduk(e, produkId) {
   let hargaVal = parseInt(document.getElementById('pr-harga').value);
   let supplierNama = (document.getElementById('pr-supplier-nama') || {}).value || '';
   let supplierWa   = (document.getElementById('pr-supplier-wa')   || {}).value || '';
+  let barcode      = ((document.getElementById('pr-barcode') || {}).value || '').trim();
 
   // Validasi WA jika diisi
   if (supplierWa) {
@@ -407,7 +467,8 @@ async function simpanProduk(e, produkId) {
           modal: modalVal,
           harga: hargaVal,
           supplier_nama: supplierNama || null,
-          supplier_wa: supplierWa || null
+          supplier_wa: supplierWa || null,
+          barcode: barcode || null
         })
         .eq('product_id', produkId);
 
@@ -433,7 +494,8 @@ async function simpanProduk(e, produkId) {
           harga: hargaVal,
           max_stok: stok * 2,
           supplier_nama: supplierNama || null,
-          supplier_wa: supplierWa || null
+          supplier_wa: supplierWa || null,
+          barcode: barcode || null
         });
 
       if (error) throw error;

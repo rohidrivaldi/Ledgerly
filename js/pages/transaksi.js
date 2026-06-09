@@ -29,6 +29,10 @@ function initTransaksi() {
     }).join('');
   }
 
+  // set ikon tombol scan barcode di modal transaksi
+  let btnScan = document.getElementById('btn-tx-scan');
+  if (btnScan) btnScan.innerHTML = icon('camera', 16);
+
   // 3. Reset pagination & render tabel
   txHalamanSkrg = 1;
   renderTransaksiTable();
@@ -236,8 +240,68 @@ function bukaModalTx() {
 }
 
 function tutupModalTx() {
+  if (typeof stopScannerTx === 'function') stopScannerTx(); // matiin kamera klo lg nyala
   let modal = document.getElementById('modal-tx');
   if (modal) modal.classList.add('hidden');
+}
+
+// scanner barcode di modal transaksi — scan → auto-pilih produk di dropdown
+var _scannerTx = null;
+
+function scanBarcodeTx() {
+  let box = document.getElementById('tx-barcode-scanner');
+  if (!box) return;
+
+  if (_scannerTx) { stopScannerTx(); return; } // tombol jadi stop klo lg nyala
+
+  if (typeof Html5Qrcode === 'undefined') {
+    alert('Library scanner belum termuat. Coba refresh halaman.');
+    return;
+  }
+
+  box.style.display = 'block';
+  box.innerHTML = '<div id="tx-barcode-reader" style="width:100%;"></div>';
+
+  _scannerTx = new Html5Qrcode('tx-barcode-reader');
+  _scannerTx.start(
+    { facingMode: 'environment' },
+    { fps: 10, qrbox: { width: 250, height: 120 } },
+    function(decodedText) {
+      let kode = decodedText.replace(/[^0-9]/g, '');
+      // cari produk yg barcode-nya cocok
+      let produk = store.produk.find(function(p) { return p.barcode && p.barcode === kode; });
+      let msg = document.getElementById('tx-scan-msg');
+      if (produk) {
+        document.getElementById('tx-produk').value = produk.id; // auto-pilih di dropdown
+        if (msg) {
+          msg.textContent = '✓ ' + produk.nama + ' terpilih';
+          msg.style.color = 'var(--emerald-600)';
+          msg.style.display = 'block';
+        }
+        stopScannerTx();
+      } else {
+        if (msg) {
+          msg.textContent = '✗ Barcode "' + kode + '" tidak cocok dgn produk manapun';
+          msg.style.color = 'var(--rose-600)';
+          msg.style.display = 'block';
+        }
+      }
+    },
+    function() { /* abaikan error per-frame */ }
+  ).catch(function(err) {
+    box.innerHTML = '<div style="font-size:12px; color:var(--rose-600); padding:8px;">Gagal akses kamera: ' + err + '<br>Pastikan izin kamera diberikan & pakai HTTPS/localhost.</div>';
+    _scannerTx = null;
+  });
+}
+
+function stopScannerTx() {
+  if (!_scannerTx) return;
+  _scannerTx.stop().then(function() {
+    _scannerTx.clear();
+    _scannerTx = null;
+    let box = document.getElementById('tx-barcode-scanner');
+    if (box) { box.style.display = 'none'; box.innerHTML = ''; }
+  }).catch(function() { _scannerTx = null; });
 }
 
 function submitTx(e) {
