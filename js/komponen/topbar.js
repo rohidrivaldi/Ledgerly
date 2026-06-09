@@ -43,14 +43,22 @@ function renderNotifDropdown() {
     `;
   }
 
+  let waEnabled = store.settings && store.settings.waEnabled;
+  let nomorWA = (store.settings && store.settings.nomorWA) || '628123456789';
+
   let items = notifs.map(function(n) {
+    let iconSvg = waEnabled ? icon('whatsapp', 18) : icon('bell', 18);
+    let iconBg = waEnabled ? 'var(--emerald-50)' : 'var(--indigo-50)';
+    let iconColor = waEnabled ? 'var(--emerald-600)' : 'var(--indigo-600)';
+    let viaText = waEnabled ? `via WhatsApp (${nomorWA})` : 'Sistem Ledgerly';
+
     return `
       <div class="notif-item">
-        <div class="notif-wa-icon">${icon('whatsapp')}</div>
+        <div class="notif-wa-icon" style="background:${iconBg}; color:${iconColor};">${iconSvg}</div>
         <div class="info">
           <div class="produk-nama">${n.produkNama}</div>
           <div class="stok-info">Stok: ${n.stok} / min: ${n.minStok}</div>
-          <div class="via">via WhatsApp • ${waktuLalu(n.dikirimPada)}</div>
+          <div class="via">${viaText} • ${waktuLalu(n.dikirimPada)}</div>
         </div>
         <button class="close-btn" onclick="hapusNotif('${n.id}')">${icon('x')}</button>
       </div>
@@ -75,12 +83,28 @@ function toggleNotif() {
 
 function hapusNotif(id) {
   tutupNotifikasi(id);
-  // update dropdown content
-  let dd = document.getElementById('notif-dropdown');
-  if (dd) dd.innerHTML = renderNotifDropdown();
-  // update badge count
+  // Re-render topbar untuk mengupdate badge count
   renderTopbar();
+  // Kembalikan status open jika notifOpen bernilai true agar tidak menutup paksa
+  let dd = document.getElementById('notif-dropdown');
+  if (dd && notifOpen) {
+    dd.classList.remove('hidden');
+  }
 }
+
+// Menutup dropdown notifikasi ketika klik di luar area
+document.addEventListener('click', function(event) {
+  let dropdown = document.getElementById('notif-dropdown');
+  let btn = document.getElementById('btn-notif');
+  
+  if (dropdown && !dropdown.classList.contains('hidden')) {
+    if (!dropdown.contains(event.target) && (!btn || !btn.contains(event.target))) {
+      dropdown.classList.add('hidden');
+      notifOpen = false;
+    }
+  }
+});
+
 
 function bukaMobileNav() {
   let overlay = document.getElementById('mobile-nav');
@@ -162,3 +186,20 @@ function syncSearch(val) {
     pemCari.dispatchEvent(new Event('input'));
   }
 }
+
+// Menyetel visibilitas search bar secara dinamis sesuai hash halaman aktif
+function updateTopbarSearchVisibility(hash) {
+  let searchContainer = document.querySelector('.topbar-search');
+  if (!searchContainer) return;
+  
+  let showSearch = (hash === '#inventaris' || hash === '#transaksi' || hash === '#kelola-pemilik' || hash === '#dasbor-superadmin');
+  if (showSearch) {
+    searchContainer.style.display = 'block';
+    // Reset nilai pencarian topbar saat berpindah halaman
+    let input = document.getElementById('topbar-search-input');
+    if (input) input.value = '';
+  } else {
+    searchContainer.style.display = 'none';
+  }
+}
+

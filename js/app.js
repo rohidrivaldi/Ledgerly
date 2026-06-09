@@ -23,12 +23,22 @@ var _storeObj = {
       { from: 'bot', text: 'Halo! Saya asisten AI Ledgerly. Saya bisa bantu kamu:\n- Cek stok barang\n- Tambah stok masuk/keluar\n- Lihat produk terlaris\n\nSilakan tanya apa saja!' }
     ];
   })(),
-  settings: {
-    waEnabled: true,
-    chatbotEnabled: true,
-    cloudSync: true,
-    nomorWA: '628123456789'
-  }
+  settings: (function() {
+    let saved = localStorage.getItem('ledgerly_settings');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.warn("Gagal memuat settings:", e);
+      }
+    }
+    return {
+      waEnabled: true,
+      chatbotEnabled: true,
+      cloudSync: true,
+      nomorWA: '628123456789'
+    };
+  })()
 };
 
 let renderTimeout;
@@ -49,6 +59,9 @@ var store = new Proxy(_storeObj, {
     if (key === 'produk' || key === 'transaksi' || key === 'notifikasi') {
       if (key === 'transaksi' && typeof hitungStatistikDariTransaksi === 'function') {
         hitungStatistikDariTransaksi();
+      }
+      if (key === 'notifikasi' && typeof renderTopbar === 'function') {
+        renderTopbar();
       }
       jadwalkanRender();
     }
@@ -423,6 +436,11 @@ async function navigasi(hash) {
   document.querySelectorAll('.sidebar-link').forEach(function(el) {
     el.classList.toggle('active', el.getAttribute('data-hash') === hash);
   });
+
+  // update search bar visibility
+  if (typeof updateTopbarSearchVisibility === 'function') {
+    updateTopbarSearchVisibility(hash);
+  }
 
   // update judul di title
   document.title = route.title + ' - Ledgerly';
