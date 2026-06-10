@@ -21,6 +21,7 @@ function renderTopbar() {
       <input type="text" id="topbar-search-input" placeholder="${placeholderText}" oninput="syncSearch(this.value)">
     </div>
     <div class="topbar-actions">
+      ${isSuper ? '' : `
       <div style="position:relative;">
         <button class="topbar-btn" onclick="toggleNotif()" title="Notifikasi" id="btn-notif">
           ${icon('bell')}
@@ -30,6 +31,7 @@ function renderTopbar() {
           ${renderNotifDropdown()}
         </div>
       </div>
+      `}
     </div>
   `;
 }
