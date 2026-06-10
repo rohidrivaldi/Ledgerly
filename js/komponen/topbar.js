@@ -118,26 +118,38 @@ function bukaMobileNav() {
   let user = store.user || {};
   let linksHtml = '';
   if (user.role === 'superadmin') {
-    linksHtml += mobileLink('#dasbor-superadmin', 'Ikhtisar Sistem');
-    linksHtml += mobileLink('#kelola-pemilik', 'Kelola Pemilik');
+    linksHtml += mobileLink('#dasbor-superadmin', icon('fileBarChart', 18), 'Ikhtisar Sistem');
+    linksHtml += mobileLink('#kelola-pemilik', icon('users', 18), 'Kelola Pemilik');
   } else {
-    linksHtml += mobileLink('#inventaris', 'Inventaris');
-    linksHtml += mobileLink('#keuangan', 'Keuangan');
-    linksHtml += mobileLink('#transaksi', 'Transaksi');
-    linksHtml += mobileLink('#laporan', 'Laporan');
-    linksHtml += mobileLink('#keputusan', 'Keputusan');
-    linksHtml += mobileLink('#pengaturan', 'Pengaturan');
+    linksHtml += mobileLink('#inventaris', icon('package', 18), 'Inventaris');
+    linksHtml += mobileLink('#keuangan', icon('wallet', 18), 'Keuangan');
+    linksHtml += mobileLink('#transaksi', icon('arrowLeftRight', 18), 'Transaksi');
+    linksHtml += mobileLink('#laporan', icon('fileBarChart', 18), 'Laporan');
+    linksHtml += mobileLink('#keputusan', icon('lightbulb', 18), 'Keputusan');
+    linksHtml += mobileLink('#pengaturan', icon('settings', 18), 'Pengaturan');
   }
 
   panel.innerHTML = `
     <div class="mobile-nav-header">
-      <span class="title">Ledgerly</span>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="display:grid; place-items:center; width:32px; height:32px; border-radius:10px; background:linear-gradient(135deg, var(--indigo-500), var(--purple-600)); color:#fff; flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            <polyline points="3.29 7 12 12 20.71 7"/>
+            <line x1="12" y1="22" x2="12" y2="12"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-size:14px; font-weight:700; color:var(--slate-900);">Ledgerly</div>
+          <div style="font-size:11px; color:var(--slate-400);">Sistem UMKM</div>
+        </div>
+      </div>
       <button class="mobile-nav-close" onclick="tutupMobileNav()">${icon('x')}</button>
     </div>
     <div class="mobile-nav-links">
       ${linksHtml}
       <hr class="divider" style="margin:8px 0;">
-      <button class="mobile-nav-logout" onclick="logout()">Keluar</button>
+      <button class="mobile-nav-logout" onclick="logout()">${icon('logOut', 16)} Keluar</button>
     </div>
   `;
 }
@@ -147,9 +159,13 @@ function tutupMobileNav() {
   if (overlay) overlay.classList.remove('open');
 }
 
-function mobileLink(hash, label) {
+function mobileLink(hash, iconSvg, label) {
+  let isActive = (typeof halamanSkrg !== 'undefined' && halamanSkrg === hash);
   return `
-    <button class="mobile-nav-link" onclick="navigasi('${hash}')">${label}</button>
+    <button class="mobile-nav-link${isActive ? ' active' : ''}" onclick="navigasi('${hash}')" style="display:flex; align-items:center; gap:10px;">
+      <span style="color:var(--indigo-600); flex-shrink:0;">${iconSvg}</span>
+      <span>${label}</span>
+    </button>
   `;
 }
 

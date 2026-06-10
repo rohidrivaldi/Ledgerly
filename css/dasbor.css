@@ -388,6 +388,7 @@
 .page-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 .page-inner {
   max-width: 1280px;
@@ -832,8 +833,10 @@
   gap: 4px;
 }
 .mobile-nav-link {
-  display: block;
-  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
   border-radius: var(--radius-lg);
   font-size: 14px;
   font-weight: 500;
@@ -843,8 +846,10 @@
   border: none;
   width: 100%;
   text-align: left;
+  transition: all 0.15s;
 }
-.mobile-nav-link:hover { background: var(--slate-50); }
+.mobile-nav-link:hover { background: var(--slate-50); color: var(--slate-900); }
+.mobile-nav-link.active { background: var(--indigo-50); color: var(--indigo-700); font-weight: 600; }
 .mobile-nav-logout {
   display: block;
   width: 100%;

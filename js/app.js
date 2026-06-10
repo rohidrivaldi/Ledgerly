@@ -242,6 +242,45 @@ function hitungRingkasan(hari) {
   };
 }
 
+// Hitung ringkasan dari rentang tanggal spesifik (untuk filter date picker)
+function hitungRingkasanRentang(startVal, endVal) {
+  var startDate = startVal ? new Date(startVal) : null;
+  var endDate   = endVal   ? new Date(endVal)   : null;
+  if (endDate) endDate.setHours(23, 59, 59, 999); // sertakan seluruh hari akhir
+
+  var totalOmzet = 0, totalHpp = 0, totalPesanan = 0;
+  var dataHarian = [];
+
+  // Gunakan store.penjualanHarian jika tersedia (60 hari), filter sesuai rentang
+  var allHarian = store.penjualanHarian || [];
+
+  allHarian.forEach(function(d) {
+    var tgl = new Date(d.tanggal);
+    var dlmRentang = (!startDate || tgl >= startDate) && (!endDate || tgl <= endDate);
+    if (dlmRentang) {
+      totalOmzet   += d.omzet;
+      totalHpp     += d.hpp;
+      totalPesanan += d.pesanan;
+      dataHarian.push(d);
+    }
+  });
+
+  var labaKotor  = totalOmzet - totalHpp;
+  var persenBiaya = (store.settings && store.settings.biayaOpsPersen !== undefined) ? store.settings.biayaOpsPersen : 8;
+  var biayaOps   = Math.round(totalOmzet * (persenBiaya / 100));
+  var labaBersih = labaKotor - biayaOps;
+
+  return {
+    omzet: totalOmzet,
+    hpp: totalHpp,
+    labaKotor: labaKotor,
+    biaya: biayaOps,
+    labaBersih: labaBersih,
+    pesanan: totalPesanan,
+    dataHarian: dataHarian
+  };
+}
+
 // update stok produk, total nilai inventaris dan jumlah SKU
 function hitungInventaris() {
   let totalUnit = 0, totalNilai = 0, rendah = 0;

@@ -37,12 +37,29 @@
 
 <!-- tabel katalog -->
 <div class="card">
-  <div class="card-header flex-between">
+  <div class="card-header flex-between" style="flex-wrap:wrap; gap:12px;">
     <div>
       <div class="card-title">Katalog Produk</div>
       <div class="card-subtitle" id="inv-katalog-subtitle"></div>
     </div>
-    <input class="form-input" type="text" id="cari-produk" placeholder="Cari nama/SKU..." style="max-width:240px; font-size:12px;">
+    <!-- Filter bar -->
+    <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+      <input class="form-input" type="text" id="cari-produk" placeholder="Cari nama/SKU..." style="max-width:180px; font-size:12px;">
+      <select class="form-select" id="filter-inv-kategori" style="max-width:150px; font-size:12px;" onchange="renderInventarisTable()">
+        <option value="">Semua Kategori</option>
+      </select>
+      <select class="form-select" id="filter-inv-status" style="max-width:130px; font-size:12px;" onchange="renderInventarisTable()">
+        <option value="">Semua Status</option>
+        <option value="aman">Aman</option>
+        <option value="rendah">Stok Rendah</option>
+      </select>
+      <div style="display:flex; align-items:center; gap:4px;">
+        <input class="form-input" type="date" id="filter-inv-start" style="font-size:12px; padding:6px 8px;" onchange="renderInventarisTable()">
+        <span style="color:var(--slate-400); font-size:12px;">s/d</span>
+        <input class="form-input" type="date" id="filter-inv-end" style="font-size:12px; padding:6px 8px;" onchange="renderInventarisTable()">
+        <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="resetFilterInventaris()">Reset</button>
+      </div>
+    </div>
   </div>
   <div style="overflow-x:auto;">
     <table class="tabel" id="tabel-produk">
@@ -62,4 +79,6 @@
       <tbody></tbody>
     </table>
   </div>
+  <!-- Pagination -->
+  <div id="inv-pagination-placeholder" style="padding:12px 20px; border-top:1px solid var(--slate-100);"></div>
 </div>

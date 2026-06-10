@@ -361,11 +361,27 @@ input, select, textarea { font-family: inherit; }
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 1000;
   display: grid;
   place-items: center;
   background: rgba(15, 23, 42, 0.4);
   padding: 16px;
+}
+.modal-close-btn {
+  color: var(--slate-400);
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.modal-close-btn:hover {
+  background: var(--slate-100);
+  color: var(--slate-700);
 }
 .modal-box {
   width: 100%;

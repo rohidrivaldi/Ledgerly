@@ -2,20 +2,10 @@
    transaksi.js — halaman riwayat & input transaksi
    ============================================= */
 
-var filterTipeTx = 'semua';
+var txHalamanSkrg = 1;
+var txPerHalaman  = 10;
 
 function initTransaksi() {
-  let masuk = 0, keluar = 0;
-  store.transaksi.forEach(function(t) {
-    if (t.tipe === 'MASUK') masuk += t.total; // Pengeluaran (Beli Stok)
-    else keluar += t.total; // Pemasukan (Jual Barang)
-  });
-  let bersih = keluar - masuk; // Arus kas bersih = Pemasukan - Pengeluaran
-
-  let txFiltered = filterTipeTx === 'semua'
-    ? store.transaksi
-    : store.transaksi.filter(function(t) { return t.tipe === filterTipeTx; });
-
   // 1. Inject Icons
   let iconPlus = document.getElementById('tx-plus-icon');
   if (iconPlus) iconPlus.innerHTML = icon('plus', 16);
@@ -31,7 +21,61 @@ function initTransaksi() {
   let iconArrowLfr = document.getElementById('tx-arrow-lfr-icon');
   if (iconArrowLfr) iconArrowLfr.innerHTML = icon('arrowLeftRight', 16);
 
-  // 2. Populate stats & totals
+  // 2. Populate product list di modal
+  let pSelect = document.getElementById('tx-produk');
+  if (pSelect) {
+    pSelect.innerHTML = store.produk.map(function(p) {
+      return `<option value="${p.id}">${p.nama}</option>`;
+    }).join('');
+  }
+
+  // 3. Reset pagination & render tabel
+  txHalamanSkrg = 1;
+  renderTransaksiTable();
+
+  // 4. Setup Search Input
+  initTransaksiSearch();
+}
+
+// ============ RENDER TABEL DENGAN FILTER & PAGINATION ============
+
+function getDaftarTxFiltered() {
+  let q          = (document.getElementById('cari-transaksi')  || {}).value || '';
+  let tipeFilter = (document.getElementById('filter-tx-tipe')  || {}).value || '';
+  let metFilter  = (document.getElementById('filter-tx-metode')|| {}).value || '';
+  let startVal   = (document.getElementById('filter-tx-start') || {}).value || '';
+  let endVal     = (document.getElementById('filter-tx-end')   || {}).value || '';
+
+  var startDate = startVal ? new Date(startVal) : null;
+  var endDate   = endVal   ? new Date(endVal)   : null;
+  if (endDate) endDate.setHours(23, 59, 59, 999);
+
+  return store.transaksi.filter(function(t) {
+    let lolosQ    = !q || t.produkNama.toLowerCase().includes(q.toLowerCase()) ||
+                    (t.catatan || '').toLowerCase().includes(q.toLowerCase()) ||
+                    t.metode.toLowerCase().includes(q.toLowerCase());
+    let lolosTipe = !tipeFilter || t.tipe === tipeFilter;
+    let lolosMet  = !metFilter  || t.metode.toLowerCase() === metFilter.toLowerCase();
+    let lolosTgl  = true;
+    if (startDate || endDate) {
+      let tgl = new Date(t.tanggal);
+      lolosTgl = (!startDate || tgl >= startDate) && (!endDate || tgl <= endDate);
+    }
+    return lolosQ && lolosTipe && lolosMet && lolosTgl;
+  });
+}
+
+function renderTransaksiTable() {
+  let filtered = getDaftarTxFiltered();
+
+  // Hitung stats dari data yang lolos filter
+  let masuk = 0, keluar = 0;
+  filtered.forEach(function(t) {
+    if (t.tipe === 'MASUK') masuk += t.total;
+    else keluar += t.total;
+  });
+  let bersih = keluar - masuk;
+
   let elTotalMasuk = document.getElementById('tx-total-masuk');
   if (elTotalMasuk) elTotalMasuk.innerText = formatRupiah(masuk);
   let elTotalKeluar = document.getElementById('tx-total-keluar');
@@ -42,48 +86,70 @@ function initTransaksi() {
   let cardBersih = document.getElementById('tx-card-bersih');
   if (cardBersih) {
     cardBersih.className = 'summary-card';
-    if (bersih > 0) {
-      cardBersih.classList.add('bersih-positif');
-    } else if (bersih < 0) {
-      cardBersih.classList.add('bersih-negatif');
-    } else {
-      cardBersih.classList.add('bersih-netral');
-    }
+    if (bersih > 0) cardBersih.classList.add('bersih-positif');
+    else if (bersih < 0) cardBersih.classList.add('bersih-negatif');
+    else cardBersih.classList.add('bersih-netral');
   }
+
+  // Pagination
+  let totalData    = filtered.length;
+  let totalHalaman = Math.max(1, Math.ceil(totalData / txPerHalaman));
+  if (txHalamanSkrg > totalHalaman) txHalamanSkrg = totalHalaman;
+
+  let slice = filtered.slice((txHalamanSkrg - 1) * txPerHalaman, txHalamanSkrg * txPerHalaman);
 
   let txSubtitle = document.getElementById('tx-list-subtitle');
-  if (txSubtitle) txSubtitle.innerText = `${txFiltered.length} transaksi`;
+  if (txSubtitle) txSubtitle.innerText = totalData + ' transaksi' + (totalData < store.transaksi.length ? ' (difilter)' : '');
 
-  // 3. Populate period filter buttons
-  let periodSel = document.getElementById('tx-period-selector');
-  if (periodSel) {
-    periodSel.innerHTML = `
-      ${filterBtn('semua', 'Semua')}
-      ${filterBtn('MASUK', 'Masuk')}
-      ${filterBtn('KELUAR', 'Keluar')}
-    `;
-  }
-
-  // 4. Render Table Rows
+  // Render baris
   let tbody = document.querySelector('#konten-utama table tbody');
   if (tbody) {
-    tbody.innerHTML = renderRowsTransaksi(txFiltered);
+    tbody.innerHTML = slice.length === 0
+      ? '<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--slate-400);">Tidak ada transaksi yang cocok dengan filter.</td></tr>'
+      : renderRowsTransaksi(slice);
   }
 
-  // 5. Populate New Transaction Modal Product list
-  let pSelect = document.getElementById('tx-produk');
-  if (pSelect) {
-    pSelect.innerHTML = store.produk.map(function(p) {
-      return `<option value="${p.id}">${p.nama}</option>`;
-    }).join('');
+  // Render pagination
+  let pgEl = document.getElementById('tx-pagination-placeholder');
+  if (pgEl) {
+    if (totalHalaman <= 1) {
+      pgEl.innerHTML = '';
+    } else {
+      pgEl.innerHTML = `
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--slate-600);">
+          <span>Halaman ${txHalamanSkrg} dari ${totalHalaman} &nbsp;(${totalData} transaksi)</span>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" ${txHalamanSkrg <= 1 ? 'disabled' : ''} onclick="gantiHalamanTx(${txHalamanSkrg - 1})">${icon('chevronLeft', 14)} Sebelumnya</button>
+            <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" ${txHalamanSkrg >= totalHalaman ? 'disabled' : ''} onclick="gantiHalamanTx(${txHalamanSkrg + 1})">Selanjutnya ${icon('chevronRight', 14)}</button>
+          </div>
+        </div>`;
+    }
   }
+}
 
-  // 6. Setup Search Input Event
-  initTransaksiSearch();
+function gantiHalamanTx(halaman) {
+  txHalamanSkrg = halaman;
+  renderTransaksiTable();
+}
+
+function filterTransaksiUpdate() {
+  txHalamanSkrg = 1;
+  renderTransaksiTable();
+}
+
+function resetFilterTransaksi() {
+  let ids = ['cari-transaksi','filter-tx-tipe','filter-tx-metode','filter-tx-start','filter-tx-end'];
+  ids.forEach(function(id) {
+    let el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  txHalamanSkrg = 1;
+  renderTransaksiTable();
 }
 
 function renderRowsTransaksi(list) {
   return list.map(function(t) {
+    let adaCatatan = t.catatan && t.catatan.trim() !== '';
     return `
       <tr>
         <td>${formatTanggalWaktu(t.tanggal)}</td>
@@ -94,22 +160,59 @@ function renderRowsTransaksi(list) {
         <td class="td-right td-semibold">${formatRupiah(t.total)}</td>
         <td><span class="badge badge-neutral">${t.metode}</span></td>
         <td class="text-center">
-          <button class="btn btn-danger btn-xs" style="padding:2px 6px;" onclick="konfirmasiHapusTransaksi('${t.id}', '${t.produkNama}', ${t.jumlah}, '${t.tipe}', '${t.produkId}')">
-            ${icon('x', 12)} Batal
-          </button>
+          <div style="display:flex; justify-content:center; gap:4px;">
+            <button class="btn btn-secondary btn-xs" style="padding:2px 6px; font-size:11px;" onclick="lihatCatatanTx('${escapeHtml(t.catatan || '')}', '${t.produkNama}')" ${!adaCatatan ? 'disabled style="opacity:0.4; padding:2px 6px; font-size:11px;"' : ''} title="${adaCatatan ? 'Lihat Catatan' : 'Tidak ada catatan'}">
+              ${icon('eye', 12)} Catatan
+            </button>
+            <button class="btn btn-danger btn-xs" style="padding:2px 6px;" onclick="konfirmasiHapusTransaksi('${t.id}', '${t.produkNama}', ${t.jumlah}, '${t.tipe}', '${t.produkId}')">
+              ${icon('x', 12)} Batal
+            </button>
+          </div>
         </td>
       </tr>`;
   }).join('');
 }
 
-function filterBtn(val, label) {
-  return `<button class="period-btn${filterTipeTx === val ? ' active' : ''}" onclick="filterTransaksi('${val}')">${label}</button>`;
+function escapeHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-function filterTransaksi(val) {
-  filterTipeTx = val;
-  navigasi('#transaksi');
+// ============ MODAL LIHAT CATATAN ============
+
+function lihatCatatanTx(catatan, produkNama) {
+  // hapus modal lama kalau ada
+  let old = document.getElementById('modal-catatan-container');
+  if (old) old.remove();
+
+  let html = `
+    <div class="modal-overlay" id="modal-catatan-container" onclick="tutupModalCatatan(event)">
+      <div class="modal-box" style="max-width:420px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+          <div>
+            <div class="modal-title">Catatan Transaksi</div>
+            <div class="modal-desc">${escapeHtml(produkNama)}</div>
+          </div>
+          <button class="modal-close-btn" onclick="tutupModalCatatan()">${icon('x', 18)}</button>
+        </div>
+        <div style="background:var(--slate-50); border:1px solid var(--slate-200); border-radius:var(--radius-lg); padding:16px; font-size:14px; color:var(--slate-700); line-height:1.6; white-space:pre-wrap; word-break:break-word;">
+          ${catatan && catatan.trim() ? escapeHtml(catatan) : '<span style="color:var(--slate-400); font-style:italic;">Tidak ada catatan.</span>'}
+        </div>
+        <div style="margin-top:16px; text-align:right;">
+          <button class="btn btn-secondary" onclick="tutupModalCatatan()">Tutup</button>
+        </div>
+      </div>
+    </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', html);
 }
+
+function tutupModalCatatan(event) {
+  if (event && event.target.id !== 'modal-catatan-container') return;
+  let modal = document.getElementById('modal-catatan-container');
+  if (modal) modal.remove();
+}
+
+// ============ MODAL TRANSAKSI BARU ============
 
 function bukaModalTx() {
   let modal = document.getElementById('modal-tx');
@@ -162,21 +265,8 @@ function initTransaksiSearch() {
     }
 
     cariInput.addEventListener('input', function() {
-      let q = this.value.toLowerCase();
-      let txFiltered = filterTipeTx === 'semua'
-        ? store.transaksi
-        : store.transaksi.filter(function(t) { return t.tipe === filterTipeTx; });
-
-      let filtered = txFiltered.filter(function(t) {
-        return t.produkNama.toLowerCase().includes(q) || 
-               (t.catatan || '').toLowerCase().includes(q) || 
-               t.metode.toLowerCase().includes(q);
-      });
-
-      let tbody = document.querySelector('#konten-utama table tbody');
-      if (tbody) {
-        tbody.innerHTML = renderRowsTransaksi(filtered);
-      }
+      txHalamanSkrg = 1;
+      renderTransaksiTable();
     });
 
     if (cariInput.value) {
@@ -218,9 +308,9 @@ async function hapusTransaksi(txId, jumlah, tipe, produkId) {
     let p = store.produk.find(function(pr) { return pr.id === produkId; });
     if (p) {
       if (tipe === 'MASUK') {
-        p.stok -= jumlah; // Jika sebelumnya beli/masuk, kurangi kembali stoknya
+        p.stok -= jumlah;
       } else {
-        p.stok += jumlah; // Jika sebelumnya jual/keluar, tambah kembali stoknya
+        p.stok += jumlah;
       }
 
       const { error: prodError } = await window.supabaseClient
@@ -232,7 +322,6 @@ async function hapusTransaksi(txId, jumlah, tipe, produkId) {
     }
 
     console.log("Berhasil membatalkan transaksi!");
-    // Sinkronisasi ulang data di local state dan re-render
     await sinkronisasiSupabase();
   } catch (err) {
     console.error("Gagal membatalkan transaksi:", err.message);

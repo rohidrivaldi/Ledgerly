@@ -4,6 +4,8 @@
    ============================================= */
 
 var chartStok = null; // simpan instance chart biar bisa di-destroy
+var invHalamanSkrg = 1;
+var invPerHalaman  = 10;
 
 function initInventaris() {
   let inv = hitungInventaris();
@@ -49,48 +51,133 @@ function initInventaris() {
         }).join('');
   }
 
-  // 4. Render Katalog Produk
-  let katSub = document.getElementById('inv-katalog-subtitle');
-  if (katSub) katSub.innerText = `${store.produk.length} produk terdaftar`;
+  // 4. Populasi dropdown kategori
+  let katSelect = document.getElementById('filter-inv-kategori');
+  if (katSelect && store.kategoriList && store.kategoriList.length > 0) {
+    let existingOpts = Array.from(katSelect.options).map(function(o) { return o.value; });
+    store.kategoriList.forEach(function(k) {
+      if (!existingOpts.includes(k.nama_kategori)) {
+        let opt = document.createElement('option');
+        opt.value = k.nama_kategori;
+        opt.textContent = k.nama_kategori;
+        katSelect.appendChild(opt);
+      }
+    });
+  }
 
-  let tbody = document.querySelector('#tabel-produk tbody');
-  if (tbody) tbody.innerHTML = renderTabelProduk(store.produk);
+  // 5. Render tabel dengan filter & pagination
+  invHalamanSkrg = 1;
+  renderInventarisTable();
 
-  // 5. Init Chart & Search input
+  // 6. Init Chart & Search input
   initInventarisChart();
   initInventarisSearch();
 }
 
-function renderTabelProduk(data) {
-  return data.map(function(p) {
-    let isRendah = p.stok < p.minStok;
-    return `
-      <tr>
-        <td class="td-mono">${p.sku}</td>
-        <td class="td-bold">${p.nama}</td>
-        <td>${p.kategori}</td>
-        <td class="td-right td-semibold">${p.stok}</td>
-        <td class="td-right">${p.minStok}</td>
-        <td class="td-right">${formatRupiah(p.hargaBeli)}</td>
-        <td class="td-right">${formatRupiah(p.hargaJual)}</td>
-        <td>
-          ${isRendah
-            ? '<span class="badge badge-danger"><span class="badge-dot red"></span> Rendah</span>'
-            : '<span class="badge badge-success"><span class="badge-dot green"></span> Aman</span>'}
-        </td>
-        <td class="text-center">
-          <div style="display:flex; justify-content:center; gap:6px;">
-            <button class="btn btn-secondary btn-xs" style="padding:4px;" onclick="bukaModalProduk('${p.id}')" title="Edit">
-              ${icon('settings', 12)}
-            </button>
-            <button class="btn btn-danger btn-xs" style="padding:4px;" onclick="konfirmasiHapusProduk('${p.id}', '${p.nama}')" title="Hapus">
-              ${icon('x', 12)}
-            </button>
+// Render tabel produk dengan filter & pagination
+function renderInventarisTable() {
+  let q          = (document.getElementById('cari-produk')          || {}).value || '';
+  let katFilter  = (document.getElementById('filter-inv-kategori')  || {}).value || '';
+  let statFilter = (document.getElementById('filter-inv-status')    || {}).value || '';
+  let startVal   = (document.getElementById('filter-inv-start')     || {}).value || '';
+  let endVal     = (document.getElementById('filter-inv-end')       || {}).value || '';
+
+  var startDate = startVal ? new Date(startVal) : null;
+  var endDate   = endVal   ? new Date(endVal)   : null;
+  if (endDate) endDate.setHours(23, 59, 59, 999);
+
+  let filtered = store.produk.filter(function(p) {
+    let lolosQ    = !q || p.nama.toLowerCase().includes(q.toLowerCase()) || p.sku.toLowerCase().includes(q.toLowerCase());
+    let lolosKat  = !katFilter || p.kategori === katFilter;
+    let lolosStat = !statFilter || (statFilter === 'aman' ? p.stok >= p.minStok : p.stok < p.minStok);
+    let lolosTgl  = true;
+    if (startDate || endDate) {
+      let updAt = p.updatedAt ? new Date(p.updatedAt) : null;
+      if (updAt) {
+        lolosTgl = (!startDate || updAt >= startDate) && (!endDate || updAt <= endDate);
+      } else {
+        lolosTgl = !startDate; // tidak ada tanggal update → tampil hanya jika tidak ada filter start
+      }
+    }
+    return lolosQ && lolosKat && lolosStat && lolosTgl;
+  });
+
+  let totalData = filtered.length;
+  let totalHalaman = Math.max(1, Math.ceil(totalData / invPerHalaman));
+  if (invHalamanSkrg > totalHalaman) invHalamanSkrg = totalHalaman;
+
+  let slice = filtered.slice((invHalamanSkrg - 1) * invPerHalaman, invHalamanSkrg * invPerHalaman);
+
+  // Update subtitle
+  let katSub = document.getElementById('inv-katalog-subtitle');
+  if (katSub) katSub.innerText = totalData + ' produk' + (totalData < store.produk.length ? ' (difilter)' : ' terdaftar');
+
+  // Render baris tabel
+  let tbody = document.querySelector('#tabel-produk tbody');
+  if (tbody) {
+    tbody.innerHTML = slice.length === 0
+      ? '<tr><td colspan="9" style="text-align:center; padding:32px; color:var(--slate-400);">Tidak ada produk yang cocok dengan filter.</td></tr>'
+      : slice.map(function(p) {
+          let isRendah = p.stok < p.minStok;
+          return `
+            <tr>
+              <td class="td-mono">${p.sku}</td>
+              <td class="td-bold">${p.nama}</td>
+              <td>${p.kategori}</td>
+              <td class="td-right td-semibold">${p.stok}</td>
+              <td class="td-right">${p.minStok}</td>
+              <td class="td-right">${formatRupiah(p.hargaBeli)}</td>
+              <td class="td-right">${formatRupiah(p.hargaJual)}</td>
+              <td>
+                ${isRendah
+                  ? '<span class="badge badge-danger"><span class="badge-dot red"></span> Rendah</span>'
+                  : '<span class="badge badge-success"><span class="badge-dot green"></span> Aman</span>'}
+              </td>
+              <td class="text-center">
+                <div style="display:flex; justify-content:center; gap:6px;">
+                  <button class="btn btn-secondary btn-xs" style="padding:4px;" onclick="bukaModalProduk('${p.id}')" title="Edit">
+                    ${icon('settings', 12)}
+                  </button>
+                  <button class="btn btn-danger btn-xs" style="padding:4px;" onclick="konfirmasiHapusProduk('${p.id}', '${p.nama}')" title="Hapus">
+                    ${icon('x', 12)}
+                  </button>
+                </div>
+              </td>
+            </tr>`;
+        }).join('');
+  }
+
+  // Render pagination
+  let pgEl = document.getElementById('inv-pagination-placeholder');
+  if (pgEl) {
+    if (totalHalaman <= 1) {
+      pgEl.innerHTML = '';
+    } else {
+      pgEl.innerHTML = `
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--slate-600);">
+          <span>Halaman ${invHalamanSkrg} dari ${totalHalaman} &nbsp;(${totalData} produk)</span>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" ${invHalamanSkrg <= 1 ? 'disabled' : ''} onclick="gantiHalamanInv(${invHalamanSkrg - 1})">${icon('chevronLeft', 14)} Sebelumnya</button>
+            <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" ${invHalamanSkrg >= totalHalaman ? 'disabled' : ''} onclick="gantiHalamanInv(${invHalamanSkrg + 1})">Selanjutnya ${icon('chevronRight', 14)}</button>
           </div>
-        </td>
-      </tr>
-    `;
-  }).join('');
+        </div>`;
+    }
+  }
+}
+
+function gantiHalamanInv(halaman) {
+  invHalamanSkrg = halaman;
+  renderInventarisTable();
+}
+
+function resetFilterInventaris() {
+  let ids = ['cari-produk','filter-inv-kategori','filter-inv-status','filter-inv-start','filter-inv-end'];
+  ids.forEach(function(id) {
+    let el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  invHalamanSkrg = 1;
+  renderInventarisTable();
 }
 
 function initInventarisChart() {
@@ -152,12 +239,8 @@ function initInventarisSearch() {
     }
 
     cariInput.addEventListener('input', function() {
-      let q = this.value.toLowerCase();
-      let filtered = store.produk.filter(function(p) {
-        return p.nama.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q);
-      });
-      let tbody = document.querySelector('#tabel-produk tbody');
-      if (tbody) tbody.innerHTML = renderTabelProduk(filtered);
+      invHalamanSkrg = 1;
+      renderInventarisTable();
     });
 
     if (cariInput.value) {
@@ -201,12 +284,12 @@ function bukaModalProduk(produkId) {
   let modalHtml = `
     <div class="modal-overlay" id="modal-produk-container">
       <div class="modal-box" style="max-width:480px;">
-        <div style="display:flex; justify-content:between; align-items:start; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
           <div>
             <div class="modal-title">${title}</div>
             <div class="modal-desc">Kelola stok, harga, dan SKU produk Anda</div>
           </div>
-          <button class="btn btn-secondary btn-xs" onclick="tutupModalProduk()">${icon('x', 16)}</button>
+          <button class="modal-close-btn" onclick="tutupModalProduk()">${icon('x', 18)}</button>
         </div>
         <form id="form-produk" onsubmit="simpanProduk(event, '${produkId || ''}')">
           <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">

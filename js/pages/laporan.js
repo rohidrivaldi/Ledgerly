@@ -4,15 +4,15 @@
    ============================================= */
 
 function initLaporan() {
-  let ring = hitungRingkasan(30);
+  let ring = hitungRingkasanLaporan();
 
   // 1. Render Stat Cards
   let statsRow = document.getElementById('lap-stats-row');
   if (statsRow) {
     statsRow.innerHTML = `
       ${statCard('Total Produk', store.produk.length + ' SKU', icon('package'), 'Tersedia utk export')}
-      ${statCard('Total Transaksi', store.transaksi.length + ' Transaksi', icon('arrowLeftRight'), 'Semua riwayat')}
-      ${statCard('Laba Bersih 30hr', formatRupiah(ring.labaBersih), icon('trendingUp'), 'Utk laporan P&L', 'success')}
+      ${statCard('Total Transaksi', getDaftarTxLaporan().length + ' Transaksi', icon('arrowLeftRight'), 'Sesuai periode')}
+      ${statCard('Laba Bersih', formatRupiah(ring.labaBersih), icon('trendingUp'), 'Sesuai periode', ring.labaBersih >= 0 ? 'success' : 'danger')}
     `;
   }
 
@@ -21,15 +21,84 @@ function initLaporan() {
   if (exportGrid) {
     exportGrid.innerHTML = `
       ${exportCard('Inventaris CSV', 'Download daftar produk dan stok ke CSV', 'CSV', 'exportProdukCSV(store.produk)')}
-      ${exportCard('Transaksi CSV', 'Download riwayat transaksi ke CSV', 'CSV', 'exportTransaksiCSV(store.transaksi)')}
-      ${exportCard('Transaksi Excel', 'Download riwayat transaksi ke format Excel', 'XLSX', 'exportTransaksiExcel(store.transaksi)')}
-      ${exportCard('Laporan Laba Rugi', 'Download laporan keuangan 30 hari ke PDF', 'PDF', 'exportLaporanPDF()')}
+      ${exportCard('Transaksi CSV', 'Download riwayat transaksi (sesuai periode) ke CSV', 'CSV', 'exportTransaksiCSVFiltered()')}
+      ${exportCard('Transaksi Excel', 'Download riwayat transaksi (sesuai periode) ke Excel rapi', 'XLSX', 'exportTransaksiExcelFiltered()')}
+      ${exportCard('Laporan Laba Rugi', 'Download laporan keuangan (sesuai periode) ke PDF', 'PDF', 'exportLaporanPDF()')}
     `;
   }
 
   // 3. Render cloud icon
   let cloudIcon = document.getElementById('lap-cloud-icon');
   if (cloudIcon) cloudIcon.innerHTML = icon('cloud');
+}
+
+// ============ HELPERS FILTER PERIODE ============
+
+function getPeriodeLaporan() {
+  let startVal = (document.getElementById('filter-lap-start') || {}).value || '';
+  let endVal   = (document.getElementById('filter-lap-end')   || {}).value || '';
+  return { startVal: startVal, endVal: endVal };
+}
+
+function getDaftarTxLaporan() {
+  let { startVal, endVal } = getPeriodeLaporan();
+  if (!startVal && !endVal) return store.transaksi;
+
+  var startDate = startVal ? new Date(startVal) : null;
+  var endDate   = endVal   ? new Date(endVal)   : null;
+  if (endDate) endDate.setHours(23, 59, 59, 999);
+
+  return store.transaksi.filter(function(t) {
+    var tgl = new Date(t.tanggal);
+    return (!startDate || tgl >= startDate) && (!endDate || tgl <= endDate);
+  });
+}
+
+function hitungRingkasanLaporan() {
+  let { startVal, endVal } = getPeriodeLaporan();
+  if (startVal || endVal) {
+    return hitungRingkasanRentang(startVal, endVal);
+  }
+  return hitungRingkasan(30);
+}
+
+function getLabelPeriodeLaporan() {
+  let { startVal, endVal } = getPeriodeLaporan();
+  if (startVal && endVal) return startVal + ' s/d ' + endVal;
+  if (startVal) return 'sejak ' + startVal;
+  if (endVal)   return 'sampai ' + endVal;
+  return '30 hari terakhir';
+}
+
+function resetPeriodeLaporan() {
+  let startEl = document.getElementById('filter-lap-start');
+  let endEl   = document.getElementById('filter-lap-end');
+  if (startEl) startEl.value = '';
+  if (endEl)   endEl.value   = '';
+  // Re-render stat cards setelah reset
+  initLaporan();
+}
+
+// ============ FUNGSI EKSPOR ============
+
+function exportTransaksiCSVFiltered() {
+  exportTransaksiCSV(getDaftarTxLaporan());
+}
+
+function exportTransaksiExcelFiltered() {
+  exportTransaksiExcel(getDaftarTxLaporan());
+}
+
+function exportLaporanPDF() {
+  let ring = hitungRingkasanLaporan();
+  exportLaporanKeuangan({
+    periode: getLabelPeriodeLaporan(),
+    omzet: ring.omzet,
+    hpp: ring.hpp,
+    labaKotor: ring.labaKotor,
+    biaya: ring.biaya,
+    labaBersih: ring.labaBersih
+  });
 }
 
 function exportCard(title, desc, format, onclickFn) {
@@ -47,16 +116,4 @@ function exportCard(title, desc, format, onclickFn) {
         ${icon('fileDown', 14)} Download
       </button>
     </div>`;
-}
-
-function exportLaporanPDF() {
-  let ring = hitungRingkasan(30);
-  exportLaporanKeuangan({
-    periode: '30 hari terakhir',
-    omzet: ring.omzet,
-    hpp: ring.hpp,
-    labaKotor: ring.labaKotor,
-    biaya: ring.biaya,
-    labaBersih: ring.labaBersih
-  });
 }

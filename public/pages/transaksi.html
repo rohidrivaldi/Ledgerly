@@ -25,14 +25,31 @@
 </div>
 
 <div class="card">
-  <div class="card-header flex-between">
+  <div class="card-header flex-between" style="flex-wrap:wrap; gap:12px;">
     <div>
       <div class="card-title">Daftar Transaksi</div>
       <div class="card-subtitle" id="tx-list-subtitle">0 transaksi</div>
     </div>
-    <div style="display:flex; gap:12px; align-items:center;">
-      <input class="form-input" type="text" id="cari-transaksi" placeholder="Cari transaksi..." style="max-width:200px; font-size:12px;">
-      <div class="period-selector" id="tx-period-selector"></div>
+    <!-- Filter bar -->
+    <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+      <input class="form-input" type="text" id="cari-transaksi" placeholder="Cari transaksi..." style="max-width:160px; font-size:12px;">
+      <select class="form-select" id="filter-tx-tipe" style="max-width:130px; font-size:12px;" onchange="filterTransaksiUpdate()">
+        <option value="">Semua Tipe</option>
+        <option value="MASUK">Masuk</option>
+        <option value="KELUAR">Keluar</option>
+      </select>
+      <select class="form-select" id="filter-tx-metode" style="max-width:130px; font-size:12px;" onchange="filterTransaksiUpdate()">
+        <option value="">Semua Metode</option>
+        <option value="cash">Cash</option>
+        <option value="transfer">Transfer</option>
+        <option value="qris">QRIS</option>
+      </select>
+      <div style="display:flex; align-items:center; gap:4px;">
+        <input class="form-input" type="date" id="filter-tx-start" style="font-size:12px; padding:6px 8px;" onchange="filterTransaksiUpdate()">
+        <span style="color:var(--slate-400); font-size:12px;">s/d</span>
+        <input class="form-input" type="date" id="filter-tx-end" style="font-size:12px; padding:6px 8px;" onchange="filterTransaksiUpdate()">
+        <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="resetFilterTransaksi()">Reset</button>
+      </div>
     </div>
   </div>
   <div style="overflow-x:auto;">
@@ -46,12 +63,14 @@
           <th class="text-right">Harga Satuan</th>
           <th class="text-right">Total</th>
           <th>Metode</th>
-          <th class="text-center" style="width:100px;">Aksi</th>
+          <th class="text-center" style="width:130px;">Aksi</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
   </div>
+  <!-- Pagination -->
+  <div id="tx-pagination-placeholder" style="padding:12px 20px; border-top:1px solid var(--slate-100);"></div>
 </div>
 
 <div class="modal-overlay hidden" id="modal-tx">
