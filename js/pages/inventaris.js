@@ -282,8 +282,8 @@ function bukaModalProduk(produkId) {
   ];
 
   let modalHtml = `
-    <div class="modal-overlay" id="modal-produk-container">
-      <div class="modal-box" style="max-width:480px;">
+    <div class="modal-overlay" id="modal-produk-container" onclick="if(event.target.id==='modal-produk-container') tutupModalProduk()">
+      <div class="modal-box" style="max-width:520px; max-height:90vh; overflow-y:auto;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
           <div>
             <div class="modal-title">${title}</div>
@@ -330,6 +330,21 @@ function bukaModalProduk(produkId) {
                 <input class="form-input" type="number" id="pr-harga" value="${target.hargaJual != null ? target.hargaJual : 0}" required>
               </div>
             </div>
+            <!-- Separator supplier -->
+            <div style="border-top:1px solid var(--slate-100); padding-top:12px; margin-top:4px;">
+              <div style="font-size:12px; font-weight:600; color:var(--slate-500); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Info Supplier <span style="font-weight:400; text-transform:none; color:var(--slate-400);">(opsional)</span></div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div>
+                  <label class="form-label">Nama Supplier</label>
+                  <input class="form-input" type="text" id="pr-supplier-nama" value="${target.supplierNama || ''}" placeholder="Contoh: UD Maju Jaya">
+                </div>
+                <div>
+                  <label class="form-label">No. WhatsApp Supplier</label>
+                  <input class="form-input" type="text" id="pr-supplier-wa" value="${target.supplierWa || ''}" placeholder="Contoh: 081234567890" oninput="validasiWaSupplier(this)" maxlength="15">
+                  <div id="pr-supplier-wa-error" style="font-size:11px; color:var(--rose-600); margin-top:4px; display:none;">Format WA tidak valid. Gunakan 08xxx / +62xxx, 10–13 digit angka.</div>
+                </div>
+              </div>
+            </div>
           </div>
           <div style="display:flex; justify-content:end; gap:8px;">
             <button type="button" class="btn btn-secondary" onclick="tutupModalProduk()">Batal</button>
@@ -348,6 +363,25 @@ function tutupModalProduk() {
   if (modal) modal.remove();
 }
 
+function validasiWaSupplier(input) {
+  let val = input.value.replace(/\s/g, '');
+  // Hapus karakter non-angka dan non-plus
+  input.value = val.replace(/[^0-9+]/g, '');
+  let errEl = document.getElementById('pr-supplier-wa-error');
+  if (!errEl) return;
+  if (!val || val === '') {
+    errEl.style.display = 'none';
+    input.style.borderColor = '';
+    return;
+  }
+  // Aturan: diawali 08 atau +62 atau 628, total digit (tanpa +) 10-13
+  let angka = val.replace(/^\+/, '');
+  let pola = /^(08|628)[0-9]{8,11}$/;
+  let valid = pola.test(angka) && angka.length >= 10 && angka.length <= 13;
+  errEl.style.display = valid ? 'none' : 'block';
+  input.style.borderColor = valid ? '' : 'var(--rose-400)';
+}
+
 async function simpanProduk(e, produkId) {
   e.preventDefault();
 
@@ -358,6 +392,19 @@ async function simpanProduk(e, produkId) {
   let minStok = parseInt(document.getElementById('pr-minstok').value);
   let modalVal = parseInt(document.getElementById('pr-modal').value);
   let hargaVal = parseInt(document.getElementById('pr-harga').value);
+  let supplierNama = (document.getElementById('pr-supplier-nama') || {}).value || '';
+  let supplierWa   = (document.getElementById('pr-supplier-wa')   || {}).value || '';
+
+  // Validasi WA jika diisi
+  if (supplierWa) {
+    let angka = supplierWa.replace(/^\+/, '');
+    let pola = /^(08|628)[0-9]{8,11}$/;
+    if (!pola.test(angka) || angka.length < 10 || angka.length > 13) {
+      let errEl = document.getElementById('pr-supplier-wa-error');
+      if (errEl) errEl.style.display = 'block';
+      return;
+    }
+  }
 
   if (!window.supabaseClient) return;
 
@@ -373,7 +420,9 @@ async function simpanProduk(e, produkId) {
           current_stok: stok,
           min_stok: minStok,
           modal: modalVal,
-          harga: hargaVal
+          harga: hargaVal,
+          supplier_nama: supplierNama || null,
+          supplier_wa: supplierWa || null
         })
         .eq('product_id', produkId);
 
@@ -397,7 +446,9 @@ async function simpanProduk(e, produkId) {
           min_stok: minStok,
           modal: modalVal,
           harga: hargaVal,
-          max_stok: stok * 2
+          max_stok: stok * 2,
+          supplier_nama: supplierNama || null,
+          supplier_wa: supplierWa || null
         });
 
       if (error) throw error;

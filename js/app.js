@@ -633,8 +633,10 @@ async function sinkronisasiSupabase() {
           minStok: parseInt(p.min_stok) || 0,
           hargaBeli: parseInt(p.modal) || 0,
           hargaJual: parseInt(p.harga) || 0,
-          supplier: 'Supplier Utama',
-          updatedAt: new Date().toISOString().slice(0, 10)
+          supplierNama: p.supplier_nama || '',
+          supplierWa: p.supplier_wa || '',
+          supplier: p.supplier_nama || 'Supplier Utama',
+          updatedAt: p.updated_at || new Date().toISOString().slice(0, 10)
         };
       });
     }
