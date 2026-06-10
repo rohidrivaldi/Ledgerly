@@ -1,0 +1,20 @@
+{
+  "name": "Ledgerly — Manajemen Inventaris & Keuangan UMKM",
+  "short_name": "Ledgerly",
+  "description": "Kelola stok, transaksi, dan keuangan toko UMKM dalam satu aplikasi.",
+  "start_url": "./dasbor.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "assets/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

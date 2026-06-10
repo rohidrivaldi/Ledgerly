@@ -720,10 +720,76 @@ async function sinkronisasiSupabase() {
     // Re-render halaman aktif setelah data berhasil dimuat
     navigasi(window.location.hash || '#inventaris');
     console.log("Sinkronisasi data Supabase berhasil!");
+
+    // simpan snapshot ke IndexedDB biar bisa dibaca pas offline nanti
+    simpanSnapshotOffline();
   } catch (err) {
-    console.warn("Gagal memuat data dari Supabase (kemungkinan tabel belum dibuat). Menggunakan mock data.", err.message);
-    hitungStatistikDariTransaksi(); // agar default stats tetap terisi
+    console.warn("Gagal memuat data dari Supabase (kemungkinan offline). Coba muat snapshot offline.", err.message);
+    // pas gagal (mis. offline): coba muat data terakhir dari IndexedDB
+    muatSnapshotOffline().then(function(snap) {
+      if (snap && snap.produk) {
+        store.produk = snap.produk;
+        store.transaksi = snap.transaksi || [];
+        store.kategoriList = snap.kategoriList || [];
+        hitungStatistikDariTransaksi();
+        store.notifikasi = buatNotifikasi();
+        navigasi(window.location.hash || '#inventaris');
+        console.log("Memuat data dari snapshot offline (terakhir: " + (snap.disimpanPada || '?') + ")");
+      } else {
+        hitungStatistikDariTransaksi(); // gak ada snapshot — default stats
+      }
+    });
   }
+}
+
+// ============ SNAPSHOT OFFLINE (IndexedDB) ============
+// simpan snapshot data inti ke IndexedDB pas online, biar pas offline
+// app masih bisa nampilin data terakhir (BACA aja, bukan nulis).
+
+var _IDB_NAMA = 'ledgerly_offline';
+var _IDB_STORE = 'snapshot';
+
+function bukaIDB() {
+  return new Promise(function(resolve, reject) {
+    if (!window.indexedDB) { reject(new Error('IndexedDB gak didukung')); return; }
+    var req = indexedDB.open(_IDB_NAMA, 1);
+    req.onupgradeneeded = function() {
+      var db = req.result;
+      if (!db.objectStoreNames.contains(_IDB_STORE)) {
+        db.createObjectStore(_IDB_STORE);
+      }
+    };
+    req.onsuccess = function() { resolve(req.result); };
+    req.onerror = function() { reject(req.error); };
+  });
+}
+
+// simpan snapshot produk + transaksi + kategori ke IndexedDB
+function simpanSnapshotOffline() {
+  bukaIDB().then(function(db) {
+    var tx = db.transaction(_IDB_STORE, 'readwrite');
+    var st = tx.objectStore(_IDB_STORE);
+    st.put({
+      produk: store.produk,
+      transaksi: store.transaksi,
+      kategoriList: store.kategoriList,
+      disimpanPada: new Date().toISOString()
+    }, 'data');
+  }).catch(function(err) {
+    console.warn('Gagal simpan snapshot offline:', err.message);
+  });
+}
+
+// muat snapshot dari IndexedDB (dipanggil pas sinkronisasi online gagal)
+function muatSnapshotOffline() {
+  return bukaIDB().then(function(db) {
+    return new Promise(function(resolve) {
+      var tx = db.transaction(_IDB_STORE, 'readonly');
+      var req = tx.objectStore(_IDB_STORE).get('data');
+      req.onsuccess = function() { resolve(req.result || null); };
+      req.onerror = function() { resolve(null); };
+    });
+  }).catch(function() { return null; });
 }
 
 // inisialisasi app pas DOM ready

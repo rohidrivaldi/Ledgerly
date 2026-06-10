@@ -7,6 +7,12 @@
     <meta name="description" content="Dashboard Ledgerly — kelola inventaris dan keuangan toko kamu." />
     <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
 
+    <!-- PWA: manifest + theme color biar bisa di-install & ada warna app -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#6366f1" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Ledgerly" />
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -106,5 +112,18 @@
     
     <!-- posisi terakhir, karena pakai function dari modul lain -->
     <script src="js/app.js?v=9"></script>
+
+    <!-- daftarkan service worker buat PWA (offline baca + bisa di-install) -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('sw.js').then(function(reg) {
+            console.log('Service worker terdaftar:', reg.scope);
+          }).catch(function(err) {
+            console.warn('Service worker gagal daftar:', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>
