@@ -902,6 +902,18 @@
     gap: 10px;
   }
 
+  /* biar value panjang (Rp 1.768.500) gak kepotong di kartu sempit:
+     div teks dikasih min-width:0 spy bisa nyusut, value dikecilin + boleh wrap */
+  .stat-card { padding: 14px; }
+  .stat-card-wrap { gap: 8px; }
+  .stat-card-wrap > div:first-child { min-width: 0; flex: 1; }
+  .stat-value {
+    font-size: 18px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .stat-label, .stat-delta { overflow-wrap: anywhere; }
+
   /* Card header: wrap di mobile */
   .card-header.flex-between {
     flex-direction: column;
@@ -992,6 +1004,12 @@
   .chatbot-fab-btn {
     width: 48px;
     height: 48px;
+  }
+
+  /* sembunyiin bubble tip FAB di mobile — di layar sempit dia nutupin
+     tombol di pojok kanan bawah (Download di laporan, CS di pengaturan) */
+  .chatbot-fab-tip {
+    display: none !important;
   }
 
   /* Chatbot panel: hampir full screen di mobile */

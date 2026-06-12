@@ -3,6 +3,17 @@
    ============================================= */
 
 /* -- summary cards (transaksi) -- */
+/* wrapper responsif: 3 kolom di desktop, turun ke 1 kolom di mobile
+   biar kartu nilai rupiah yg lebar gak nyembul keluar layar */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 767px) {
+  .summary-row { grid-template-columns: 1fr; gap: 10px; }
+}
 .summary-card {
   padding: 16px;
   border-radius: var(--radius-xl);
