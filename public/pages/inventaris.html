@@ -57,9 +57,15 @@
     </div>
   </div>
   <div style="overflow-x:auto;">
+    <!-- bar aksi bulk: muncul kalau ada produk yg dicentang -->
+    <div id="inv-bulk-bar" style="display:none; align-items:center; justify-content:space-between; gap:12px; padding:10px 20px; background:var(--indigo-50); border-bottom:1px solid var(--indigo-100);">
+      <span id="inv-bulk-count" style="font-size:13px; font-weight:600; color:var(--indigo-700);"></span>
+      <button class="btn btn-danger btn-xs" onclick="konfirmasiHapusMassal()">Hapus Terpilih</button>
+    </div>
     <table class="tabel" id="tabel-produk">
       <thead>
         <tr>
+          <th class="text-center" style="width:36px;"><input type="checkbox" id="inv-check-all" onclick="toggleSelectAllProduk(this)" title="Pilih semua"></th>
           <th class="text-center" style="width:54px;">QR</th>
           <th>SKU</th>
           <th>Nama Produk</th>

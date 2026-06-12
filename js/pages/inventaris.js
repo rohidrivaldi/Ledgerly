@@ -103,13 +103,16 @@ function renderInventarisTable() {
   let tbody = document.querySelector('#tabel-produk tbody');
   if (tbody) {
     tbody.innerHTML = slice.length === 0
-      ? '<tr><td colspan="10" style="text-align:center; padding:32px; color:var(--slate-400);">Tidak ada produk yang cocok dengan filter.</td></tr>'
+      ? '<tr><td colspan="11" style="text-align:center; padding:32px; color:var(--slate-400);">Tidak ada produk yang cocok dengan filter.</td></tr>'
       : slice.map(function(p) {
           let isRendah = p.stok < p.minStok;
           // isi QR: pake barcode klo ada, fallback ke SKU. dipake buat scan di kasir
           let kodeQR = p.barcode || p.sku || '';
           return `
             <tr>
+              <td class="text-center">
+                <input type="checkbox" class="inv-row-check" value="${p.id}" data-nama="${(p.nama || '').replace(/"/g, '&quot;')}" onclick="updateBulkBar()">
+              </td>
               <td class="text-center">
                 <canvas class="qr-thumb" data-qr="${kodeQR}" data-nama="${(p.nama || '').replace(/"/g, '&quot;')}" width="40" height="40" title="Klik utk perbesar & unduh" style="cursor:pointer; vertical-align:middle;"></canvas>
               </td>
@@ -688,5 +691,98 @@ async function hapusProduk(produkId) {
   } catch (err) {
     console.error("Gagal menghapus produk:", err.message);
     alert("Gagal menghapus: " + err.message);
+  }
+}
+
+// ============ SELECT ALL & BULK DELETE ============
+
+// centang/uncheck semua checkbox baris yg lagi keliatan
+function toggleSelectAllProduk(masterCb) {
+  document.querySelectorAll('.inv-row-check').forEach(function(cb) {
+    cb.checked = masterCb.checked;
+  });
+  updateBulkBar();
+}
+
+// update bar aksi bulk (jumlah terpilih). sembunyiin klo gak ada yg dipilih
+function updateBulkBar() {
+  let dipilih = document.querySelectorAll('.inv-row-check:checked');
+  let bar = document.getElementById('inv-bulk-bar');
+  let countEl = document.getElementById('inv-bulk-count');
+  if (!bar) return;
+  if (dipilih.length > 0) {
+    bar.style.display = 'flex';
+    if (countEl) countEl.textContent = dipilih.length + ' produk terpilih';
+  } else {
+    bar.style.display = 'none';
+  }
+  // sinkronin master checkbox: kalo semua kecentang -> ikut kecentang
+  let semua = document.querySelectorAll('.inv-row-check');
+  let master = document.getElementById('inv-check-all');
+  if (master) master.checked = semua.length > 0 && dipilih.length === semua.length;
+}
+
+// modal UI konfirmasi hapus massal
+function konfirmasiHapusMassal() {
+  let dipilih = [...document.querySelectorAll('.inv-row-check:checked')];
+  if (dipilih.length === 0) return;
+
+  let ids = dipilih.map(function(cb) { return cb.value; });
+  let namaList = dipilih.slice(0, 5).map(function(cb) { return cb.getAttribute('data-nama'); });
+  let preview = namaList.join(', ') + (dipilih.length > 5 ? ', dan ' + (dipilih.length - 5) + ' lainnya' : '');
+
+  let lama = document.getElementById('modal-hapus-massal');
+  if (lama) lama.remove();
+
+  let modalHtml = '<div class="modal-overlay" id="modal-hapus-massal" onclick="if(event.target.id===\'modal-hapus-massal\') tutupModalHapusMassal()">'
+    + '<div class="modal-box" style="max-width:440px;">'
+    + '<div style="display:flex; align-items:flex-start; gap:14px; margin-bottom:18px;">'
+    + '<div style="flex-shrink:0; width:42px; height:42px; border-radius:50%; background:var(--rose-50); color:var(--rose-600); display:grid; place-items:center;">' + icon('trash', 20) + '</div>'
+    + '<div>'
+    + '<div class="modal-title">Hapus ' + dipilih.length + ' produk?</div>'
+    + '<div class="modal-desc" style="margin-top:6px; line-height:1.5;">' + preview + '.<br>Produk akan dihapus permanen, tapi <b>riwayat transaksinya tetap aman</b> (nama & nilai lama tersimpan).</div>'
+    + '</div>'
+    + '</div>'
+    + '<div style="display:flex; justify-content:flex-end; gap:8px;">'
+    + '<button class="btn btn-secondary" onclick="tutupModalHapusMassal()">Batal</button>'
+    + '<button class="btn btn-danger" id="btn-hapus-massal" onclick="hapusMassal()">Ya, Hapus Semua</button>'
+    + '</div>'
+    + '</div></div>';
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  // simpan ids di elemen tombol biar gampang diambil pas eksekusi
+  let btn = document.getElementById('btn-hapus-massal');
+  if (btn) btn._ids = ids;
+}
+
+function tutupModalHapusMassal() {
+  let modal = document.getElementById('modal-hapus-massal');
+  if (modal) modal.remove();
+}
+
+async function hapusMassal() {
+  let btn = document.getElementById('btn-hapus-massal');
+  let ids = btn ? btn._ids : null;
+  if (!ids || !ids.length || !window.supabaseClient) return;
+
+  btn.disabled = true;
+  btn.innerHTML = icon('loader', 14) + ' Menghapus...';
+
+  try {
+    // hapus sekaligus pake filter .in()
+    const { error } = await window.supabaseClient
+      .from('Products')
+      .delete()
+      .in('product_id', ids);
+
+    if (error) throw error;
+    console.log('Berhasil menghapus ' + ids.length + ' produk!');
+    tutupModalHapusMassal();
+    await sinkronisasiSupabase();
+  } catch (err) {
+    console.error('Gagal menghapus massal:', err.message);
+    alert('Gagal menghapus: ' + err.message);
+    btn.disabled = false;
+    btn.innerHTML = 'Ya, Hapus Semua';
   }
 }
