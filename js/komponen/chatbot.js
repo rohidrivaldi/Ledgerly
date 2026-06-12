@@ -200,7 +200,7 @@ function prosesChatLokal(pesan) {
   // Bersihkan pesan untuk mengekstrak kata kunci produk
   let clean = lower.replace(matchNum[0], ''); // hapus angka
   // Hapus kata kunci instruksi, unit, dan kata pengisi khas percakapan
-  clean = clean.replace(/\b(tambah|tambahkan|stok|masuk|kurang|kurangi|kurangkan|keluar|jual|penjualan|sebanyak|unit|pcs|dong|ya|sih|kah|tolong|mohon|saja)\b/g, '');
+  clean = clean.replace(/\b(tambah|tambahkan|stok|masuk|kurang|kurangi|kurangkan|keluar|jual|terjual|menjual|dijual|terpakai|kepakai|penjualan|sebanyak|unit|pcs|dong|ya|sih|kah|tolong|mohon|saja)\b/g, '');
   
   // Bersihkan spasi ganda
   let keyword = clean.replace(/\s+/g, ' ').trim();
