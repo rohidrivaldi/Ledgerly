@@ -177,6 +177,9 @@ function initPengaturan() {
       }
     }, 10);
   }
+
+  // Render daftar kategori
+  renderKategoriList();
 }
 
 function toggleRow(key, iconSvg, title, desc, isActive, color) {
@@ -355,4 +358,101 @@ function ubahBiayaOpsPersen(val) {
 
 function salinSettingsKeLocalStorage() {
   localStorage.setItem('ledgerly_settings', JSON.stringify(store.settings));
+}
+
+// ============ KELOLA KATEGORI ============
+
+function renderKategoriList() {
+  let container = document.getElementById('set-kategori-list');
+  if (!container) return;
+
+  let list = store.kategoriList || [];
+  if (list.length === 0) {
+    container.innerHTML = '<div style="text-align:center; color:var(--slate-400); font-size:13px; padding:20px 0;">Belum ada kategori. Tambahkan kategori pertama Anda!</div>';
+    return;
+  }
+
+  container.innerHTML = '<div style="display:flex; flex-wrap:wrap; gap:8px;">' +
+    list.map(function(k) {
+      return '<div style="display:flex; align-items:center; gap:6px; background:var(--slate-50); border:1px solid var(--slate-200); border-radius:20px; padding:5px 12px; font-size:13px; color:var(--slate-700);">'
+        + '<span>' + (k.nama_kategori || k.nama || '') + '</span>'
+        + '<button onclick="hapusKategori(\'' + k.kategori_id + '\', \'' + (k.nama_kategori || k.nama || '') + '\')" '
+        + 'style="background:none; border:none; cursor:pointer; color:var(--slate-400); display:flex; align-items:center; padding:0; margin-left:2px; font-size:14px; line-height:1;" '
+        + 'title="Hapus kategori" >&times;</button>'
+        + '</div>';
+    }).join('') + '</div>';
+}
+
+async function tambahKategori() {
+  let input = document.getElementById('input-kategori-baru');
+  let errEl = document.getElementById('kat-error');
+  if (!input) return;
+
+  let nama = input.value.trim();
+  errEl.style.display = 'none';
+
+  // Validasi
+  if (!nama) { errEl.textContent = 'Nama kategori tidak boleh kosong.'; errEl.style.display = 'block'; return; }
+  if (nama.length > 30) { errEl.textContent = 'Nama kategori maksimal 30 karakter.'; errEl.style.display = 'block'; return; }
+
+  let duplikat = (store.kategoriList || []).some(function(k) {
+    return (k.nama_kategori || '').toLowerCase() === nama.toLowerCase();
+  });
+  if (duplikat) { errEl.textContent = 'Kategori \"' + nama + '\" sudah ada.'; errEl.style.display = 'block'; return; }
+
+  try {
+    let { data, error } = await window.supabaseClient
+      .from('Kategori')
+      .insert({ nama_kategori: nama })
+      .select();
+
+    if (error) throw error;
+
+    // Update store
+    if (data && data[0]) {
+      store.kategoriList = [...(store.kategoriList || []), data[0]];
+    }
+
+    input.value = '';
+    renderKategoriList();
+    refreshDropdownKategori();
+  } catch (err) {
+    errEl.textContent = 'Gagal menambah kategori: ' + err.message;
+    errEl.style.display = 'block';
+  }
+}
+
+async function hapusKategori(id, nama) {
+  // Cek apakah kategori dipakai produk
+  let dipakai = (store.produk || []).filter(function(p) { return p.kategori === nama; }).length;
+  if (dipakai > 0) {
+    if (!confirm('Kategori \"' + nama + '\" masih digunakan oleh ' + dipakai + ' produk. Produk tersebut akan tetap memiliki kategori lama. Yakin ingin menghapus?')) return;
+  }
+
+  try {
+    let { error } = await window.supabaseClient
+      .from('Kategori')
+      .delete()
+      .eq('kategori_id', id);
+
+    if (error) throw error;
+
+    store.kategoriList = (store.kategoriList || []).filter(function(k) { return k.kategori_id !== id; });
+    renderKategoriList();
+    refreshDropdownKategori();
+  } catch (err) {
+    alert('Gagal menghapus kategori: ' + err.message);
+  }
+}
+
+function refreshDropdownKategori() {
+  // Refresh dropdown filter di halaman inventaris jika sedang aktif
+  let filterKat = document.getElementById('filter-inv-kategori');
+  if (filterKat) {
+    let currentVal = filterKat.value;
+    let list = store.kategoriList || [];
+    filterKat.innerHTML = '<option value="">Semua Kategori</option>' +
+      list.map(function(k) { return '<option value="' + (k.nama_kategori || '') + '">' + (k.nama_kategori || '') + '</option>'; }).join('');
+    filterKat.value = currentVal;
+  }
 }
