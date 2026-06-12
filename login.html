@@ -69,16 +69,16 @@
             <h2>Selamat Datang 👋</h2>
             <p class="subtitle">Masukkan kredensial untuk mengakses dashboard</p>
 
-            <form class="login-form" id="form-login" onsubmit="handleLogin(event)">
+            <form class="login-form" id="form-login" onsubmit="handleLogin(event)" autocomplete="on">
               <div>
                 <label class="form-label" for="email">Email</label>
-                <input class="form-input" type="email" id="email" placeholder="Masukkan email Anda" required>
+                <input class="form-input" type="email" id="email" name="email" placeholder="Masukkan email Anda" autocomplete="email" required>
               </div>
 
               <div>
                 <label class="form-label" for="password">Password</label>
                 <div class="login-input-group">
-                  <input class="form-input" type="password" id="password" placeholder="Masukkan password" required>
+                  <input class="form-input" type="password" id="password" name="password" placeholder="Masukkan password" autocomplete="current-password" required>
                   <button type="button" class="login-toggle-pw" onclick="togglePassword('password', 'icon-eye', 'icon-eye-off')">
                     <svg id="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
                     <svg id="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>

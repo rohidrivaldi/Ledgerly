@@ -73,11 +73,16 @@
       '</div>' +
     '</div>';
 
-    // Buka/tutup saat klik input
-    document.getElementById(this.containerId + '-input').addEventListener('click', function(e) {
-      if (e.target.closest('.drp-clear-btn')) return;
-      self._togglePopup();
-    });
+    // Buka/tutup saat klik input (listener di wrapper agar area klik lebih luas)
+    var inputEl = document.getElementById(this.containerId + '-input');
+    var wrapperEl = container.querySelector('.drp-wrapper');
+    if (wrapperEl) {
+      wrapperEl.addEventListener('click', function(e) {
+        if (e.target.closest('.drp-clear-btn')) return;
+        e.stopPropagation(); // cegah bubble ke document listener yang akan menutup popup
+        self._togglePopup();
+      });
+    }
 
     // Tombol clear
     document.getElementById(this.containerId + '-clear').addEventListener('click', function(e) {
@@ -102,10 +107,35 @@
 
   DateRangePicker.prototype._openPopup = function() {
     var popup = document.getElementById(this.containerId + '-popup');
-    if (!popup) return;
+    var inputEl = document.getElementById(this.containerId + '-input');
+    if (!popup || !inputEl) return;
     this.open = true;
     popup.style.display = 'block';
     this._renderCalendar();
+
+    // Posisi smart: hitung apakah buka ke bawah atau ke atas
+    var rect = inputEl.getBoundingClientRect();
+    var popupH = popup.offsetHeight || 300;
+    var popupW = popup.offsetWidth || 280;
+    var spaceBelow = window.innerHeight - rect.bottom - 8;
+    var spaceAbove = rect.top - 8;
+    var top, left;
+
+    if (spaceBelow >= popupH || spaceBelow >= spaceAbove) {
+      top = rect.bottom + 6;
+    } else {
+      top = rect.top - popupH - 6;
+    }
+
+    // Pastikan tidak keluar kanan layar
+    left = rect.left;
+    if (left + popupW > window.innerWidth - 8) {
+      left = window.innerWidth - popupW - 8;
+    }
+    if (left < 8) left = 8;
+
+    popup.style.top  = top + 'px';
+    popup.style.left = left + 'px';
   };
 
   DateRangePicker.prototype._closePopup = function() {

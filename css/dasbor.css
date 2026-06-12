@@ -10,6 +10,7 @@
   overflow: hidden;
   background: var(--slate-50);
   color: var(--slate-900);
+  position: relative;
 }
 
 /* ============ SIDEBAR ============ */
@@ -29,9 +30,9 @@
 /* Toggle button melayang */
 .sidebar-toggle-btn {
   position: absolute;
-  right: -12px;
+  right: -13px;
   top: 20px;
-  z-index: 10;
+  z-index: 100;
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -884,3 +885,138 @@
 .text-right { text-align: right; }
 
 .hidden { display: none !important; }
+
+/* ============ MOBILE RESPONSIVE FIXES ============ */
+@media (max-width: 767px) {
+
+  /* Page inner lebih compact di mobile */
+  .page-inner {
+    padding: 12px 12px 80px 12px !important;
+  }
+
+  .page-title { font-size: 20px; }
+
+  /* Stats row: 2 kolom di mobile */
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  /* Card header: wrap di mobile */
+  .card-header.flex-between {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+
+  /* Filter bar inventaris/transaksi/keuangan/laporan: stack vertikal */
+  .card-header > div:last-child,
+  .card-header [style*="display:flex"] {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    width: 100%;
+  }
+
+  .card-header .form-input,
+  .card-header .form-select,
+  .card-header select {
+    max-width: 100% !important;
+    width: 100%;
+    font-size: 13px;
+  }
+
+  /* DRP full width di mobile */
+  .drp-wrapper {
+    width: 100%;
+  }
+  .drp-input {
+    min-width: unset !important;
+    width: 100%;
+  }
+
+  /* Tabel: horizontal scroll */
+  .tabel-wrapper,
+  div[style*="overflow-x:auto"],
+  div[style*="overflow-x: auto"] {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tabel {
+    min-width: 600px;
+  }
+
+  /* Modal full-width di mobile */
+  .modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+  .modal-box,
+  .modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Form grid di modal: 1 kolom di mobile */
+  .form-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Laporan: tombol export stack */
+  .export-bar,
+  .laporan-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Keputusan: analisis card full width */
+  .keputusan-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Pengaturan: layout single column */
+  .pengaturan-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Layout 2-1 dan 1-1 sudah 1fr default, oke */
+
+  /* Topbar: search lebih kecil */
+  .topbar-search {
+    max-width: none;
+  }
+
+  /* Chatbot FAB: sedikit lebih kecil */
+  .chatbot-fab-btn {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Chatbot panel: hampir full screen di mobile */
+  .chatbot-panel {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+    height: 80vh;
+  }
+
+  /* Halaman keuangan filter row */
+  .keuangan-filter-row,
+  .filter-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* Tablet: beberapa tweak */
+@media (max-width: 1023px) {
+  .page-inner {
+    padding: 16px 16px 80px 16px;
+  }
+}
+
