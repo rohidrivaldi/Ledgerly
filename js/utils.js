@@ -25,17 +25,18 @@ function formatPersen(n) {
   return (n * 100).toFixed(1) + '%';
 }
 
-// format tanggal lengkap
+// format tanggal lengkap (selalu WIB / Asia/Jakarta, apapun timezone device)
 function formatTanggal(iso) {
   var d = new Date(iso);
   return d.toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
+    timeZone: 'Asia/Jakarta'
   });
 }
 
-// format tanggal + waktu
+// format tanggal + waktu (selalu WIB)
 function formatTanggalWaktu(iso) {
   var d = new Date(iso);
   return d.toLocaleString('id-ID', {
@@ -43,7 +44,8 @@ function formatTanggalWaktu(iso) {
     month: 'short',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    timeZone: 'Asia/Jakarta'
   });
 }
 

@@ -21,6 +21,7 @@ function renderTopbar() {
       <input type="text" id="topbar-search-input" placeholder="${placeholderText}" oninput="syncSearch(this.value)">
     </div>
     <div class="topbar-actions">
+      <div class="topbar-clock" id="topbar-clock" title="Waktu Indonesia Barat"></div>
       ${isSuper ? '' : `
       <div style="position:relative;">
         <button class="topbar-btn" onclick="toggleNotif()" title="Notifikasi" id="btn-notif">
@@ -34,6 +35,25 @@ function renderTopbar() {
       `}
     </div>
   `;
+
+  // mulai jam WIB berdetak (sekali aja set intervalnya)
+  mulaiJamWIB();
+}
+
+// update teks jam WIB tiap detik di topbar. selalu Asia/Jakarta apapun device.
+var _jamWIBInterval = null;
+function mulaiJamWIB() {
+  function tick() {
+    let el = document.getElementById('topbar-clock');
+    if (!el) return;
+    let now = new Date();
+    let tgl = now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Jakarta' });
+    let jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Jakarta' });
+    el.innerHTML = '<span class="clock-date">' + tgl + '</span><span class="clock-time">' + jam + ' WIB</span>';
+  }
+  tick();
+  if (_jamWIBInterval) clearInterval(_jamWIBInterval);
+  _jamWIBInterval = setInterval(tick, 1000);
 }
 
 function renderNotifDropdown() {

@@ -99,7 +99,7 @@ function renderKeuangan() {
 
   // Render Chart.js
   let labels = data.map(function(d) {
-    return new Date(d.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+    return new Date(d.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', timeZone: 'Asia/Jakarta' });
   });
 
   // chart omzet vs hpp

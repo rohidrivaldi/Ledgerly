@@ -151,7 +151,7 @@ function exportLaporanKeuangan(ringkasan) {
   doc.setFontSize(11);
   doc.setTextColor(100);
   doc.text('Periode: ' + ringkasan.periode, 14, 26);
-  doc.text('Dihasilkan: ' + new Date().toLocaleString('id-ID'), 14, 32);
+  doc.text('Dihasilkan: ' + new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) + ' WIB', 14, 32);
 
   doc.setTextColor(0);
 
