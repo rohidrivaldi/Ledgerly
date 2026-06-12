@@ -70,12 +70,22 @@ function renderRowsPemilik(data) {
       let badgeDot = u.role === "superadmin" ? "red" : "green";
       let waNum = u.noTelp ? "+" + u.noTelp : "—";
 
-      // Paket Badge
+      // Paket Badge — bedain trial vs langganan + tampilin sisa hari
       let paketBadge = "badge-neutral";
       let paketLabel = "Starter";
       if (u.paket === "business") {
-        paketBadge = "badge-info";
-        paketLabel = "Business (Trial)";
+        let sisa = 0;
+        if (u.tgl_expired) {
+          sisa = Math.max(0, Math.ceil((new Date(u.tgl_expired) - new Date()) / (1000 * 60 * 60 * 24)));
+        }
+        if (u.status_langganan === "langganan") {
+          paketBadge = "badge-success";
+          paketLabel = "Langganan • " + sisa + " hari";
+        } else {
+          paketBadge = "badge-info";
+          paketLabel = "Trial • " + sisa + " hari";
+        }
+        if (sisa <= 0) { paketBadge = "badge-neutral"; paketLabel = "Kedaluwarsa"; }
       } else if (u.paket === "enterprise") {
         paketBadge = "badge-danger";
         paketLabel = "Enterprise";
@@ -115,6 +125,23 @@ function filterPemilik() {
     );
   });
   renderRowsPemilik(filtered);
+}
+
+// hitung sisa hari trial dr tgl_expired target (buat pre-fill input). default 7
+function hitungSisaHariTarget(target) {
+  if (target && target.paket === "business" && target.tgl_expired) {
+    let diff = new Date(target.tgl_expired) - new Date();
+    let hari = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return hari > 0 ? hari : 1;
+  }
+  return 7;
+}
+
+// show/hide input masa trial pas paket diganti di dropdown
+function toggleInputMasaTrial() {
+  let sel = document.getElementById("p-paket");
+  let wrap = document.getElementById("wrap-masa-trial");
+  if (sel && wrap) wrap.style.display = sel.value === "business" ? "block" : "none";
 }
 
 // Render pop-up untuk tambah/ubah data pemilik
@@ -158,11 +185,21 @@ function bukaModalPemilik(userId) {
             </div>
             <div>
               <label class="form-label">Paket Langganan</label>
-              <select class="form-select" id="p-paket">
+              <select class="form-select" id="p-paket" onchange="toggleInputMasaTrial()">
                 <option value="starter"${target.paket === "starter" || !target.paket ? " selected" : ""}>Starter (Gratis)</option>
-                <option value="business"${target.paket === "business" ? " selected" : ""}>Business (Trial 7 Hari)</option>
+                <option value="business"${target.paket === "business" ? " selected" : ""}>Business (Trial)</option>
                 <option value="enterprise"${target.paket === "enterprise" ? " selected" : ""}>Enterprise (Kustom)</option>
               </select>
+            </div>
+            <div id="wrap-masa-trial" style="display:${target.paket === "business" ? "block" : "none"};">
+              <label class="form-label">Status Langganan</label>
+              <select class="form-select" id="p-status-langganan" style="margin-bottom:10px;">
+                <option value="trial"${target.status_langganan !== "langganan" ? " selected" : ""}>Trial (uji coba)</option>
+                <option value="langganan"${target.status_langganan === "langganan" ? " selected" : ""}>Langganan (sudah bayar)</option>
+              </select>
+              <label class="form-label">Masa Aktif (hari dari sekarang)</label>
+              <input class="form-input" type="number" id="p-masa-trial" min="1" max="365" value="${hitungSisaHariTarget(target)}" placeholder="Contoh: 7">
+              <div style="font-size:11px; color:var(--slate-400); margin-top:4px;">${target.tgl_expired ? 'Berakhir saat ini: ' + new Date(target.tgl_expired).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric', timeZone:'Asia/Jakarta' }) : 'Isi jumlah hari masa aktif.'}</div>
             </div>
           </div>
           <div style="display:flex; justify-content:end; gap:8px;">
@@ -198,6 +235,22 @@ async function simpanPemilik(e, userId) {
   let role = target.role || "pemilik"; // pertahankan peran asli atau default ke pemilik untuk akun baru
   let paket = document.getElementById("p-paket").value;
 
+  // hitung tgl_expired buat paket business dr input jumlah hari.
+  // paket lain (starter/enterprise) gak ada expired -> null
+  let tglExpired = null;
+  let statusLangganan = null;
+  if (paket === "business") {
+    let inputHari = document.getElementById("p-masa-trial");
+    let hari = inputHari ? parseInt(inputHari.value) : 7;
+    if (isNaN(hari) || hari < 1) hari = 7;
+    let exp = new Date();
+    exp.setDate(exp.getDate() + hari);
+    tglExpired = exp.toISOString();
+    // status dipilih admin manual (trial / langganan), bukan ditebak dr lama hari
+    let selStatus = document.getElementById("p-status-langganan");
+    statusLangganan = selStatus ? selStatus.value : "trial";
+  }
+
   if (!window.supabaseClient) return;
 
   try {
@@ -205,7 +258,7 @@ async function simpanPemilik(e, userId) {
       // UPDATE data user di Supabase
       const { error } = await window.supabaseClient
         .from("Users")
-        .update({ nama: nama, email: email, bisnis: bisnis, noTelp: parseInt(noTelp), role: role, paket: paket })
+        .update({ nama: nama, email: email, bisnis: bisnis, noTelp: parseInt(noTelp), role: role, paket: paket, tgl_expired: tglExpired, status_langganan: statusLangganan })
         .eq("user_id", userId);
 
       if (error) throw error;
@@ -214,7 +267,7 @@ async function simpanPemilik(e, userId) {
       // INSERT data user baru ke Supabase
       const { error } = await window.supabaseClient
         .from("Users")
-        .insert({ nama: nama, email: email, bisnis: bisnis, noTelp: parseInt(noTelp), role: role, paket: paket });
+        .insert({ nama: nama, email: email, bisnis: bisnis, noTelp: parseInt(noTelp), role: role, paket: paket, tgl_expired: tglExpired, status_langganan: statusLangganan });
 
       if (error) throw error;
       console.log("Berhasil menambahkan pemilik baru!");

@@ -32,13 +32,32 @@ async function login(email, password) {
           .eq('email', email)
           .maybeSingle();
 
+        // cek masa aktif paket business: klo tgl_expired udh lewat, auto-balik ke starter.
+        // ini nyegah bug akun nyangkut di "business sisa 0 hari" terus-terusan.
+        let paketAktif = profil ? profil.paket : 'starter';
+        let tglExpired = profil ? profil.tgl_expired : null;
+        let statusLangganan = profil ? profil.status_langganan : null;
+        if (paketAktif === 'business' && tglExpired && new Date(tglExpired) < new Date()) {
+          paketAktif = 'starter';
+          tglExpired = null;
+          statusLangganan = null;
+          // sinkronkan balik ke DB biar konsisten
+          try {
+            await window.supabaseClient.from('Users')
+              .update({ paket: 'starter', tgl_expired: null, status_langganan: null })
+              .eq('user_id', data.user.id);
+          } catch (e) { /* abaikan, nanti ke-sync lagi */ }
+        }
+
         const userData = {
           id: data.user.id,
           nama: profil ? profil.nama : 'Pemilik Toko',
           email: email,
           bisnis: profil ? profil.bisnis : 'Toko Sejahtera',
           role: profil ? profil.role : 'pemilik',
-          paket: profil ? profil.paket : 'starter',
+          paket: paketAktif,
+          tglExpired: tglExpired,
+          statusLangganan: statusLangganan,
           noTelp: profil ? profil.noTelp : null,
           tglDaftar: data.user.created_at
         };

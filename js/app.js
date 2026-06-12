@@ -547,6 +547,8 @@ async function sinkronisasiSupabase() {
           bisnis: profil.bisnis,
           role: profil.role,
           paket: profil.paket || 'starter',
+          tglExpired: profil.tgl_expired || null,
+          statusLangganan: profil.status_langganan || null,
           noTelp: profil.noTelp,
           tglDaftar: authUser.created_at
         };
@@ -562,31 +564,19 @@ async function sinkronisasiSupabase() {
           }
         }
 
-        // Cek masa berlaku trial (untuk paket 'business')
-        if (updatedUser.paket === 'business' && updatedUser.tglDaftar) {
-          let tglDaftar = new Date(updatedUser.tglDaftar);
-          let tglSekarang = new Date();
-          let diffTime = tglSekarang - tglDaftar;
-          let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-          // Jangan paksa downgrade akun testing rohid@ledgerly.id
-          if (diffDays >= 7 && authUser.email !== 'rohid@ledgerly.id') {
-            // Downgrade ke starter
+        // Cek masa berlaku trial: pake tgl_expired (diset admin), bukan tglDaftar.
+        // klo udh lewat, auto-downgrade ke starter. berlaku utk semua akun
+        // (gak ada lagi pengecualian hardcoded rohid).
+        if (updatedUser.paket === 'business' && updatedUser.tglExpired) {
+          if (new Date(updatedUser.tglExpired) < new Date()) {
             updatedUser.paket = 'starter';
+            updatedUser.tglExpired = null;
+            updatedUser.statusLangganan = null;
             await window.supabaseClient
               .from('Users')
-              .update({ paket: 'starter' })
+              .update({ paket: 'starter', tgl_expired: null, status_langganan: null })
               .eq('email', authUser.email);
-
-            // Tambahkan notifikasi alert bahwa trial habis
-            let notifList = store.notifikasi || [];
-            notifList.unshift({
-              id: 'notif-trial-habis-' + Date.now(),
-              tipe: 'warning',
-              pesan: 'Masa trial 7 hari paket Profesional Anda telah habis. Akun diturunkan ke paket Starter.',
-              waktu: new Date().toISOString()
-            });
-            store.notifikasi = notifList;
+            console.log('Trial habis — akun ' + authUser.email + ' diturunkan ke Starter.');
           }
         }
 

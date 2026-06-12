@@ -58,16 +58,28 @@ function initPengaturan() {
     let sisaHari = 7;
 
     if (user.paket === 'business') {
-      paketLabel = 'Profesional (7 Hari Trial)';
-      if (user.tglDaftar) {
-        let tglDaftar = new Date(user.tglDaftar);
+      // hitung sisa hari dr tgl_expired (diset admin), BUKAN dr tglDaftar.
+      // dulu pake tglDaftar makanya nyangkut "sisa 0 hari" terus krn akun udh lama dibuat
+      if (user.tglExpired) {
+        let tglExp = new Date(user.tglExpired);
         let tglSekarang = new Date();
-        let diffTime = tglSekarang - tglDaftar;
-        let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        sisaHari = Math.max(0, 7 - diffDays);
+        let diffTime = tglExp - tglSekarang;
+        sisaHari = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+      } else {
+        sisaHari = 0;
       }
-      paketStatus = `Trial • Sisa ${sisaHari} Hari`;
-      badgeClass = 'badge-info';
+
+      // status (trial/langganan) dipilih admin manual & disimpan di DB.
+      // jd pelanggan yg sisa harinya menipis TETEP "langganan", gak balik "trial".
+      if (user.statusLangganan === 'langganan') {
+        paketLabel = 'Profesional (Langganan Aktif)';
+        paketStatus = `Aktif • Sisa ${sisaHari} Hari`;
+        badgeClass = 'badge-success';
+      } else {
+        paketLabel = 'Profesional (Trial)';
+        paketStatus = `Trial • Sisa ${sisaHari} Hari`;
+        badgeClass = 'badge-info';
+      }
     } else if (user.paket === 'enterprise') {
       paketLabel = 'Enterprise (Kustom)';
       paketStatus = 'Premium Aktif';
@@ -77,7 +89,11 @@ function initPengaturan() {
 
     let deskripsiAkun = 'Akun Anda saat ini menggunakan paket <strong>Starter</strong>. Silakan hubungi Admin untuk memperpanjang langganan atau upgrade ke paket <strong>Profesional/Enterprise</strong> untuk membuka semua fitur pembukuan tanpa batasan.';
     if (user.paket === 'business') {
-      deskripsiAkun = `Akun Anda saat ini menggunakan paket <strong>Profesional (Trial 7 Hari)</strong>. Anda memiliki sisa waktu <strong>${sisaHari} hari</strong> untuk menggunakan semua fitur premium. Silakan hubungi Admin jika ingin berlangganan bulanan secara penuh.`;
+      if (user.statusLangganan === 'langganan') {
+        deskripsiAkun = `Langganan paket <strong>Profesional</strong> Anda aktif dengan sisa waktu <strong>${sisaHari} hari</strong>. Semua fitur premium terbuka penuh. Hubungi Admin untuk memperpanjang sebelum masa langganan berakhir agar layanan tidak terputus.`;
+      } else {
+        deskripsiAkun = `Akun Anda menggunakan paket <strong>Profesional (Trial)</strong>. Sisa waktu <strong>${sisaHari} hari</strong>. Segera hubungi Admin untuk berlangganan atau memperpanjang sebelum masa trial berakhir.`;
+      }
     } else if (user.paket === 'enterprise') {
       deskripsiAkun = 'Akun <strong>Enterprise</strong> Anda aktif dengan akses prioritas 24/7. Hubungi Admin jika memerlukan kustomisasi sistem tambahan.';
     }
