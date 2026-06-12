@@ -184,8 +184,8 @@ function initPengaturan() {
 
 function toggleRow(key, iconSvg, title, desc, isActive, color) {
   return `
-    <div class="toggle-row" style="padding:0; margin:0; display:flex; align-items:center; justify-content:space-between;">
-      <div class="toggle-left" style="display:flex; align-items:center; gap:12px;">
+    <div class="toggle-row" style="padding:0; margin:0; display:flex; flex-wrap:nowrap; align-items:center; justify-content:space-between; gap:12px;">
+      <div class="toggle-left" style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
         <div class="toggle-icon" style="color:${color || 'var(--slate-500)'};">${iconSvg}</div>
         <div>
           <div class="toggle-title" style="font-weight:600; font-size:14px; color:var(--slate-800);">${title}</div>
