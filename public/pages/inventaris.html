@@ -17,11 +17,13 @@
     <div class="card-header">
       <div>
         <div class="card-title">Level Stok per Produk</div>
-        <div class="card-subtitle">Merah = di bawah reorder point</div>
+        <div class="card-subtitle" id="inv-chart-subtitle">Merah = di bawah reorder point</div>
       </div>
     </div>
-    <div class="chart-container">
-      <canvas id="chart-stok" class="chart-canvas"></canvas>
+    <div class="chart-container" style="overflow-x:auto;">
+      <div id="chart-stok-sizer" style="position:relative; height:288px; min-width:100%;">
+        <canvas id="chart-stok"></canvas>
+      </div>
     </div>
   </div>
   <div class="card">

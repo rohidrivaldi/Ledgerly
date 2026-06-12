@@ -182,12 +182,38 @@ function initInventarisChart() {
 
   if (chartStok) chartStok.destroy();
 
-  let labels = store.produk.map(function(p) { return p.nama; });
-  let stokData = store.produk.map(function(p) { return p.stok; });
-  let minData = store.produk.map(function(p) { return p.minStok; });
-  let colors = store.produk.map(function(p) {
+  // urutkan produk dari yg paling kritis (rasio stok/min terkecil) ke aman.
+  // jadi yg butuh perhatian muncul di kiri (keliatan duluan tanpa scroll).
+  // produk stok rendah selalu di depan.
+  let urut = store.produk.slice().sort(function(a, b) {
+    let ra = a.minStok > 0 ? a.stok / a.minStok : 999;
+    let rb = b.minStok > 0 ? b.stok / b.minStok : 999;
+    return ra - rb;
+  });
+
+  let labels = urut.map(function(p) { return p.nama; });
+  let stokData = urut.map(function(p) { return p.stok; });
+  let minData = urut.map(function(p) { return p.minStok; });
+  let colors = urut.map(function(p) {
     return p.stok < p.minStok ? 'rgba(244, 63, 94, 0.8)' : 'rgba(99, 102, 241, 0.8)';
   });
+
+  // lebarkan kanvas dinamis: ~72px per produk. klo produk banyak (ratusan),
+  // sizer melebar & kontainer-nya scroll horizontal — bar tetep kebaca, gak gepeng.
+  // di bawah ~15 produk biarin 100% (gak usah scroll).
+  let sizer = document.getElementById('chart-stok-sizer');
+  if (sizer) {
+    let lebarIdeal = urut.length * 72;
+    sizer.style.minWidth = lebarIdeal > sizer.parentElement.clientWidth ? lebarIdeal + 'px' : '100%';
+  }
+
+  // update subtitle kasih info jumlah + saran scroll klo banyak
+  let sub = document.getElementById('inv-chart-subtitle');
+  if (sub) {
+    sub.textContent = urut.length > 15
+      ? 'Diurut dari paling kritis • geser ke kanan untuk lihat semua (' + urut.length + ' produk)'
+      : 'Merah = di bawah reorder point';
+  }
 
   chartStok = new Chart(ctx, {
     type: 'bar',
