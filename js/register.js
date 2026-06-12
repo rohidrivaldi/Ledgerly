@@ -10,6 +10,23 @@
   }
 })();
 
+// Ambil nomor wa.me admin dari Platform_Settings (diatur superadmin) buat
+// update tombol CTA enterprise. RLS udah dibuka read publik jadi anon bisa baca.
+(async function() {
+  try {
+    if (!window.supabaseClient) return;
+    const { data } = await window.supabaseClient.from('Platform_Settings').select('key,value');
+    if (!data) return;
+    let map = {};
+    data.forEach(function(r) { map[r.key] = r.value; });
+    let cta = document.getElementById('cta-wa-enterprise');
+    if (cta && map.wa_admin) {
+      let pesan = encodeURIComponent('Halo Admin Ledgerly, saya tertarik dengan paket Enterprise untuk bisnis saya.');
+      cta.href = 'https://wa.me/' + map.wa_admin + '?text=' + pesan;
+    }
+  } catch (e) { /* fallback ke nomor default di html */ }
+})();
+
 // Mengatur perpindahan kartu paket
 function togglePlan(plan) {
   var starterCard = document.getElementById('plan-card-starter');

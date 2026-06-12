@@ -489,7 +489,7 @@
               </li>
             </ul>
           </div>
-          <a href="https://wa.me/6285750917686?text=Halo%20Admin%20Ledgerly,%20saya%20tertarik%20dengan%20Paket%20Enterprise%20Kustom%20untuk%20multi-cabang." target="_blank" class="harga-btn secondary">Hubungi Sales</a>
+          <a href="https://wa.me/6285750917686?text=Halo%20Admin%20Ledgerly,%20saya%20tertarik%20dengan%20Paket%20Enterprise%20Kustom%20untuk%20multi-cabang." target="_blank" class="harga-btn secondary" id="cta-wa-sales">Hubungi Sales</a>
         </div>
       </div>
 
@@ -764,6 +764,27 @@
         observer.observe(el);
       });
     });
+
+    // Ambil nomor wa.me 'Hubungi Sales' dari Platform_Settings (diatur superadmin).
+    // pake REST ringan (gak load SDK supabase penuh) — env di-inject vite ke window.process.
+    (function() {
+      try {
+        var env = (window.process && window.process.env) ? window.process.env : {};
+        var url = env.VITE_SUPABASE_URL, key = env.VITE_SUPABASE_ANON_KEY;
+        if (!url || !key) return;
+        fetch(url + '/rest/v1/Platform_Settings?key=eq.wa_admin&select=value', {
+          headers: { apikey: key, Authorization: 'Bearer ' + key }
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          if (data && data[0] && data[0].value) {
+            var cta = document.getElementById('cta-wa-sales');
+            if (cta) {
+              var pesan = encodeURIComponent('Halo Admin Ledgerly, saya tertarik dengan Paket Enterprise Kustom untuk multi-cabang.');
+              cta.href = 'https://wa.me/' + data[0].value + '?text=' + pesan;
+            }
+          }
+        }).catch(function() { /* fallback ke nomor default di html */ });
+      } catch (e) {}
+    })();
 
     // toggle FAQ accordion
     function toggleFaq(btn) {
