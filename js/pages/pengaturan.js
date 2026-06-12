@@ -445,36 +445,45 @@ function konfirmasiHapusKategori(id, nama) {
   // cek brp produk yg make kategori ini
   let dipakai = (store.produk || []).filter(function(p) { return p.kategori === nama; }).length;
 
-  // pesan beda tergantung dipakai produk atau belum.
-  // FK Products.kategori_id pake ON DELETE SET NULL, jadi produk GAK kehapus,
-  // cuma kategorinya jadi kosong (tampil "Lainnya"). stok/harga/sku tetep aman.
-  let pesanBody;
-  if (dipakai > 0) {
-    pesanBody = '<b>' + dipakai + ' produk</b> memakai kategori ini. Produk <b>tidak akan terhapus</b> — '
-      + 'stok, harga, dan datanya tetap aman, tapi kategorinya jadi kosong (tampil "Lainnya"). '
-      + 'Anda bisa atur ulang lewat Edit produk.';
-  } else {
-    pesanBody = 'Kategori ini belum dipakai produk manapun.';
-  }
-
   // hapus modal lama klo ada, biar gak numpuk
   let lama = document.getElementById('modal-hapus-kategori');
   if (lama) lama.remove();
 
-  let modalHtml = '<div class="modal-overlay" id="modal-hapus-kategori" onclick="if(event.target.id===\'modal-hapus-kategori\') tutupModalHapusKategori()">'
-    + '<div class="modal-box" style="max-width:420px;">'
-    + '<div style="display:flex; align-items:flex-start; gap:14px; margin-bottom:18px;">'
-    + '<div style="flex-shrink:0; width:42px; height:42px; border-radius:50%; background:var(--rose-50); color:var(--rose-600); display:grid; place-items:center;">' + icon('trash', 20) + '</div>'
-    + '<div>'
-    + '<div class="modal-title">Hapus kategori "' + nama + '"?</div>'
-    + '<div class="modal-desc" style="margin-top:6px; line-height:1.5;">' + pesanBody + '</div>'
-    + '</div>'
-    + '</div>'
-    + '<div style="display:flex; justify-content:flex-end; gap:8px;">'
-    + '<button class="btn btn-secondary" onclick="tutupModalHapusKategori()">Batal</button>'
-    + '<button class="btn btn-danger" onclick="hapusKategori(\'' + id + '\')">Ya, Hapus</button>'
-    + '</div>'
-    + '</div></div>';
+  let modalHtml;
+  if (dipakai > 0) {
+    // DIPAKAI produk -> TOLAK hapus, cuma kasih peringatan. gak ada tombol hapus.
+    // user harus pindahin/hapus produknya dulu baru bisa hapus kategori ini.
+    modalHtml = '<div class="modal-overlay" id="modal-hapus-kategori" onclick="if(event.target.id===\'modal-hapus-kategori\') tutupModalHapusKategori()">'
+      + '<div class="modal-box" style="max-width:420px;">'
+      + '<div style="display:flex; align-items:flex-start; gap:14px; margin-bottom:18px;">'
+      + '<div style="flex-shrink:0; width:42px; height:42px; border-radius:50%; background:var(--amber-50); color:var(--amber-600); display:grid; place-items:center;">' + icon('alertTriangle', 20) + '</div>'
+      + '<div>'
+      + '<div class="modal-title">Tidak bisa dihapus</div>'
+      + '<div class="modal-desc" style="margin-top:6px; line-height:1.5;">Kategori <b>"' + nama + '"</b> masih dipakai <b>' + dipakai + ' produk</b>. '
+      + 'Pindahkan produk tersebut ke kategori lain (lewat Edit produk) atau hapus produknya dulu, baru kategori ini bisa dihapus.</div>'
+      + '</div>'
+      + '</div>'
+      + '<div style="display:flex; justify-content:flex-end; gap:8px;">'
+      + '<button class="btn btn-primary" onclick="tutupModalHapusKategori()">Mengerti</button>'
+      + '</div>'
+      + '</div></div>';
+  } else {
+    // KOSONG -> boleh dihapus
+    modalHtml = '<div class="modal-overlay" id="modal-hapus-kategori" onclick="if(event.target.id===\'modal-hapus-kategori\') tutupModalHapusKategori()">'
+      + '<div class="modal-box" style="max-width:420px;">'
+      + '<div style="display:flex; align-items:flex-start; gap:14px; margin-bottom:18px;">'
+      + '<div style="flex-shrink:0; width:42px; height:42px; border-radius:50%; background:var(--rose-50); color:var(--rose-600); display:grid; place-items:center;">' + icon('trash', 20) + '</div>'
+      + '<div>'
+      + '<div class="modal-title">Hapus kategori "' + nama + '"?</div>'
+      + '<div class="modal-desc" style="margin-top:6px; line-height:1.5;">Kategori ini belum dipakai produk manapun, jadi aman dihapus.</div>'
+      + '</div>'
+      + '</div>'
+      + '<div style="display:flex; justify-content:flex-end; gap:8px;">'
+      + '<button class="btn btn-secondary" onclick="tutupModalHapusKategori()">Batal</button>'
+      + '<button class="btn btn-danger" onclick="hapusKategori(\'' + id + '\')">Ya, Hapus</button>'
+      + '</div>'
+      + '</div></div>';
+  }
 
   document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
