@@ -39,7 +39,15 @@ var _storeObj = {
       nomorWA: '628123456789',
       biayaOpsPersen: 8
     };
-  })()
+  })(),
+  // pengaturan platform global (wa.me admin/cs + template). default dipakai
+  // sblm sync; nanti ditimpa nilai dr Platform_Settings di Supabase
+  platformSettings: {
+    wa_admin: '6285750917686',
+    wa_cs: '6285750917686',
+    pesan_upgrade: 'Halo Admin Ledgerly, saya tertarik untuk melakukan upgrade atau memperpanjang paket langganan toko saya.',
+    pesan_cs: 'Halo CS Ledgerly, saya mengalami kendala di aplikasi Ledgerly dan memerlukan bantuan.'
+  }
 };
 
 let renderTimeout;
@@ -322,7 +330,8 @@ var ROUTES = {
   '#keputusan': { title: 'Keputusan', init: typeof initKeputusan !== 'undefined' ? initKeputusan : function(){} },
   '#pengaturan': { title: 'Pengaturan', init: typeof initPengaturan !== 'undefined' ? initPengaturan : function(){} },
   '#kelola-pemilik': { title: 'Kelola Pemilik', init: typeof initKelolaPemilik !== 'undefined' ? initKelolaPemilik : function(){} },
-  '#dasbor-superadmin': { title: 'Ikhtisar Sistem', init: typeof initDasborSuperadmin !== 'undefined' ? initDasborSuperadmin : function(){} }
+  '#dasbor-superadmin': { title: 'Ikhtisar Sistem', init: typeof initDasborSuperadmin !== 'undefined' ? initDasborSuperadmin : function(){} },
+  '#pengaturan-platform': { title: 'Pengaturan Platform', init: typeof initPengaturanPlatform !== 'undefined' ? initPengaturanPlatform : function(){} }
 };
 
 var halamanSkrg = '#inventaris'; // default
@@ -348,13 +357,17 @@ async function navigasi(hash) {
   // jika hash tidak valid atau tidak ada di ROUTES, pakai default
   if (!hash || !ROUTES[hash]) hash = defaultHash;
 
+  // daftar halaman khusus superadmin
+  var halamanSuperadmin = ['#kelola-pemilik', '#dasbor-superadmin', '#pengaturan-platform'];
+
   // jika user bukan superadmin, tidak boleh akses halaman superadmin
   if (userRole !== 'superadmin') {
-    if (hash === '#kelola-pemilik' || hash === '#dasbor-superadmin') {
+    if (halamanSuperadmin.indexOf(hash) !== -1) {
       hash = '#inventaris';
     }
   } else {
-    if (hash !== '#kelola-pemilik' && hash !== '#dasbor-superadmin') {
+    // superadmin cuma boleh di halaman superadmin
+    if (halamanSuperadmin.indexOf(hash) === -1) {
       hash = '#dasbor-superadmin';
     }
   }
@@ -600,6 +613,17 @@ async function sinkronisasiSupabase() {
 
   // kalo ada koneksi, coba ambil data dari Supabase dan update state global
   try {
+    // 0. Ambil pengaturan platform global (wa.me admin/cs + template pesan).
+    // dibaca semua user (RLS select true), tapi cuma superadmin yg bisa ubah.
+    try {
+      let { data: ps } = await window.supabaseClient.from('Platform_Settings').select('*');
+      if (ps) {
+        let map = {};
+        ps.forEach(function(row) { map[row.key] = row.value; });
+        store.platformSettings = map;
+      }
+    } catch (e) { /* abaikan, pake default klo gagal */ }
+
     // 1. Ambil data kategori
     let { data: kategori } = await window.supabaseClient
       .from('Kategori')

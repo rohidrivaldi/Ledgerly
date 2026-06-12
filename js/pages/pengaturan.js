@@ -98,6 +98,14 @@ function initPengaturan() {
       deskripsiAkun = 'Akun <strong>Enterprise</strong> Anda aktif dengan akses prioritas 24/7. Hubungi Admin jika memerlukan kustomisasi sistem tambahan.';
     }
 
+    // ambil wa.me + template pesan dr platform settings (diatur superadmin).
+    // pesan di-encode biar aman dipake di url wa.me
+    let ps = store.platformSettings || {};
+    let psWaAdmin = ps.wa_admin || '6285750917686';
+    let psWaCs = ps.wa_cs || '6285750917686';
+    let psPesanUpgrade = encodeURIComponent(ps.pesan_upgrade || 'Halo Admin Ledgerly, saya ingin upgrade paket.');
+    let psPesanCs = encodeURIComponent(ps.pesan_cs || 'Halo CS Ledgerly, saya butuh bantuan.');
+
     setPaketContainer.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--slate-100); padding-bottom:18px;">
@@ -114,11 +122,11 @@ function initPengaturan() {
           </div>
           <div style="display:flex; flex-wrap:wrap; gap:10px;">
             ${showCta ? `
-              <a href="https://wa.me/6285750917686?text=Halo%20Admin%20Ledgerly,%20saya%20tertarik%20untuk%20melakukan%20upgrade%20atau%20memperpanjang%20paket%20langganan%20toko%20saya." target="_blank" class="btn btn-primary" style="padding:10px 20px; font-size:13px; border-radius:10px; display:inline-flex; align-items:center; gap:8px;">
+              <a href="https://wa.me/${psWaAdmin}?text=${psPesanUpgrade}" target="_blank" class="btn btn-primary" style="padding:10px 20px; font-size:13px; border-radius:10px; display:inline-flex; align-items:center; gap:8px;">
                 ${icon('whatsapp', 16)} Hubungi Admin (Upgrade)
               </a>
             ` : ''}
-            <a href="https://wa.me/6285750917686?text=Halo%20CS%20Ledgerly,%20saya%20mengalami%20kendala%20di%20aplikasi%20Ledgerly%20dan%20memerlukan%20bantuan." target="_blank" class="btn btn-secondary" style="padding:10px 20px; font-size:13px; border-radius:10px; display:inline-flex; align-items:center; gap:8px;">
+            <a href="https://wa.me/${psWaCs}?text=${psPesanCs}" target="_blank" class="btn btn-secondary" style="padding:10px 20px; font-size:13px; border-radius:10px; display:inline-flex; align-items:center; gap:8px;">
               ${icon('helpCircle', 16)} Hubungi CS Bantuan (Lapor Kendala)
             </a>
           </div>

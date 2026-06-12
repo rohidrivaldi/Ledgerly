@@ -19,6 +19,7 @@ function renderSidebar() {
   if (user.role === 'superadmin') {
     navHtml += navLink('#dasbor-superadmin', icon('fileBarChart'), 'Ikhtisar Sistem');
     navHtml += navLink('#kelola-pemilik', icon('users'), 'Kelola Pemilik');
+    navHtml += navLink('#pengaturan-platform', icon('settings'), 'Pengaturan Platform');
   } else {
     navHtml += navLink('#inventaris', icon('package'), 'Inventaris');
     navHtml += navLink('#keuangan', icon('wallet'), 'Keuangan');
