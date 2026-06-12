@@ -178,9 +178,14 @@ async function tambahTransaksi(tx) {
           .insert({
             transaction_id: txData.transaction_id,
             product_id: dbProdukId,
-            jumlah: tx.jumlah
+            jumlah: tx.jumlah,
+            // snapshot nama+harga produk saat transaksi dibuat. biar history & laporan
+            // tetep utuh walau produknya nanti dihapus (FK SET NULL gak ngerusak nilai)
+            nama_snapshot: p ? p.nama : (tx.produkNama || null),
+            harga_beli_snapshot: p ? p.hargaBeli : null,
+            harga_jual_snapshot: p ? p.hargaJual : null
           });
-          
+
         if (detErr) throw detErr;
       }
 
@@ -684,14 +689,26 @@ async function sinkronisasiSupabase() {
 
         let tipe = t.isPenjualan ? 'KELUAR' : 'MASUK';
         let qty = det ? parseInt(det.jumlah) : 0;
-        let hargaSat = prod ? (tipe === 'MASUK' ? prod.hargaBeli : prod.hargaJual) : 0;
+
+        // utamain snapshot (kebal walau produk dihapus), fallback ke produk live.
+        // harga: pas MASUK pake harga beli, pas KELUAR pake harga jual.
+        let namaFinal = (det && det.nama_snapshot) ? det.nama_snapshot
+                        : (prod ? prod.nama : (t.catatan || 'Produk Lainnya'));
+        let hargaSat;
+        if (tipe === 'MASUK') {
+          hargaSat = (det && det.harga_beli_snapshot != null) ? parseInt(det.harga_beli_snapshot)
+                     : (prod ? prod.hargaBeli : 0);
+        } else {
+          hargaSat = (det && det.harga_jual_snapshot != null) ? parseInt(det.harga_jual_snapshot)
+                     : (prod ? prod.hargaJual : 0);
+        }
 
         return {
           id: t.transaction_id,
           tanggal: t.created_at,
           tipe: tipe,
           produkId: prodId || 'dummy',
-          produkNama: prod ? prod.nama : (t.catatan || 'Produk Lainnya'),
+          produkNama: namaFinal,
           jumlah: qty,
           hargaSatuan: hargaSat,
           total: qty * hargaSat,
