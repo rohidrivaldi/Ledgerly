@@ -57,9 +57,21 @@ function initKeputusan() {
   let tbody = document.querySelector('#tabel-restock tbody');
   if (tbody) {
     tbody.innerHTML = produkRendah.length === 0
-      ? '<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--slate-400);">Semua stok aman, tidak ada yg perlu restock 👍</td></tr>'
+      ? '<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--slate-400);">Semua stok aman, tidak ada yg perlu restock 👍</td></tr>'
       : produkRendah.map(function(p) {
           let kurang = p.minStok - p.stok;
+          // klo supplier kosong tampilin strip, jgn teks palsu
+          let supplierTxt = p.supplier ? p.supplier : '<span style="color:var(--slate-400);">—</span>';
+          // kontak WA: bikin link wa.me biar pemilik bisa lgsg chat supplier buat restock
+          let waTd;
+          if (p.supplierWa) {
+            let waBersih = p.supplierWa.replace(/[^0-9]/g, '');
+            if (waBersih.charAt(0) === '0') waBersih = '62' + waBersih.slice(1);
+            let pesan = encodeURIComponent('Halo, saya mau restock ' + p.nama + ' sebanyak ' + kurang + ' unit. Apakah tersedia?');
+            waTd = '<a href="https://wa.me/' + waBersih + '?text=' + pesan + '" target="_blank" style="color:var(--emerald-600); font-weight:600; text-decoration:none;">Chat WA</a>';
+          } else {
+            waTd = '<span style="color:var(--slate-400);">—</span>';
+          }
           return `
             <tr>
               <td class="td-bold">${p.nama}</td>
@@ -68,7 +80,8 @@ function initKeputusan() {
               <td class="td-right td-semibold">${kurang}</td>
               <td class="td-right">${formatRupiah(p.hargaBeli)}</td>
               <td class="td-right td-semibold">${formatRupiah(kurang * p.hargaBeli)}</td>
-              <td>${p.supplier}</td>
+              <td>${supplierTxt}</td>
+              <td>${waTd}</td>
             </tr>`;
         }).join('');
   }

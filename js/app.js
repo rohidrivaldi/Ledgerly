@@ -636,7 +636,7 @@ async function sinkronisasiSupabase() {
           hargaJual: parseInt(p.harga) || 0,
           supplierNama: p.supplier_nama || '',
           supplierWa: p.supplier_wa || '',
-          supplier: p.supplier_nama || 'Supplier Utama',
+          supplier: p.supplier_nama || '',
           updatedAt: p.updated_at || new Date().toISOString().slice(0, 10)
         };
       });
