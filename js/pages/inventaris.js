@@ -69,19 +69,7 @@ function initInventaris() {
   invHalamanSkrg = 1;
   renderInventarisTable();
 
-  // 6. Init DateRangePicker
-  if (typeof buatDateRangePicker === 'function' && document.getElementById('drp-inventaris')) {
-    buatDateRangePicker({
-      containerId: 'drp-inventaris',
-      placeholder: 'Rentang tanggal edit...',
-      onChange: function(start, end) {
-        invHalamanSkrg = 1;
-        renderInventarisTable();
-      }
-    });
-  }
-
-  // 7. Init Chart & Search input
+  // 6. Init Chart & Search input
   initInventarisChart();
   initInventarisSearch();
 }
@@ -92,29 +80,11 @@ function renderInventarisTable() {
   let katFilter  = (document.getElementById('filter-inv-kategori')  || {}).value || '';
   let statFilter = (document.getElementById('filter-inv-status')    || {}).value || '';
 
-  // Baca dari DateRangePicker custom
-  var drpVal = (typeof getDrpValue === 'function') ? getDrpValue('drp-inventaris') : { start: '', end: '' };
-  let startVal = drpVal.start;
-  let endVal   = drpVal.end;
-
-  var startDate = startVal ? new Date(startVal) : null;
-  var endDate   = endVal   ? new Date(endVal)   : null;
-  if (endDate) endDate.setHours(23, 59, 59, 999);
-
   let filtered = store.produk.filter(function(p) {
     let lolosQ    = !q || p.nama.toLowerCase().includes(q.toLowerCase()) || p.sku.toLowerCase().includes(q.toLowerCase());
     let lolosKat  = !katFilter || p.kategori === katFilter;
     let lolosStat = !statFilter || (statFilter === 'aman' ? p.stok >= p.minStok : p.stok < p.minStok);
-    let lolosTgl  = true;
-    if (startDate || endDate) {
-      let updAt = p.updatedAt ? new Date(p.updatedAt) : null;
-      if (updAt) {
-        lolosTgl = (!startDate || updAt >= startDate) && (!endDate || updAt <= endDate);
-      } else {
-        lolosTgl = !startDate; // tidak ada tanggal update → tampil hanya jika tidak ada filter start
-      }
-    }
-    return lolosQ && lolosKat && lolosStat && lolosTgl;
+    return lolosQ && lolosKat && lolosStat;
   });
 
   let totalData = filtered.length;
@@ -191,7 +161,6 @@ function resetFilterInventaris() {
     let el = document.getElementById(id);
     if (el) el.value = '';
   });
-  if (typeof resetDrp === 'function') resetDrp('drp-inventaris');
   invHalamanSkrg = 1;
   renderInventarisTable();
 }
