@@ -68,7 +68,7 @@
           '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
         '</button>' +
       '</div>' +
-      '<div class="drp-popup" id="' + this.containerId + '-popup" style="display:none;">' +
+      '<div class="drp-popup" id="' + this.containerId + '-popup" style="display:none;" onclick="event.stopPropagation()">' +
         '<div class="drp-calendar" id="' + this.containerId + '-cal"></div>' +
       '</div>' +
     '</div>';
@@ -190,9 +190,9 @@
     var jumlahHari  = new Date(tahun, bulan + 1, 0).getDate();
 
     var headerHtml = '<div class="drp-header">' +
-      '<button class="drp-nav-btn" onclick="window._drp_prev(\'' + this.containerId + '\')">&#8249;</button>' +
+      '<button class="drp-nav-btn" onclick="event.stopPropagation();window._drp_prev(\'' + this.containerId + '\')" type="button">&#8249;</button>' +
       '<span class="drp-month-label">' + BULAN_PANJANG[bulan] + ' ' + tahun + '</span>' +
-      '<button class="drp-nav-btn" onclick="window._drp_next(\'' + this.containerId + '\')">&#8250;</button>' +
+      '<button class="drp-nav-btn" onclick="event.stopPropagation();window._drp_next(\'' + this.containerId + '\')" type="button">&#8250;</button>' +
     '</div>';
 
     // Baris nama hari
@@ -228,7 +228,7 @@
       if (dow === 0 || dow === 6) cls.push('drp-weekend');
 
       var iso = toInputVal(tgl);
-      gridHtml += '<span class="' + cls.join(' ') + '" data-date="' + iso + '" onclick="window._drp_select(\'' + self.containerId + '\',\'' + iso + '\')" onmouseover="window._drp_hover(\'' + self.containerId + '\',\'' + iso + '\')">' + d + '</span>';
+      gridHtml += '<span class="' + cls.join(' ') + '" data-date="' + iso + '" onclick="event.stopPropagation();window._drp_select(\'' + self.containerId + '\',\'' + iso + '\')" onmouseover="window._drp_hover(\'' + self.containerId + '\',\'' + iso + '\')" onmousedown="event.stopPropagation()" >'+d+'</span>';
     }
     gridHtml += '</div>';
 
