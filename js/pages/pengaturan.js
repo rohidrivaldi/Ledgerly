@@ -401,9 +401,11 @@ async function tambahKategori() {
   if (duplikat) { errEl.textContent = 'Kategori \"' + nama + '\" sudah ada.'; errEl.style.display = 'block'; return; }
 
   try {
+    // wajib sertakan user_id krn RLS Kategori cek auth.uid() = user_id.
+    // klo gak diisi, insert ditolak policy (row level security)
     let { data, error } = await window.supabaseClient
       .from('Kategori')
-      .insert({ nama_kategori: nama })
+      .insert({ nama_kategori: nama, user_id: (store.user || {}).id })
       .select();
 
     if (error) throw error;
@@ -423,11 +425,22 @@ async function tambahKategori() {
 }
 
 async function hapusKategori(id, nama) {
-  // Cek apakah kategori dipakai produk
+  // cek brp produk yg make kategori ini
   let dipakai = (store.produk || []).filter(function(p) { return p.kategori === nama; }).length;
+
+  // konfirmasi SELALU muncul, biar gak kepencet x gak sengaja
+  let pesan;
   if (dipakai > 0) {
-    if (!confirm('Kategori \"' + nama + '\" masih digunakan oleh ' + dipakai + ' produk. Produk tersebut akan tetap memiliki kategori lama. Yakin ingin menghapus?')) return;
+    // FK Products.kategori_id pake ON DELETE SET NULL, jadi produk GAK kehapus,
+    // cuma kategorinya jadi kosong (tampil "Lainnya"). stok/harga/sku tetep aman.
+    pesan = 'Hapus kategori "' + nama + '"?\n\n'
+          + dipakai + ' produk memakai kategori ini. Produk TIDAK akan terhapus — '
+          + 'stok, harga, dan datanya tetap aman, tapi kategorinya jadi kosong (tampil "Lainnya"). '
+          + 'Anda bisa atur ulang kategorinya nanti lewat Edit produk.\n\nLanjut hapus?';
+  } else {
+    pesan = 'Hapus kategori "' + nama + '"? Kategori ini belum dipakai produk manapun.';
   }
+  if (!confirm(pesan)) return;
 
   try {
     let { error } = await window.supabaseClient
