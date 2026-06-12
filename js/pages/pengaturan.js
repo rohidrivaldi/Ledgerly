@@ -376,7 +376,7 @@ function renderKategoriList() {
     list.map(function(k) {
       return '<div style="display:flex; align-items:center; gap:6px; background:var(--slate-50); border:1px solid var(--slate-200); border-radius:20px; padding:5px 12px; font-size:13px; color:var(--slate-700);">'
         + '<span>' + (k.nama_kategori || k.nama || '') + '</span>'
-        + '<button onclick="hapusKategori(\'' + k.kategori_id + '\', \'' + (k.nama_kategori || k.nama || '') + '\')" '
+        + '<button onclick="konfirmasiHapusKategori(\'' + k.kategori_id + '\', \'' + (k.nama_kategori || k.nama || '') + '\')" '
         + 'style="background:none; border:none; cursor:pointer; color:var(--slate-400); display:flex; align-items:center; padding:0; margin-left:2px; font-size:14px; line-height:1;" '
         + 'title="Hapus kategori" >&times;</button>'
         + '</div>';
@@ -424,24 +424,52 @@ async function tambahKategori() {
   }
 }
 
-async function hapusKategori(id, nama) {
+// tampilkan modal konfirmasi UI (bukan confirm() bawaan browser yg jelek)
+function konfirmasiHapusKategori(id, nama) {
   // cek brp produk yg make kategori ini
   let dipakai = (store.produk || []).filter(function(p) { return p.kategori === nama; }).length;
 
-  // konfirmasi SELALU muncul, biar gak kepencet x gak sengaja
-  let pesan;
+  // pesan beda tergantung dipakai produk atau belum.
+  // FK Products.kategori_id pake ON DELETE SET NULL, jadi produk GAK kehapus,
+  // cuma kategorinya jadi kosong (tampil "Lainnya"). stok/harga/sku tetep aman.
+  let pesanBody;
   if (dipakai > 0) {
-    // FK Products.kategori_id pake ON DELETE SET NULL, jadi produk GAK kehapus,
-    // cuma kategorinya jadi kosong (tampil "Lainnya"). stok/harga/sku tetep aman.
-    pesan = 'Hapus kategori "' + nama + '"?\n\n'
-          + dipakai + ' produk memakai kategori ini. Produk TIDAK akan terhapus — '
-          + 'stok, harga, dan datanya tetap aman, tapi kategorinya jadi kosong (tampil "Lainnya"). '
-          + 'Anda bisa atur ulang kategorinya nanti lewat Edit produk.\n\nLanjut hapus?';
+    pesanBody = '<b>' + dipakai + ' produk</b> memakai kategori ini. Produk <b>tidak akan terhapus</b> — '
+      + 'stok, harga, dan datanya tetap aman, tapi kategorinya jadi kosong (tampil "Lainnya"). '
+      + 'Anda bisa atur ulang lewat Edit produk.';
   } else {
-    pesan = 'Hapus kategori "' + nama + '"? Kategori ini belum dipakai produk manapun.';
+    pesanBody = 'Kategori ini belum dipakai produk manapun.';
   }
-  if (!confirm(pesan)) return;
 
+  // hapus modal lama klo ada, biar gak numpuk
+  let lama = document.getElementById('modal-hapus-kategori');
+  if (lama) lama.remove();
+
+  let modalHtml = '<div class="modal-overlay" id="modal-hapus-kategori" onclick="if(event.target.id===\'modal-hapus-kategori\') tutupModalHapusKategori()">'
+    + '<div class="modal-box" style="max-width:420px;">'
+    + '<div style="display:flex; align-items:flex-start; gap:14px; margin-bottom:18px;">'
+    + '<div style="flex-shrink:0; width:42px; height:42px; border-radius:50%; background:var(--rose-50); color:var(--rose-600); display:grid; place-items:center;">' + icon('trash', 20) + '</div>'
+    + '<div>'
+    + '<div class="modal-title">Hapus kategori "' + nama + '"?</div>'
+    + '<div class="modal-desc" style="margin-top:6px; line-height:1.5;">' + pesanBody + '</div>'
+    + '</div>'
+    + '</div>'
+    + '<div style="display:flex; justify-content:flex-end; gap:8px;">'
+    + '<button class="btn btn-secondary" onclick="tutupModalHapusKategori()">Batal</button>'
+    + '<button class="btn btn-danger" onclick="hapusKategori(\'' + id + '\')">Ya, Hapus</button>'
+    + '</div>'
+    + '</div></div>';
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function tutupModalHapusKategori() {
+  let modal = document.getElementById('modal-hapus-kategori');
+  if (modal) modal.remove();
+}
+
+async function hapusKategori(id) {
+  tutupModalHapusKategori();
   try {
     let { error } = await window.supabaseClient
       .from('Kategori')

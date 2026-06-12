@@ -43,17 +43,17 @@
       <div class="card-subtitle" id="inv-katalog-subtitle"></div>
     </div>
     <!-- Filter bar -->
-    <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-      <input class="form-input" type="text" id="cari-produk" placeholder="Cari nama/SKU..." style="max-width:180px; font-size:12px;">
-      <select class="form-select" id="filter-inv-kategori" style="max-width:150px; font-size:12px;" onchange="renderInventarisTable()">
+    <div style="display:flex; flex-wrap:nowrap; gap:8px; align-items:center;">
+      <input class="form-input" type="text" id="cari-produk" placeholder="Cari nama/SKU..." style="max-width:160px; font-size:12px;">
+      <select class="form-select" id="filter-inv-kategori" style="max-width:140px; font-size:12px;" onchange="renderInventarisTable()">
         <option value="">Semua Kategori</option>
       </select>
-      <select class="form-select" id="filter-inv-status" style="max-width:130px; font-size:12px;" onchange="renderInventarisTable()">
+      <select class="form-select" id="filter-inv-status" style="max-width:120px; font-size:12px;" onchange="renderInventarisTable()">
         <option value="">Semua Status</option>
         <option value="aman">Aman</option>
         <option value="rendah">Stok Rendah</option>
       </select>
-      <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="resetFilterInventaris()">Reset</button>
+      <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px; white-space:nowrap;" onclick="resetFilterInventaris()">Reset</button>
     </div>
   </div>
   <div style="overflow-x:auto;">
