@@ -45,9 +45,11 @@ var _storeObj = {
   platformSettings: {
     wa_admin: '6285750917686',
     wa_cs: '6285750917686',
+    wa_saluran: '',
     pesan_upgrade: 'Halo Admin Ledgerly, saya tertarik untuk melakukan upgrade atau memperpanjang paket langganan toko saya.',
     pesan_cs: 'Halo CS Ledgerly, saya mengalami kendala di aplikasi Ledgerly dan memerlukan bantuan.'
-  }
+  },
+  pengumuman: [] // diisi dr tabel Pengumuman pas sync
 };
 
 let renderTimeout;
@@ -329,9 +331,11 @@ var ROUTES = {
   '#laporan': { title: 'Laporan', init: typeof initLaporan !== 'undefined' ? initLaporan : function(){} },
   '#keputusan': { title: 'Keputusan', init: typeof initKeputusan !== 'undefined' ? initKeputusan : function(){} },
   '#pengaturan': { title: 'Pengaturan', init: typeof initPengaturan !== 'undefined' ? initPengaturan : function(){} },
+  '#pengumuman': { title: 'Pengumuman', init: typeof initPengumuman !== 'undefined' ? initPengumuman : function(){} },
   '#kelola-pemilik': { title: 'Kelola Pemilik', init: typeof initKelolaPemilik !== 'undefined' ? initKelolaPemilik : function(){} },
   '#dasbor-superadmin': { title: 'Ikhtisar Sistem', init: typeof initDasborSuperadmin !== 'undefined' ? initDasborSuperadmin : function(){} },
-  '#pengaturan-platform': { title: 'Pengaturan Platform', init: typeof initPengaturanPlatform !== 'undefined' ? initPengaturanPlatform : function(){} }
+  '#pengaturan-platform': { title: 'Pengaturan Platform', init: typeof initPengaturanPlatform !== 'undefined' ? initPengaturanPlatform : function(){} },
+  '#kelola-pengumuman': { title: 'Kelola Pengumuman', init: typeof initKelolaPengumuman !== 'undefined' ? initKelolaPengumuman : function(){} }
 };
 
 var halamanSkrg = '#inventaris'; // default
@@ -358,7 +362,7 @@ async function navigasi(hash) {
   if (!hash || !ROUTES[hash]) hash = defaultHash;
 
   // daftar halaman khusus superadmin
-  var halamanSuperadmin = ['#kelola-pemilik', '#dasbor-superadmin', '#pengaturan-platform'];
+  var halamanSuperadmin = ['#kelola-pemilik', '#dasbor-superadmin', '#pengaturan-platform', '#kelola-pengumuman'];
 
   // jika user bukan superadmin, tidak boleh akses halaman superadmin
   if (userRole !== 'superadmin') {
@@ -623,6 +627,16 @@ async function sinkronisasiSupabase() {
         store.platformSettings = map;
       }
     } catch (e) { /* abaikan, pake default klo gagal */ }
+
+    // 0b. Ambil pengumuman dari admin (yg aktif aja), urut terbaru dulu
+    try {
+      let { data: peng } = await window.supabaseClient
+        .from('Pengumuman')
+        .select('*')
+        .eq('is_aktif', true)
+        .order('created_at', { ascending: false });
+      store.pengumuman = peng || [];
+    } catch (e) { store.pengumuman = []; }
 
     // 1. Ambil data kategori
     let { data: kategori } = await window.supabaseClient

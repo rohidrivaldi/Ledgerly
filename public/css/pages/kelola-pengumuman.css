@@ -1,0 +1,15 @@
+/* =============================================
+   kelola-pengumuman.css — styles halaman kelola pengumuman (admin)
+   sebagian besar pakai komponen tabel & card global
+   ============================================= */
+
+#tabel-pengumuman td {
+  vertical-align: middle;
+}
+
+/* di mobile, tabel bisa di-scroll horizontal (udah dibungkus overflow-x) */
+@media (max-width: 600px) {
+  #tabel-pengumuman {
+    min-width: 560px;
+  }
+}

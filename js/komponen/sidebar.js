@@ -19,6 +19,7 @@ function renderSidebar() {
   if (user.role === 'superadmin') {
     navHtml += navLink('#dasbor-superadmin', icon('fileBarChart'), 'Ikhtisar Sistem');
     navHtml += navLink('#kelola-pemilik', icon('users'), 'Kelola Pemilik');
+    navHtml += navLink('#kelola-pengumuman', icon('bell'), 'Kelola Pengumuman');
     navHtml += navLink('#pengaturan-platform', icon('settings'), 'Pengaturan Platform');
   } else {
     navHtml += navLink('#inventaris', icon('package'), 'Inventaris');
@@ -26,6 +27,7 @@ function renderSidebar() {
     navHtml += navLink('#transaksi', icon('arrowLeftRight'), 'Transaksi');
     navHtml += navLink('#laporan', icon('fileBarChart'), 'Laporan');
     navHtml += navLink('#keputusan', icon('lightbulb'), 'Keputusan');
+    navHtml += navLink('#pengumuman', icon('bell'), 'Pengumuman');
     navHtml += navLink('#pengaturan', icon('settings'), 'Pengaturan');
   }
 

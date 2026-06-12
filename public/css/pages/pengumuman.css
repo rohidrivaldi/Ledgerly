@@ -1,0 +1,82 @@
+/* =============================================
+   pengumuman.css — styles halaman pengumuman pemilik
+   ============================================= */
+
+/* kartu status saluran whatsapp */
+.peng-saluran-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+}
+.peng-saluran-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--emerald-50);
+  color: var(--emerald-600);
+}
+.peng-saluran-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--slate-900);
+}
+.peng-saluran-desc {
+  font-size: 13px;
+  color: var(--slate-500);
+  margin-top: 2px;
+  line-height: 1.5;
+}
+.peng-saluran-card.peng-saluran-kosong {
+  background: var(--slate-50);
+  border-style: dashed;
+}
+
+/* item pengumuman */
+.peng-item {
+  padding: 18px 20px;
+}
+.peng-item-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.peng-item-judul {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--slate-900);
+}
+.peng-item-tgl {
+  font-size: 11px;
+  color: var(--slate-400);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.peng-item-isi {
+  font-size: 13px;
+  color: var(--slate-600);
+  line-height: 1.7;
+}
+
+/* responsif mobile */
+@media (max-width: 600px) {
+  .peng-saluran-card {
+    flex-wrap: wrap;
+  }
+  .peng-saluran-card #peng-saluran-aksi {
+    width: 100%;
+  }
+  .peng-saluran-card #peng-saluran-aksi .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .peng-item-head {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
