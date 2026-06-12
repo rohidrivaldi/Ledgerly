@@ -131,26 +131,20 @@
         }
       });
 
-      // Hover untuk preview range — hanya update saat startDate ada tapi endDate belum
+      // Hover untuk preview range — update CLASS di tempat, JANGAN rebuild innerHTML.
+      // krn klo rebuild pas hover, node tanggal kehapus di tengah mousedown->mouseup,
+      // jadinya event click batal & tanggal akhir gabisa dipilih. ini bug lama.
       calEl.addEventListener('mouseover', function(e) {
         if (!self.startDate || self.endDate) return;
         var dayEl = e.target.closest('[data-date]');
         if (dayEl && dayEl.dataset.date) {
-          var hov = new Date(dayEl.dataset.date);
-          // Hanya re-render jika tanggal hover berubah
-          if (!self.hoverDate || !samaTgl(hov, self.hoverDate)) {
-            self.hoverDate = hov;
-            self._renderCalendar();
-          }
+          self._previewRange(dayEl.dataset.date);
         }
       });
 
       calEl.addEventListener('mouseleave', function() {
         if (!self.startDate || self.endDate) return;
-        if (self.hoverDate) {
-          self.hoverDate = null;
-          self._renderCalendar();
-        }
+        self._previewRange(null);
       });
     }
 
@@ -187,8 +181,25 @@
     this.open = true;
     popup.style.display = 'block';
     this._renderCalendar();
+    this._position();
 
-    // Posisi smart: buka ke atas atau ke bawah berdasarkan ruang tersedia
+    // Reposisi popup pas user scroll / resize biar gak lari kemana-mana.
+    // popup-nya position:fixed jadi harus ngikut posisi input scr manual.
+    // capture:true biar nangkep scroll di parent container juga (bukan cuma window)
+    var self = this;
+    this._onScrollResize = function() {
+      if (self.open) self._position();
+    };
+    window.addEventListener('scroll', this._onScrollResize, true);
+    window.addEventListener('resize', this._onScrollResize);
+  };
+
+  // ── Hitung & set posisi popup relatif ke input (atas/bawah sesuai ruang) ──
+  DateRangePicker.prototype._position = function() {
+    var popup   = document.getElementById(this.containerId + '-popup');
+    var inputEl = document.getElementById(this.containerId + '-input');
+    if (!popup || !inputEl) return;
+
     var rect     = inputEl.getBoundingClientRect();
     var popupH   = popup.offsetHeight || 300;
     var popupW   = popup.offsetWidth  || 280;
@@ -215,6 +226,13 @@
     if (!popup) return;
     this.open = false;
     popup.style.display = 'none';
+
+    // copot listener scroll/resize biar gak numpuk
+    if (this._onScrollResize) {
+      window.removeEventListener('scroll', this._onScrollResize, true);
+      window.removeEventListener('resize', this._onScrollResize);
+      this._onScrollResize = null;
+    }
   };
 
   // ── Pilih tanggal ──
@@ -329,6 +347,21 @@
     gridHtml += '</div>';
 
     calEl.innerHTML = headerHtml + hariHtml + gridHtml;
+  };
+
+  // ── Preview range pas hover — cuma toggle class, GAK rebuild innerHTML ──
+  // ini yg bikin klik tanggal akhir gak batal lagi
+  DateRangePicker.prototype._previewRange = function(iso) {
+    this.hoverDate = iso ? new Date(iso) : null;
+    var calEl = document.getElementById(this.containerId + '-cal');
+    if (!calEl) return;
+    var effEnd = this.endDate || this.hoverDate;
+    var self = this;
+    calEl.querySelectorAll('.drp-day[data-date]').forEach(function(el) {
+      var tgl = new Date(el.dataset.date);
+      var inRange = effEnd && self.startDate && diantara(tgl, self.startDate, effEnd);
+      el.classList.toggle('drp-in-range', !!inRange);
+    });
   };
 
   // ── API publik ──

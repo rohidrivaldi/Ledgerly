@@ -6,12 +6,18 @@ import { cpSync } from 'fs'
 // krn kita punya 3 html: index, login, dasbor
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+
+  // versi build buat cache-busting otomatis (dipakai pas build/deploy).
+  // di-stamp sekali per build jadi semua halaman seragam versinya
+  const buildVersion = Date.now()
+
   return {
     plugins: [
       {
         name: 'html-env-injection',
-        transformIndexHtml(html) {
-          return html.replace(
+        transformIndexHtml(html, ctx) {
+          // 1. inject env supabase/gemini ke window.process
+          let out = html.replace(
             '</head>',
             `  <script>
     window.process = {
@@ -24,6 +30,15 @@ export default defineConfig(({ mode }) => {
   </script>
 </head>`
           )
+
+          // 2. auto cache-busting: ganti semua ?v=NN di tag script jadi versi otomatis.
+          // jadi gak usah bump manual ?v=8 -> ?v=9 tiap edit js lagi.
+          // dev: tiap reload dpt timestamp baru (browser gak nyimpen js basi).
+          // build: satu versi per deploy, jadi tiap deploy user otomatis ambil js terbaru.
+          let ver = (ctx && ctx.server) ? Date.now() : buildVersion
+          out = out.replace(/\?v=\d+/g, '?v=' + ver)
+
+          return out
         }
       },
       {
