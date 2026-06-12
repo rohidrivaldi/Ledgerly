@@ -670,10 +670,12 @@ async function simpanProduk(e, produkId) {
 }
 
 function konfirmasiHapusProduk(produkId, nama) {
-  let setuju = confirm("Apakah Anda yakin ingin menghapus produk '" + nama + "'? Produk akan terhapus permanen dari database.");
-  if (setuju) {
-    hapusProduk(produkId);
-  }
+  konfirmasiUI({
+    judul: 'Hapus produk "' + nama + '"?',
+    pesan: 'Produk akan dihapus permanen dari database, tapi <b>riwayat transaksinya tetap aman</b> (nama & nilai lama tersimpan).',
+    teksYa: 'Ya, Hapus',
+    onYa: function() { hapusProduk(produkId); }
+  });
 }
 
 async function hapusProduk(produkId) {

@@ -492,13 +492,18 @@ function mulaiSuara() {
 }
 
 function konfirmasiHapusChat() {
-  if (confirm("Apakah Anda yakin ingin menghapus seluruh riwayat percakapan ini?")) {
-    localStorage.removeItem(dapatkanChatKey());
-    store.chatMessages = [
-      { from: 'bot', text: 'Halo! Saya asisten AI Ledgerly. Saya bisa bantu kamu:\n- Cek stok barang\n- Tambah stok masuk/keluar\n- Lihat produk terlaris\n\nSilakan tanya apa saja!' }
-    ];
-    renderChatPanel();
-  }
+  konfirmasiUI({
+    judul: 'Hapus riwayat obrolan?',
+    pesan: 'Seluruh riwayat percakapan dengan asisten AI akan dihapus permanen.',
+    teksYa: 'Ya, Hapus',
+    onYa: function() {
+      localStorage.removeItem(dapatkanChatKey());
+      store.chatMessages = [
+        { from: 'bot', text: 'Halo! Saya asisten AI Ledgerly. Saya bisa bantu kamu:\n- Cek stok barang\n- Tambah stok masuk/keluar\n- Lihat produk terlaris\n\nSilakan tanya apa saja!' }
+      ];
+      renderChatPanel();
+    }
+  });
 }
 
 // Mengatur visibilitas Chatbot AI (FAB & Panel) berdasarkan role dan pengaturan pengguna

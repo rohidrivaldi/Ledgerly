@@ -283,10 +283,12 @@ async function simpanPemilik(e, userId) {
 
 // notifikasi konfirmasi sebelum menghapus akun pemilik
 function konfirmasiHapusPemilik(userId, nama) {
-  let setuju = confirm("Apakah Anda yakin ingin menghapus akun pemilik '" + nama + "'? Data profil akan dihapus permanen dari database.");
-  if (setuju) {
-    hapusPemilik(userId);
-  }
+  konfirmasiUI({
+    judul: 'Hapus akun "' + nama + '"?',
+    pesan: 'Data profil pemilik ini akan dihapus permanen dari database.',
+    teksYa: 'Ya, Hapus',
+    onYa: function() { hapusPemilik(userId); }
+  });
 }
 
 // Hapus data pemilik dari database berdasarkan userId

@@ -358,10 +358,12 @@ function initTransaksiSearch() {
 // ============ FUNGSI BATAL/HAPUS TRANSAKSI ============
 
 function konfirmasiHapusTransaksi(txId, produkNama, jumlah, tipe, produkId) {
-  let setuju = confirm("Apakah Anda yakin ingin membatalkan transaksi '" + produkNama + " (" + tipe + ")' sejumlah " + jumlah + " unit? Stok produk terkait akan disesuaikan kembali.");
-  if (setuju) {
-    hapusTransaksi(txId, jumlah, tipe, produkId);
-  }
+  konfirmasiUI({
+    judul: 'Batalkan transaksi ini?',
+    pesan: 'Transaksi <b>' + produkNama + ' (' + tipe + ')</b> sejumlah <b>' + jumlah + ' unit</b> akan dibatalkan. Stok produk terkait akan disesuaikan kembali.',
+    teksYa: 'Ya, Batalkan',
+    onYa: function() { hapusTransaksi(txId, jumlah, tipe, produkId); }
+  });
 }
 
 async function hapusTransaksi(txId, jumlah, tipe, produkId) {

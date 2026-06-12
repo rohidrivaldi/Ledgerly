@@ -107,19 +107,24 @@ function cekLogin() {
 }
 
 // delete user data session saat logout
-async function logout() {
-  if (confirm("Apakah Anda yakin ingin keluar dari sistem Ledgerly?")) {
-    if (window.supabaseClient) {
-      try {
-        await window.supabaseClient.auth.signOut();
-      } catch (err) {
-        console.warn("Gagal logout dari Supabase session:", err.message);
+function logout() {
+  konfirmasiUI({
+    judul: 'Keluar dari Ledgerly?',
+    pesan: 'Anda akan keluar dari sistem dan kembali ke halaman login.',
+    teksYa: 'Ya, Keluar',
+    onYa: async function() {
+      if (window.supabaseClient) {
+        try {
+          await window.supabaseClient.auth.signOut();
+        } catch (err) {
+          console.warn("Gagal logout dari Supabase session:", err.message);
+        }
       }
+      localStorage.removeItem('ledgerly_user');
+      store.user = null;
+      window.location.href = 'login.html';
     }
-    localStorage.removeItem('ledgerly_user');
-    store.user = null;
-    window.location.href = 'login.html';
-  }
+  });
 }
 
 // -- mutasi data --

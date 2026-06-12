@@ -138,3 +138,56 @@ function dapatkanChatKey() {
   }
   return 'ledgerly_chat_history'; // fallback
 }
+
+// ============ MODAL KONFIRMASI UI (reusable) ============
+// pengganti confirm() bawaan browser yg jelek. dipake di mana2: logout,
+// hapus produk, batal transaksi, dll. tinggal kasih opsi + callback onYa.
+// contoh: konfirmasiUI({ judul:'Hapus?', pesan:'yakin?', onYa: function(){...} })
+function konfirmasiUI(opt) {
+  opt = opt || {};
+  var judul = opt.judul || 'Konfirmasi';
+  var pesan = opt.pesan || 'Apakah Anda yakin?';
+  var teksYa = opt.teksYa || 'Ya';
+  var teksBatal = opt.teksBatal || 'Batal';
+  var bahaya = opt.bahaya !== false; // default tombol merah (danger)
+  var onYa = typeof opt.onYa === 'function' ? opt.onYa : function() {};
+
+  // hapus modal lama biar gak numpuk
+  var lama = document.getElementById('modal-konfirmasi-ui');
+  if (lama) lama.remove();
+
+  var warnaIkon = bahaya ? 'var(--rose-600)' : 'var(--indigo-600)';
+  var bgIkon = bahaya ? 'var(--rose-50)' : 'var(--indigo-50)';
+  var ikon = bahaya ? icon('alertTriangle', 20) : icon('helpCircle', 20);
+  var klsTombol = bahaya ? 'btn-danger' : 'btn-primary';
+
+  var modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.id = 'modal-konfirmasi-ui';
+  modal.innerHTML =
+    '<div class="modal-box" style="max-width:420px;">'
+    + '<div style="display:flex; align-items:flex-start; gap:14px; margin-bottom:18px;">'
+    + '<div style="flex-shrink:0; width:42px; height:42px; border-radius:50%; background:' + bgIkon + '; color:' + warnaIkon + '; display:grid; place-items:center;">' + ikon + '</div>'
+    + '<div>'
+    + '<div class="modal-title">' + judul + '</div>'
+    + '<div class="modal-desc" style="margin-top:6px; line-height:1.5;">' + pesan + '</div>'
+    + '</div>'
+    + '</div>'
+    + '<div style="display:flex; justify-content:flex-end; gap:8px;">'
+    + '<button class="btn btn-secondary" id="konfirmasi-ui-batal">' + teksBatal + '</button>'
+    + '<button class="btn ' + klsTombol + '" id="konfirmasi-ui-ya">' + teksYa + '</button>'
+    + '</div>'
+    + '</div>';
+
+  function tutup() { if (modal.parentNode) modal.parentNode.removeChild(modal); }
+
+  // klik overlay (luar box) = batal
+  modal.addEventListener('click', function(e) { if (e.target === modal) tutup(); });
+
+  document.body.appendChild(modal);
+  modal.querySelector('#konfirmasi-ui-batal').addEventListener('click', tutup);
+  modal.querySelector('#konfirmasi-ui-ya').addEventListener('click', function() {
+    tutup();
+    onYa();
+  });
+}
