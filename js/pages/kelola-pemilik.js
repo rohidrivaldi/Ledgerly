@@ -94,7 +94,7 @@ function renderRowsPemilik(data) {
       let deleteBtn =
         u.role !== "superadmin"
           ? `<button class="btn btn-danger btn-xs" onclick="konfirmasiHapusPemilik('${u.user_id}', '${u.nama}')" title="Hapus Akun">${icon("x", 12)} Hapus</button>`
-          : '<span style="color:var(--slate-400); font-size:11px; font-style:italic; padding:4px 8px;">Utama</span>';
+          : '<span style="color:var(--slate-400); font-size:11px; font-style:italic;">Utama</span>';
 
       return `
       <tr>
@@ -104,10 +104,10 @@ function renderRowsPemilik(data) {
         <td><span class="badge ${paketBadge}">${paketLabel}</span></td>
         <td><span class="badge ${badgeColor}"><span class="badge-dot ${badgeDot}"></span>${u.role || "pemilik"}</span></td>
         <td class="td-mono">${waNum}</td>
-        <td class="text-center">
-          <div style="display:flex; justify-content:center; gap:8px; align-items:center;">
+        <td>
+          <div style="display:flex; justify-content:flex-end; gap:8px; align-items:center;">
             <button class="btn btn-secondary btn-xs" onclick="bukaModalPemilik('${u.user_id}')" title="Ubah Profil">${icon("settings", 12)} Ubah</button>
-            ${deleteBtn}
+            <span style="display:inline-flex; justify-content:flex-end; align-items:center; width:96px; flex-shrink:0;">${deleteBtn}</span>
           </div>
         </td>
       </tr>
@@ -156,9 +156,9 @@ function bukaModalPemilik(userId) {
   let title = userId ? "Ubah Profil Pemilik" : "Tambah Pemilik Baru";
 
   let modalHtml = `
-    <div class="modal-overlay" id="modal-pemilik-container">
+    <div class="modal-overlay" id="modal-pemilik-container" onclick="if(event.target.id==='modal-pemilik-container') tutupModalPemilik()">
       <div class="modal-box" style="max-width:480px;">
-        <div style="display:flex; justify-content:between; align-items:start; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; gap:12px;">
           <div>
             <div class="modal-title">${title}</div>
             <div class="modal-desc">Kelola detail kredensial dan hak akses bisnis</div>
