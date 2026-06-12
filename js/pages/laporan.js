@@ -4,6 +4,17 @@
    ============================================= */
 
 function initLaporan() {
+  // Init DateRangePicker
+  if (typeof buatDateRangePicker === 'function' && document.getElementById('drp-laporan')) {
+    if (!window._drp_instances || !window._drp_instances['drp-laporan']) {
+      buatDateRangePicker({
+        containerId: 'drp-laporan',
+        placeholder: 'Pilih rentang periode...',
+        onChange: function() { initLaporan(); }
+      });
+    }
+  }
+
   let ring = hitungRingkasanLaporan();
 
   // 1. Render Stat Cards
@@ -35,9 +46,8 @@ function initLaporan() {
 // ============ HELPERS FILTER PERIODE ============
 
 function getPeriodeLaporan() {
-  let startVal = (document.getElementById('filter-lap-start') || {}).value || '';
-  let endVal   = (document.getElementById('filter-lap-end')   || {}).value || '';
-  return { startVal: startVal, endVal: endVal };
+  var drpVal = (typeof getDrpValue === 'function') ? getDrpValue('drp-laporan') : { start: '', end: '' };
+  return { startVal: drpVal.start || '', endVal: drpVal.end || '' };
 }
 
 function getDaftarTxLaporan() {
@@ -71,11 +81,7 @@ function getLabelPeriodeLaporan() {
 }
 
 function resetPeriodeLaporan() {
-  let startEl = document.getElementById('filter-lap-start');
-  let endEl   = document.getElementById('filter-lap-end');
-  if (startEl) startEl.value = '';
-  if (endEl)   endEl.value   = '';
-  // Re-render stat cards setelah reset
+  if (typeof resetDrp === 'function') resetDrp('drp-laporan');
   initLaporan();
 }
 

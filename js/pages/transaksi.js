@@ -33,7 +33,19 @@ function initTransaksi() {
   txHalamanSkrg = 1;
   renderTransaksiTable();
 
-  // 4. Setup Search Input
+  // 4. Init DateRangePicker
+  if (typeof buatDateRangePicker === 'function' && document.getElementById('drp-transaksi')) {
+    buatDateRangePicker({
+      containerId: 'drp-transaksi',
+      placeholder: 'Rentang tanggal...',
+      onChange: function() {
+        txHalamanSkrg = 1;
+        renderTransaksiTable();
+      }
+    });
+  }
+
+  // 5. Setup Search Input
   initTransaksiSearch();
 }
 
@@ -43,8 +55,11 @@ function getDaftarTxFiltered() {
   let q          = (document.getElementById('cari-transaksi')  || {}).value || '';
   let tipeFilter = (document.getElementById('filter-tx-tipe')  || {}).value || '';
   let metFilter  = (document.getElementById('filter-tx-metode')|| {}).value || '';
-  let startVal   = (document.getElementById('filter-tx-start') || {}).value || '';
-  let endVal     = (document.getElementById('filter-tx-end')   || {}).value || '';
+
+  // Baca dari DateRangePicker custom
+  var drpVal = (typeof getDrpValue === 'function') ? getDrpValue('drp-transaksi') : { start: '', end: '' };
+  let startVal = drpVal.start;
+  let endVal   = drpVal.end;
 
   var startDate = startVal ? new Date(startVal) : null;
   var endDate   = endVal   ? new Date(endVal)   : null;
@@ -138,11 +153,12 @@ function filterTransaksiUpdate() {
 }
 
 function resetFilterTransaksi() {
-  let ids = ['cari-transaksi','filter-tx-tipe','filter-tx-metode','filter-tx-start','filter-tx-end'];
+  let ids = ['cari-transaksi','filter-tx-tipe','filter-tx-metode'];
   ids.forEach(function(id) {
     let el = document.getElementById(id);
     if (el) el.value = '';
   });
+  if (typeof resetDrp === 'function') resetDrp('drp-transaksi');
   txHalamanSkrg = 1;
   renderTransaksiTable();
 }

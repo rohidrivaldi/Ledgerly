@@ -1,0 +1,232 @@
+/* =============================================
+   daterangepicker.css — style komponen date range picker
+   Mirip Mantine UI — clean, modern, indigo brand
+   ============================================= */
+
+/* ── Wrapper & Input ── */
+.drp-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.drp-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1.5px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--slate-400);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  min-width: 200px;
+  user-select: none;
+}
+
+.drp-input:hover {
+  border-color: var(--indigo-400);
+}
+
+.drp-input:focus,
+.drp-input.drp-has-value {
+  border-color: var(--indigo-500);
+}
+
+.drp-input-icon {
+  flex-shrink: 0;
+  color: var(--slate-400);
+  display: flex;
+  align-items: center;
+}
+
+.drp-input-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drp-clear-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--slate-100);
+  border: none;
+  cursor: pointer;
+  color: var(--slate-500);
+  padding: 0;
+  transition: background 0.15s;
+}
+
+.drp-clear-btn:hover {
+  background: var(--slate-200);
+  color: var(--slate-700);
+}
+
+/* ── Popup ── */
+.drp-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 3000;
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(15, 23, 42, 0.06);
+  padding: 16px;
+  min-width: 280px;
+  animation: drp-fade-in 0.12s ease;
+}
+
+@keyframes drp-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ── Calendar ── */
+.drp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.drp-month-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--slate-900);
+}
+
+.drp-nav-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--slate-200);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--slate-600);
+  line-height: 1;
+  padding: 0;
+  transition: all 0.12s;
+}
+
+.drp-nav-btn:hover {
+  background: var(--indigo-50);
+  border-color: var(--indigo-300);
+  color: var(--indigo-700);
+}
+
+/* Baris nama hari */
+.drp-days-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.drp-days-header span {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--slate-400);
+  padding: 4px 0;
+  text-transform: uppercase;
+}
+
+/* Grid tanggal */
+.drp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.drp-day {
+  text-align: center;
+  font-size: 13px;
+  padding: 7px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--slate-700);
+  transition: all 0.1s;
+  position: relative;
+}
+
+.drp-day.empty {
+  cursor: default;
+  pointer-events: none;
+}
+
+.drp-day:not(.empty):hover {
+  background: var(--indigo-50);
+  color: var(--indigo-700);
+}
+
+/* Hari ini */
+.drp-day.drp-today {
+  font-weight: 700;
+  color: var(--indigo-600);
+}
+
+.drp-day.drp-today::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--indigo-500);
+}
+
+/* Tanggal dipilih (start/end) */
+.drp-day.drp-selected {
+  background: var(--indigo-600) !important;
+  color: #fff !important;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+.drp-day.drp-selected.drp-today::after {
+  background: rgba(255,255,255,0.7);
+}
+
+/* Range di antara start dan end */
+.drp-day.drp-in-range {
+  background: var(--indigo-50);
+  color: var(--indigo-700);
+  border-radius: 0;
+}
+
+/* Ujung range supaya rapi */
+.drp-day.drp-start:not(.drp-end) {
+  border-radius: 8px 0 0 8px;
+}
+
+.drp-day.drp-end:not(.drp-start) {
+  border-radius: 0 8px 8px 0;
+}
+
+/* Weekend */
+.drp-day.drp-weekend:not(.drp-selected) {
+  color: var(--rose-500);
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .drp-popup {
+    min-width: 260px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

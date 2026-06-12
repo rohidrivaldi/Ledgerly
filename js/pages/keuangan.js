@@ -21,11 +21,23 @@ function initKeuangan() {
     `;
   }
 
-  // Kembalikan nilai date picker jika ada state
-  let startEl = document.getElementById('filter-keu-start');
-  let endEl   = document.getElementById('filter-keu-end');
-  if (startEl && keuCustomStart) startEl.value = keuCustomStart;
-  if (endEl   && keuCustomEnd)   endEl.value   = keuCustomEnd;
+  // Init DateRangePicker jika belum
+  if (typeof buatDateRangePicker === 'function' && document.getElementById('drp-keuangan')) {
+    if (!window._drp_instances || !window._drp_instances['drp-keuangan']) {
+      buatDateRangePicker({
+        containerId: 'drp-keuangan',
+        placeholder: 'Rentang tanggal...',
+        onChange: function(start, end) {
+          keuCustomStart = start;
+          keuCustomEnd   = end;
+          // Hapus highlight tombol periode
+          let ps = document.getElementById('keu-period-selector');
+          if (ps) ps.querySelectorAll('.period-btn').forEach(function(b) { b.classList.remove('active'); });
+          renderKeuangan();
+        }
+      });
+    }
+  }
 
   renderKeuangan();
 }
@@ -172,16 +184,11 @@ function renderKeuangan() {
 // ============ FILTER CUSTOM ============
 
 function filterKeuanganCustom() {
-  keuCustomStart = (document.getElementById('filter-keu-start') || {}).value || '';
-  keuCustomEnd   = (document.getElementById('filter-keu-end')   || {}).value || '';
-  // Hapus highlight tombol periode jika pakai custom
+  keuCustomStart = (typeof getDrpValue === 'function') ? getDrpValue('drp-keuangan').start : '';
+  keuCustomEnd   = (typeof getDrpValue === 'function') ? getDrpValue('drp-keuangan').end   : '';
   if (keuCustomStart || keuCustomEnd) {
     let periodSel = document.getElementById('keu-period-selector');
-    if (periodSel) {
-      periodSel.querySelectorAll('.period-btn').forEach(function(btn) {
-        btn.classList.remove('active');
-      });
-    }
+    if (periodSel) periodSel.querySelectorAll('.period-btn').forEach(function(btn) { btn.classList.remove('active'); });
   }
   renderKeuangan();
 }
@@ -189,16 +196,10 @@ function filterKeuanganCustom() {
 function resetFilterKeuangan() {
   keuCustomStart = '';
   keuCustomEnd   = '';
-  let startEl = document.getElementById('filter-keu-start');
-  let endEl   = document.getElementById('filter-keu-end');
-  if (startEl) startEl.value = '';
-  if (endEl)   endEl.value   = '';
+  if (typeof resetDrp === 'function') resetDrp('drp-keuangan');
   renderKeuangan();
-  // Re-render period buttons agar active state benar
   let periodSel = document.getElementById('keu-period-selector');
-  if (periodSel) {
-    periodSel.innerHTML = `${periodBtn(7)}${periodBtn(30)}${periodBtn(60)}`;
-  }
+  if (periodSel) periodSel.innerHTML = `${periodBtn(7)}${periodBtn(30)}${periodBtn(60)}`;
 }
 
 // ============ HELPERS ============
@@ -220,10 +221,7 @@ function gantiPeriode(hari) {
   periodeHari    = hari;
   keuCustomStart = '';
   keuCustomEnd   = '';
-  let startEl = document.getElementById('filter-keu-start');
-  let endEl   = document.getElementById('filter-keu-end');
-  if (startEl) startEl.value = '';
-  if (endEl)   endEl.value   = '';
+  if (typeof resetDrp === 'function') resetDrp('drp-keuangan');
   navigasi('#keuangan');
 }
 

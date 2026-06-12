@@ -69,7 +69,19 @@ function initInventaris() {
   invHalamanSkrg = 1;
   renderInventarisTable();
 
-  // 6. Init Chart & Search input
+  // 6. Init DateRangePicker
+  if (typeof buatDateRangePicker === 'function' && document.getElementById('drp-inventaris')) {
+    buatDateRangePicker({
+      containerId: 'drp-inventaris',
+      placeholder: 'Rentang tanggal edit...',
+      onChange: function(start, end) {
+        invHalamanSkrg = 1;
+        renderInventarisTable();
+      }
+    });
+  }
+
+  // 7. Init Chart & Search input
   initInventarisChart();
   initInventarisSearch();
 }
@@ -79,8 +91,11 @@ function renderInventarisTable() {
   let q          = (document.getElementById('cari-produk')          || {}).value || '';
   let katFilter  = (document.getElementById('filter-inv-kategori')  || {}).value || '';
   let statFilter = (document.getElementById('filter-inv-status')    || {}).value || '';
-  let startVal   = (document.getElementById('filter-inv-start')     || {}).value || '';
-  let endVal     = (document.getElementById('filter-inv-end')       || {}).value || '';
+
+  // Baca dari DateRangePicker custom
+  var drpVal = (typeof getDrpValue === 'function') ? getDrpValue('drp-inventaris') : { start: '', end: '' };
+  let startVal = drpVal.start;
+  let endVal   = drpVal.end;
 
   var startDate = startVal ? new Date(startVal) : null;
   var endDate   = endVal   ? new Date(endVal)   : null;
@@ -171,11 +186,12 @@ function gantiHalamanInv(halaman) {
 }
 
 function resetFilterInventaris() {
-  let ids = ['cari-produk','filter-inv-kategori','filter-inv-status','filter-inv-start','filter-inv-end'];
+  let ids = ['cari-produk','filter-inv-kategori','filter-inv-status'];
   ids.forEach(function(id) {
     let el = document.getElementById(id);
     if (el) el.value = '';
   });
+  if (typeof resetDrp === 'function') resetDrp('drp-inventaris');
   invHalamanSkrg = 1;
   renderInventarisTable();
 }

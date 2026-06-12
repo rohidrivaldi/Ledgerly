@@ -54,9 +54,7 @@
         <option value="rendah">Stok Rendah</option>
       </select>
       <div style="display:flex; align-items:center; gap:4px;">
-        <input class="form-input" type="date" id="filter-inv-start" style="font-size:12px; padding:6px 8px;" onchange="renderInventarisTable()">
-        <span style="color:var(--slate-400); font-size:12px;">s/d</span>
-        <input class="form-input" type="date" id="filter-inv-end" style="font-size:12px; padding:6px 8px;" onchange="renderInventarisTable()">
+        <div id="drp-inventaris" style="min-width:220px;"></div>
         <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="resetFilterInventaris()">Reset</button>
       </div>
     </div>
