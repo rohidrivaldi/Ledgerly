@@ -368,7 +368,8 @@ async function navigasi(hash) {
       muatStylesHalaman(pageName);
       
       // fetch file HTML halaman dari folder public/pages
-      let response = await fetch(`pages/${pageName}.html`);
+      // ?cb= untuk cache busting agar browser tidak pakai versi lama
+      let response = await fetch(`pages/${pageName}.html?cb=${window._appVersion || Date.now()}`);
       if (!response.ok) throw new Error(`Gagal memuat halaman: ${response.statusText}`);
       
       // tampilkan HTML halaman di slot konten
