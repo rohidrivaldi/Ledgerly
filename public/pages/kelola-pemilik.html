@@ -3,9 +3,7 @@
     <h1 class="page-title">Kelola Pemilik Bisnis</h1>
     <p class="page-desc">Manajemen akun pemilik toko dan UMKM terdaftar</p>
   </div>
-  <button class="btn btn-primary flex-center" onclick="bukaModalPemilik()" style="gap:6px;">
-    <span id="kp-plus-icon"></span>Tambah Pemilik
-  </button>
+  <button class="btn btn-primary flex-center" onclick="bukaModalPemilik()"><span id="kp-plus-icon"></span>Tambah Pemilik</button>
 </div>
 
 <div class="card">
@@ -14,9 +12,9 @@
       <div class="card-title">Daftar Pemilik Toko</div>
       <div class="card-subtitle" id="sub-total-pemilik">Memuat data...</div>
     </div>
-    <input class="form-input" type="text" id="cari-pemilik" placeholder="Cari nama/email..." style="max-width:240px; font-size:12px;" oninput="filterPemilik()">
+    <input class="form-input" type="text" id="cari-pemilik" placeholder="Cari nama/email..." style="max-width: 200px" oninput="filterPemilik()" />
   </div>
-  <div style="overflow-x:auto;">
+  <div style="overflow-x: auto">
     <table class="tabel" id="tabel-pemilik">
       <thead>
         <tr>
@@ -26,12 +24,12 @@
           <th>Paket</th>
           <th>Peran</th>
           <th>No. WhatsApp</th>
-          <th class="text-right" style="width:200px;">Aksi</th>
+          <th class="text-right" style="width: 200px">Aksi</th>
         </tr>
       </thead>
       <tbody id="body-tabel-pemilik">
         <tr>
-          <td colspan="7" class="text-center" style="padding:40px; color:var(--slate-400);">Memuat data dari database cloud...</td>
+          <td colspan="7" class="text-center td-mono p-40">Memuat data dari database cloud...</td>
         </tr>
       </tbody>
     </table>
