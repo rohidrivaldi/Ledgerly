@@ -2,13 +2,25 @@
    laporan.css — styles khusus halaman laporan
    ============================================= */
 
+.custom-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
 /* -- export cards (laporan) -- */
 .export-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  column-gap: 14px;
 }
-@media (min-width: 768px) { .export-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 768px) {
+  .export-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 .export-card {
   display: flex;
   align-items: center;
@@ -23,7 +35,8 @@
 .export-icon {
   display: grid;
   place-items: center;
-  width: 44px; height: 44px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-xl);
   background: var(--indigo-50);
   color: var(--indigo-600);
@@ -37,11 +50,9 @@
 .export-desc {
   font-size: 12px;
   color: var(--slate-500);
-  margin-top: 2px;
 }
 .export-format {
   display: inline-block;
-  margin-top: 8px;
   padding: 2px 8px;
   border-radius: var(--radius-full);
   background: var(--slate-100);
@@ -60,7 +71,19 @@
   font-size: 14px;
 }
 .sync-dot {
-  width: 8px; height: 8px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--emerald-500);
+}
+
+.custom-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.green-icon {
+  background: var(--emerald-50);
+  color: var(--emerald-600);
 }
