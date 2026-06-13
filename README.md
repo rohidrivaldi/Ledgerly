@@ -97,6 +97,12 @@ Ledgerly mengadopsi arsitektur **Pure Decoupled SPA (Single Page Application)** 
 * Sakelar tema terang/gelap di seluruh halaman (landing, login, register, dan dashboard) lewat tombol ikon yang mudah dijangkau.
 * Preferensi tema tersimpan otomatis di perangkat pengguna (localStorage) dan diterapkan tanpa kedip (anti-FOUC) saat halaman dimuat ulang.
 * Default tetap mode terang dan responsif penuh di mobile maupun desktop tanpa memengaruhi performa (Lighthouse/PageSpeed).
+
+### 10. Login dengan Google (OAuth)
+* Opsi masuk cepat menggunakan akun Google via Supabase Auth (OAuth 2.0).
+* Bersifat **gated** — hanya email yang sudah terdaftar di Ledgerly yang boleh masuk. Email yang belum terdaftar otomatis ditolak (akun "nyangkut" dibersihkan lewat serverless `/api/delete-orphan`) dengan pesan untuk mendaftar terlebih dahulu.
+* Tombol selalu memunculkan pemilih akun Google (`prompt=select_account`).
+
 ---
 
 ## 📂 Struktur Arsitektur Kode
@@ -104,9 +110,11 @@ Ledgerly mengadopsi arsitektur **Pure Decoupled SPA (Single Page Application)** 
 ```
 ledgerly/
 ├── index.html              # Landing page promosi utama
-├── login.html              # Halaman gerbang masuk auth
+├── login.html              # Halaman gerbang masuk auth (+ Google OAuth & Turnstile)
 ├── register.html           # Halaman pendaftaran akun baru
 ├── dasbor.html             # Shell utama Single Page Application (SPA)
+├── syarat-ketentuan.html   # Halaman Syarat & Ketentuan
+├── kebijakan-privasi.html  # Halaman Kebijakan Privasi
 ├── css/
 │   ├── style.css           # Sistem desain & token global
 │   ├── landing.css         # Styling landing page
@@ -123,6 +131,7 @@ ledgerly/
 │   ├── supabase.js         # Koneksi Supabase client & inisialisasi
 │   ├── register.js         # Logika pendaftaran akun + validasi
 │   ├── theme.js            # Toggle dark/light mode (anti-FOUC, localStorage)
+│   ├── chat-demo.js        # Animasi simulasi chat AI di landing (infinite loop)
 │   ├── komponen/
 │   │   ├── sidebar.js      # Sidebar navigasi SPA
 │   │   ├── topbar.js       # Topbar search & notifikasi
@@ -140,10 +149,14 @@ ledgerly/
 │   └── vendor/             # Pustaka pihak ketiga di-self-host (anti-CDN/503)
 ├── api/                    # Vercel Serverless Functions
 │   ├── create-user.js      # Buat akun pemilik oleh superadmin (service_role + JWT guard)
+│   ├── delete-orphan.js    # Hapus akun OAuth "nyangkut" milik pemanggil (gate login Google)
 │   └── chatbot.js          # Proxy Gemini AI ber-otentikasi JWT
 ├── public/                 # Aset statis terisolasi (MIME Types-safe)
 │   ├── pages/              # Kumpulan kerangka HTML murni per halaman (.html)
 │   ├── js/vendor/          # Lokasi fisik pustaka self-host (di-serve apa adanya)
+│   ├── 404.html            # Halaman not-found kustom (auto-serve oleh Vercel)
+│   ├── robots.txt          # Aturan crawler + lokasi sitemap
+│   ├── sitemap.xml         # Peta URL publik untuk mesin pencari
 │   └── sw.js               # Service Worker (cache PWA, network-first)
 ├── vite.config.js          # Konfigurasi Vite + dev proxy /api lokal
 └── vercel.json             # Rewrites, cleanUrls, security headers (CSP, HSTS, dll)
@@ -191,6 +204,8 @@ Ledgerly dirancang dengan prinsip pertahanan berlapis (*defense in depth*):
 * **Content Security Policy (CSP) ketat**: `script-src 'self'` — seluruh pustaka di-self-host, tidak ada eksekusi skrip dari domain eksternal. Dilengkapi header HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, dan COOP via [vercel.json](vercel.json).
 * **Validasi Input Berlapis**: Nomor WhatsApp, panjang kata sandi, dan field wajib divalidasi baik di sisi klien maupun server (serverless + dev proxy) sehingga bypass frontend tetap tertolak.
 * **Keandalan Aset (anti-supply-chain & anti-503)**: Seluruh pustaka pihak ketiga di-self-host di `public/js/vendor/`, menghilangkan ketergantungan pada CDN eksternal yang bisa down atau disusupi.
+* **Proteksi Anti-Bot (Cloudflare Turnstile)**: CAPTCHA pada form login, register, dan reset kata sandi untuk mencegah bot/credential stuffing. Token diverifikasi server-side oleh Supabase Auth (Secret Key tetap di server).
+* **Login Google Ber-gate**: OAuth Google hanya mengizinkan email yang sudah terdaftar; akun OAuth "nyangkut" dari email tak dikenal dibersihkan otomatis lewat serverless `/api/delete-orphan` (hanya bisa menghapus akun milik pemanggil sendiri yang belum punya profil).
 
 ---
 
@@ -203,6 +218,9 @@ Rangkuman peningkatan signifikan pada iterasi terakhir proyek:
 * **Auto-Provisioning Profil**: Trigger database otomatis membuat profil pengguna saat pendaftaran sehingga akun baru langsung tampil di panel superadmin.
 * **Perbaikan Dasbor Superadmin**: Statistik & grafik paket langganan akurat (4 segmen: Starter, Business Trial, Business Langganan, Enterprise) dengan status layanan platform yang jujur.
 * **Stabilitas Service Worker**: Strategi cache *network-first* untuk mencegah penyajian versi lama aplikasi.
+* **Login Google (OAuth) ber-gate** & **CAPTCHA Cloudflare Turnstile** pada form autentikasi.
+* **Konfirmasi kata sandi** (input ganda) di pendaftaran + halaman **Syarat & Ketentuan** dan **Kebijakan Privasi**.
+* **Polish landing & SEO**: simulasi chat AI animasi infinite-loop (CLS 0), meta Open Graph/Twitter/JSON-LD, dan halaman **404 kustom**.
 
 ---
 
