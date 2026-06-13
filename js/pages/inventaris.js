@@ -42,7 +42,7 @@ function initInventaris() {
             <div class="alert-item">
               <div class="alert-icon">${icon('alertTriangle')}</div>
               <div class="alert-info">
-                <div class="nama">${p.nama}</div>
+                <div class="nama">${escapeHtml(p.nama)}</div>
                 <div class="stok-text">Stok: ${p.stok} / Min: ${p.minStok}</div>
                 <div class="progress-bar">
                   <div class="progress-fill" style="width:${persen}%; background:${persen < 50 ? 'var(--rose-500)' : 'var(--amber-500)'};"></div>
@@ -108,17 +108,25 @@ function renderInventarisTable() {
           let isRendah = p.stok < p.minStok;
           // isi QR: pake barcode klo ada, fallback ke SKU. dipake buat scan di kasir
           let kodeQR = p.barcode || p.sku || '';
+          // escape nilai produk sblm masuk innerHTML/atribut (anti-XSS).
+          // nama/sku/kategori bisa diisi via import CSV/Excel atau chatbot.
+          let namaEsc = escapeHtml(p.nama);
+          let skuEsc = escapeHtml(p.sku);
+          let katEsc = escapeHtml(p.kategori);
+          let idAttr = escapeAttr(p.id);
+          let namaAttr = escapeAttr(p.nama);
+          let qrAttr = escapeAttr(kodeQR);
           return `
             <tr>
               <td class="text-center">
-                <input type="checkbox" class="inv-row-check" value="${p.id}" data-nama="${(p.nama || '').replace(/"/g, '&quot;')}" onclick="updateBulkBar()">
+                <input type="checkbox" class="inv-row-check" value="${idAttr}" data-nama="${namaAttr}" onclick="updateBulkBar()">
               </td>
               <td class="text-center">
-                <canvas class="qr-thumb" data-qr="${kodeQR}" data-nama="${(p.nama || '').replace(/"/g, '&quot;')}" width="40" height="40" title="Klik utk perbesar & unduh" style="cursor:pointer; vertical-align:middle;"></canvas>
+                <canvas class="qr-thumb" data-qr="${qrAttr}" data-nama="${namaAttr}" width="40" height="40" title="Klik utk perbesar & unduh" style="cursor:pointer; vertical-align:middle;"></canvas>
               </td>
-              <td class="td-mono">${p.sku}</td>
-              <td class="td-bold">${p.nama}</td>
-              <td>${p.kategori}</td>
+              <td class="td-mono">${skuEsc}</td>
+              <td class="td-bold">${namaEsc}</td>
+              <td>${katEsc}</td>
               <td class="td-right td-semibold">${p.stok}</td>
               <td class="td-right">${p.minStok}</td>
               <td class="td-right">${formatRupiah(p.hargaBeli)}</td>
@@ -130,10 +138,10 @@ function renderInventarisTable() {
               </td>
               <td class="text-center">
                 <div style="display:flex; justify-content:center; gap:6px;">
-                  <button class="btn btn-secondary btn-xs" style="padding:4px;" onclick="bukaModalProduk('${p.id}')" title="Edit">
+                  <button class="btn btn-secondary btn-xs" style="padding:4px;" onclick="bukaModalProduk('${idAttr}')" title="Edit">
                     ${icon('settings', 12)}
                   </button>
-                  <button class="btn btn-danger btn-xs" style="padding:4px;" onclick="konfirmasiHapusProduk('${p.id}', '${p.nama}')" title="Hapus">
+                  <button class="btn btn-danger btn-xs" style="padding:4px;" onclick="konfirmasiHapusProduk('${idAttr}', '${namaAttr}')" title="Hapus">
                     ${icon('x', 12)}
                   </button>
                 </div>

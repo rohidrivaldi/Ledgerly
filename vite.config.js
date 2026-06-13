@@ -63,6 +63,20 @@ export default defineConfig(({ mode }) => {
             if (req.method !== 'POST') {
               res.statusCode = 405; res.end('Method Not Allowed'); return;
             }
+            // verifikasi sesi user dulu (mirror api/chatbot.js produksi) — endpoint
+            // gak boleh kebuka buat anon biar kuota Gemini gak di-abuse.
+            let SUPABASE_URL = env.VITE_SUPABASE_URL;
+            let ANON_KEY = env.VITE_SUPABASE_ANON_KEY;
+            let token = (req.headers['authorization'] || '').replace(/^Bearer\s+/i, '');
+            if (!token) { res.statusCode = 401; res.end('Harus login dulu.'); return; }
+            if (SUPABASE_URL && ANON_KEY) {
+              try {
+                let meR = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + token } });
+                if (!meR.ok) { res.statusCode = 401; res.end('Sesi tidak valid.'); return; }
+              } catch (e) { res.statusCode = 401; res.end('Gagal verifikasi sesi.'); return; }
+            } else {
+              res.statusCode = 500; res.end('Supabase env belum diset.'); return;
+            }
             // baca body JSON
             let body = '';
             req.on('data', function(c) { body += c; });
@@ -71,6 +85,7 @@ export default defineConfig(({ mode }) => {
                 let prompt = '';
                 try { prompt = JSON.parse(body || '{}').prompt || ''; } catch (e) {}
                 if (!prompt) { res.statusCode = 400; res.end('Prompt is required'); return; }
+                if (String(prompt).length > 8000) { res.statusCode = 413; res.end('Prompt terlalu panjang.'); return; }
 
                 let apiKey = env.VITE_GEMINI_API_KEY;
                 if (!apiKey) { res.statusCode = 500; res.end('Gemini API Key belum diset di .env'); return; }

@@ -101,6 +101,12 @@ async function initDasborSuperadmin() {
           .map(function (u) {
             let waNum = u.noTelp ? "+" + u.noTelp : "—";
 
+            // escape data owner sblm masuk innerHTML. ini dibuka di sesi SUPERADMIN,
+            // jadi klo gak di-escape, nama toko jahat bisa nyuntik script di akun admin.
+            let namaEsc = escapeHtml(u.nama) || "—";
+            let bisnisEsc = escapeHtml(u.bisnis) || "—";
+            let emailEsc = escapeHtml(u.email) || "—";
+
             let paketBadge = "badge-neutral";
             let paketLabel = "Starter";
             if (u.paket === "business") {
@@ -113,9 +119,9 @@ async function initDasborSuperadmin() {
 
             return `
             <tr>
-              <td class="td-bold">${u.nama || "—"}</td>
-              <td>${u.bisnis || "—"}</td>
-              <td style="text-transform:none;">${u.email || "—"}</td>
+              <td class="td-bold">${namaEsc}</td>
+              <td>${bisnisEsc}</td>
+              <td style="text-transform:none;">${emailEsc}</td>
               <td><span class="badge ${paketBadge}">${paketLabel}</span></td>
               <td class="td-mono">${waNum}</td>
             </tr>

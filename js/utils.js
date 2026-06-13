@@ -49,6 +49,26 @@ function formatTanggalWaktu(iso) {
   });
 }
 
+// escape html biar data dr user/db gak bisa nyuntik tag/script (anti-XSS).
+// dipake tiap kali masukin nilai dinamis ke innerHTML/template string.
+// contoh: nama toko "<img onerror=...>" jadi teks biasa, bukan tag aktif.
+function escapeHtml(val) {
+  if (val == null) return '';
+  return String(val)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// escape buat nilai yg masuk ke dlm atribut html yg dibungkus kutip tunggal,
+// mis. onclick="fungsi('NILAI')". selain escape html, kutip tunggal & backslash
+// juga di-handle biar gak bisa kabur dr string js-nya.
+function escapeAttr(val) {
+  return escapeHtml(val).replace(/\\/g, '&#92;');
+}
+
 // escape karakter utk csv
 function csvEscape(val) {
   var s = String(val == null ? '' : val);

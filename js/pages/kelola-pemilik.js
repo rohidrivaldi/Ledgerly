@@ -70,6 +70,16 @@ function renderRowsPemilik(data) {
       let badgeDot = u.role === "superadmin" ? "red" : "green";
       let waNum = u.noTelp ? "+" + u.noTelp : "—";
 
+      // escape semua nilai dr db sblm masuk ke innerHTML (anti-XSS).
+      // nama/email/bisnis diisi sendiri sama owner pas daftar, jadi gak bisa dipercaya.
+      let namaEsc = escapeHtml(u.nama) || "—";
+      let emailEsc = escapeHtml(u.email) || "—";
+      let bisnisEsc = escapeHtml(u.bisnis) || "—";
+      let roleEsc = escapeHtml(u.role) || "pemilik";
+      // buat argumen onclick -> dlm atribut kutip ganda yg isinya string kutip tunggal
+      let userIdAttr = escapeAttr(u.user_id);
+      let namaAttr = escapeAttr(u.nama);
+
       // Paket Badge — bedain trial vs langganan + tampilin sisa hari
       let paketBadge = "badge-neutral";
       let paketLabel = "Starter";
@@ -93,20 +103,20 @@ function renderRowsPemilik(data) {
 
       let deleteBtn =
         u.role !== "superadmin"
-          ? `<button class="btn btn-danger btn-xs" onclick="konfirmasiHapusPemilik('${u.user_id}', '${u.nama}')" title="Hapus Akun">${icon("x", 12)} Hapus</button>`
+          ? `<button class="btn btn-danger btn-xs" onclick="konfirmasiHapusPemilik('${userIdAttr}', '${namaAttr}')" title="Hapus Akun">${icon("x", 12)} Hapus</button>`
           : '<span style="color:var(--slate-400); font-size:11px; font-style:italic;">Utama</span>';
 
       return `
       <tr>
-        <td class="td-bold">${u.nama || "—"}</td>
-        <td style="text-transform:none;">${u.email || "—"}</td>
-        <td>${u.bisnis || "—"}</td>
+        <td class="td-bold">${namaEsc}</td>
+        <td style="text-transform:none;">${emailEsc}</td>
+        <td>${bisnisEsc}</td>
         <td><span class="badge ${paketBadge}">${paketLabel}</span></td>
-        <td><span class="badge ${badgeColor}"><span class="badge-dot ${badgeDot}"></span>${u.role || "pemilik"}</span></td>
+        <td><span class="badge ${badgeColor}"><span class="badge-dot ${badgeDot}"></span>${roleEsc}</span></td>
         <td class="td-mono">${waNum}</td>
         <td>
           <div style="display:flex; justify-content:flex-end; gap:8px; align-items:center;">
-            <button class="btn btn-secondary btn-xs" onclick="bukaModalPemilik('${u.user_id}')" title="Ubah Profil">${icon("settings", 12)} Ubah</button>
+            <button class="btn btn-secondary btn-xs" onclick="bukaModalPemilik('${userIdAttr}')" title="Ubah Profil">${icon("settings", 12)} Ubah</button>
             <span style="display:inline-flex; justify-content:flex-end; align-items:center; width:96px; flex-shrink:0;">${deleteBtn}</span>
           </div>
         </td>
@@ -155,6 +165,13 @@ function bukaModalPemilik(userId) {
     }) || {};
   let title = userId ? "Ubah Profil Pemilik" : "Tambah Pemilik Baru";
 
+  // escape nilai yg masuk ke value="..." form (anti-XSS via atribut).
+  let namaVal = escapeAttr(target.nama);
+  let emailVal = escapeAttr(target.email);
+  let bisnisVal = escapeAttr(target.bisnis);
+  let notelpVal = escapeAttr(target.noTelp);
+  let userIdAttr = escapeAttr(userId || "");
+
   let modalHtml = `
     <div class="modal-overlay" id="modal-pemilik-container" onclick="if(event.target.id==='modal-pemilik-container') tutupModalPemilik()">
       <div class="modal-box" style="max-width:480px;">
@@ -165,15 +182,15 @@ function bukaModalPemilik(userId) {
           </div>
           <button class="btn btn-secondary btn-xs" onclick="tutupModalPemilik()">${icon("x", 16)}</button>
         </div>
-        <form id="form-pemilik" onsubmit="simpanPemilik(event, '${userId || ""}')">
+        <form id="form-pemilik" onsubmit="simpanPemilik(event, '${userIdAttr}')">
           <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
             <div>
               <label class="form-label">Nama Lengkap</label>
-              <input class="form-input" type="text" id="p-nama" value="${target.nama || ""}" required>
+              <input class="form-input" type="text" id="p-nama" value="${namaVal}" required>
             </div>
             <div>
               <label class="form-label">Email Kerja</label>
-              <input class="form-input" type="email" id="p-email" value="${target.email || ""}" style="text-transform:none;" required ${userId ? 'readonly disabled' : ''}>
+              <input class="form-input" type="email" id="p-email" value="${emailVal}" style="text-transform:none;" required ${userId ? 'readonly disabled' : ''}>
             </div>
             ${userId ? '' : `
             <div>
@@ -187,11 +204,11 @@ function bukaModalPemilik(userId) {
             `}
             <div>
               <label class="form-label">Nama Bisnis / Toko</label>
-              <input class="form-input" type="text" id="p-bisnis" value="${target.bisnis || ""}" required>
+              <input class="form-input" type="text" id="p-bisnis" value="${bisnisVal}" required>
             </div>
             <div>
               <label class="form-label">Nomor WhatsApp (Format: 628xxxx)</label>
-              <input class="form-input" type="number" id="p-notelp" value="${target.noTelp || ""}" placeholder="Contoh: 628123456789" required>
+              <input class="form-input" type="number" id="p-notelp" value="${notelpVal}" placeholder="Contoh: 628123456789" required>
             </div>
             <div>
               <label class="form-label">Paket Langganan</label>

@@ -25,7 +25,7 @@ function initTransaksi() {
   let pSelect = document.getElementById('tx-produk');
   if (pSelect) {
     pSelect.innerHTML = store.produk.map(function(p) {
-      return `<option value="${p.id}">${p.nama}</option>`;
+      return `<option value="${escapeAttr(p.id)}">${escapeHtml(p.nama)}</option>`;
     }).join('');
   }
 
@@ -170,21 +170,29 @@ function resetFilterTransaksi() {
 function renderRowsTransaksi(list) {
   return list.map(function(t) {
     let adaCatatan = t.catatan && t.catatan.trim() !== '';
+    // escape nilai transaksi sblm masuk innerHTML/atribut. produkNama itu
+    // snapshot yg asalnya dr nama produk (bisa diisi via import/chatbot).
+    let produkNamaEsc = escapeHtml(t.produkNama);
+    let produkNamaAttr = escapeAttr(t.produkNama);
+    let metodeEsc = escapeHtml(t.metode);
+    let idAttr = escapeAttr(t.id);
+    let produkIdAttr = escapeAttr(t.produkId);
+    let tipeAttr = escapeAttr(t.tipe);
     return `
       <tr>
         <td>${formatTanggalWaktu(t.tanggal)}</td>
-        <td><span class="badge ${t.tipe === 'MASUK' ? 'badge-danger' : 'badge-success'}">${t.tipe}</span></td>
-        <td class="td-bold">${t.produkNama}</td>
+        <td><span class="badge ${t.tipe === 'MASUK' ? 'badge-danger' : 'badge-success'}">${escapeHtml(t.tipe)}</span></td>
+        <td class="td-bold">${produkNamaEsc}</td>
         <td class="td-right">${t.jumlah}</td>
         <td class="td-right">${formatRupiah(t.hargaSatuan)}</td>
         <td class="td-right td-semibold">${formatRupiah(t.total)}</td>
-        <td><span class="badge badge-neutral">${t.metode}</span></td>
+        <td><span class="badge badge-neutral">${metodeEsc}</span></td>
         <td class="text-center">
           <div style="display:flex; justify-content:center; gap:4px;">
-            <button class="btn btn-secondary btn-xs" style="padding:2px 6px; font-size:11px;" onclick="lihatCatatanTx('${escapeHtml(t.catatan || '')}', '${t.produkNama}')" ${!adaCatatan ? 'disabled style="opacity:0.4; padding:2px 6px; font-size:11px;"' : ''} title="${adaCatatan ? 'Lihat Catatan' : 'Tidak ada catatan'}">
+            <button class="btn btn-secondary btn-xs" style="padding:2px 6px; font-size:11px;" onclick="lihatCatatanTx('${escapeAttr(t.catatan || '')}', '${produkNamaAttr}')" ${!adaCatatan ? 'disabled style="opacity:0.4; padding:2px 6px; font-size:11px;"' : ''} title="${adaCatatan ? 'Lihat Catatan' : 'Tidak ada catatan'}">
               ${icon('eye', 12)} Catatan
             </button>
-            <button class="btn btn-danger btn-xs" style="padding:2px 6px;" onclick="konfirmasiHapusTransaksi('${t.id}', '${t.produkNama}', ${t.jumlah}, '${t.tipe}', '${t.produkId}')">
+            <button class="btn btn-danger btn-xs" style="padding:2px 6px;" onclick="konfirmasiHapusTransaksi('${idAttr}', '${produkNamaAttr}', ${t.jumlah}, '${tipeAttr}', '${produkIdAttr}')">
               ${icon('x', 12)} Batal
             </button>
           </div>

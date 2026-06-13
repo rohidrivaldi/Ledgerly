@@ -353,6 +353,16 @@ async function tanyaGeminiAI(pesan, onChunk) {
 
   try {
     let response;
+    // ambil JWT user yg login buat dikirim ke /api/chatbot (server verifikasi
+    // sesi dulu sblm proxy ke Gemini — biar endpoint gak bisa di-abuse anon).
+    let token = '';
+    try {
+      if (window.supabaseClient) {
+        const { data: sesi } = await window.supabaseClient.auth.getSession();
+        token = sesi && sesi.session ? sesi.session.access_token : '';
+      }
+    } catch (e) {}
+
     // retry max 5x klo kena 503/429 (Gemini lagi overload, ini transient).
     // backoff naik tiap percobaan biar gak ngegas. 5x ~ total 8 detik worst case
     let percobaan = 0;
@@ -360,7 +370,10 @@ async function tanyaGeminiAI(pesan, onChunk) {
       percobaan++;
       response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
         body: JSON.stringify({ prompt: prompt })
       });
 
@@ -422,6 +435,9 @@ async function tanyaGeminiAI(pesan, onChunk) {
 // Parser markdown sederhana untuk chat bubble
 function formatMarkdown(text) {
   if (!text) return '';
+  // escape dulu sblm apa2 — teks bisa berisi nama produk (diisi owner) atau
+  // jawaban Gemini. klo gak di-escape, "<img onerror=...>" bakal jalan di bubble.
+  text = escapeHtml(text);
   // Convert **text** to <strong>text</strong>
   text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   // Convert *text* to <em>text</em>
