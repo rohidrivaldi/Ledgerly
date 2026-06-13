@@ -2,6 +2,22 @@
    pengaturan.css — styles khusus halaman pengaturan
    ============================================= */
 
+.profil-container {
+  padding: 20px;
+  border-bottom: 1px solid var(--slate-50);
+}
+
+.paket-container {
+  padding: 0 20px 20px 20px;
+  border-top: 1px solid var(--slate-100);
+  padding-top: 20px;
+}
+
+.keuangan-container,
+.kategori-container {
+  padding: 20px;
+}
+
 /* -- pengaturan: field readonly -- */
 .setting-field {
   padding: 8px 12px;
@@ -22,6 +38,13 @@
   margin-bottom: 6px;
 }
 
+.kat-error {
+  font-size: 12px;
+  color: var(--rose-600);
+  margin-bottom: 8px;
+  display: none;
+}
+
 /* -- toggle row (pengaturan) -- */
 .toggle-row {
   display: flex;
@@ -32,7 +55,9 @@
   padding: 16px 20px;
   border-top: 1px solid var(--slate-100);
 }
-.toggle-row:first-child { border-top: none; }
+.toggle-row:first-child {
+  border-top: none;
+}
 .toggle-left {
   display: flex;
   align-items: flex-start;
@@ -41,14 +66,22 @@
 .toggle-icon {
   display: grid;
   place-items: center;
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-lg);
   background: var(--slate-50);
   flex-shrink: 0;
   margin-top: 2px;
 }
-.toggle-title { font-size: 14px; font-weight: 600; color: var(--slate-900); }
-.toggle-desc { font-size: 12px; color: var(--slate-500); }
+.toggle-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--slate-900);
+}
+.toggle-desc {
+  font-size: 12px;
+  color: var(--slate-500);
+}
 
 /* -- toggle track and knob (pengaturan) -- */
 .toggle-track {
@@ -58,7 +91,9 @@
   border-radius: 9999px;
   position: relative;
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
   flex-shrink: 0;
   align-self: center;
 }
@@ -85,4 +120,3 @@
 .toggle-track.active .toggle-knob {
   transform: translateX(20px);
 }
-
