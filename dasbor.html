@@ -54,7 +54,10 @@
     </div>
 
     <!-- Chatbot Floating Action Button (Bouncing FAB) -->
-    <div class="chatbot-fab-container" id="chatbot-fab-container">
+    <!-- mulai 'hidden' biar gak kedip: JS (checkChatbotVisibility) yg munculin
+         buat pemilik toko & nyembunyiin buat superadmin. dulu default visible
+         -> superadmin liat FAB nongol sekejap sblm JS sempet sembunyiin. -->
+    <div class="chatbot-fab-container hidden" id="chatbot-fab-container">
       <div class="chatbot-fab-tip" id="chatbot-fab-tip">Tanya AI Ledgerly...</div>
       <button type="button" class="chatbot-fab-btn" onclick="toggleChatbot()" title="Tanya AI Ledgerly">
         <svg
