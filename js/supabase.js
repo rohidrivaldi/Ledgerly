@@ -16,10 +16,12 @@ window.supabaseClient = db;
 async function login(email, password) {
   if (window.supabaseClient) {
     try {
-      // Ambil token Turnstile jika ada widget di halaman
+      // Ambil token Turnstile dr widget LOGIN spesifik (login.html punya 2 widget;
+      // getResponse() tanpa id ambigu -> bisa balik token widget yg salah/kosong).
       let captchaToken = undefined;
       if (window.turnstile) {
-        captchaToken = window.turnstile.getResponse();
+        let el = document.getElementById('turnstile-login');
+        captchaToken = el ? window.turnstile.getResponse(el) : window.turnstile.getResponse();
       }
 
       // authentikasi user pakai function signInWithPassword dari Supabase Library
@@ -215,10 +217,12 @@ async function cekKembaliOAuth() {
 async function resetPassword(email) {
   if (window.supabaseClient) {
     try {
-      // Ambil token Turnstile jika ada widget di halaman
+      // Ambil token Turnstile dr widget FORGOT-PW spesifik (hindari ambiguitas
+      // krn login.html punya 2 widget turnstile).
       let captchaToken = undefined;
       if (window.turnstile) {
-        captchaToken = window.turnstile.getResponse();
+        let el = document.getElementById('turnstile-forgot');
+        captchaToken = el ? window.turnstile.getResponse(el) : window.turnstile.getResponse();
       }
 
       const { data, error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
