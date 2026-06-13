@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# halaman privat (butuh login) — gak perlu di-index
+Disallow: /dasbor.html
+
+Sitemap: https://ledgerly.my.id/sitemap.xml

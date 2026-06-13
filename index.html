@@ -62,6 +62,9 @@
     </div>
   </nav>
 
+  <!-- landmark main biar a11y: konten utama dibungkus <main> -->
+  <main>
+
   <!-- hero section -->
   <section class="hero">
     <div class="hero-glow"></div>
@@ -105,8 +108,8 @@
         </span>
       </div>
 
-      <!-- mockup dashboard -->
-      <div class="mockup-wrapper animate-float">
+      <!-- mockup dashboard (dekoratif aja, sembunyiin dr screen reader & audit kontras) -->
+      <div class="mockup-wrapper animate-float" aria-hidden="true">
         <div class="mockup-fade"></div>
         <div class="mockup-frame">
           <div class="mockup-toolbar">
@@ -116,7 +119,7 @@
                 <span class="mockup-dot" style="background:#f59e0b;"></span>
                 <span class="mockup-dot" style="background:#22c55e;"></span>
               </div>
-              <span class="mockup-url">ledgerly.vercel.app/dasbor</span>
+              <span class="mockup-url">ledgerly.my.id/dasbor</span>
             </div>
             <div class="mockup-sync">
               <span class="mockup-sync-dot"></span>
@@ -128,12 +131,12 @@
             <div class="mockup-stat">
               <div class="label">Total Omzet</div>
               <div class="val">Rp38,9jt</div>
-              <div class="sub" style="color:var(--emerald-600);">↑ 12.5% vs bulan lalu</div>
+              <div class="sub" style="color:var(--emerald-700);">↑ 12.5% vs bulan lalu</div>
             </div>
             <div class="mockup-stat">
               <div class="label">Laba Bersih</div>
               <div class="val">Rp11,2jt</div>
-              <div class="sub" style="color:var(--emerald-600);">↑ 8.3%</div>
+              <div class="sub" style="color:var(--emerald-700);">↑ 8.3%</div>
             </div>
             <div class="mockup-stat">
               <div class="label">Total SKU</div>
@@ -143,7 +146,7 @@
             <div class="mockup-stat">
               <div class="label">Peringatan Stok</div>
               <div class="val" style="color:var(--amber-600);">4</div>
-              <div class="sub" style="color:var(--rose-600);">Perlu restock segera</div>
+              <div class="sub" style="color:var(--rose-700);">Perlu restock segera</div>
             </div>
           </div>
 
@@ -231,7 +234,7 @@
             <div class="fitur-icon" style="background:linear-gradient(135deg,var(--indigo-100),var(--indigo-50)); color:var(--indigo-600);">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
             </div>
-            <h4>Dashboard Inventaris</h4>
+            <h3>Dashboard Inventaris</h3>
             <p>Monitoring stok secara real-time dengan visualisasi grafik. Peringatan otomatis saat stok di bawah batas minimum. Filter dan pencarian produk instan.</p>
           </div>
           <div class="fitur-footer">
@@ -246,7 +249,7 @@
             <div class="fitur-icon" style="background:linear-gradient(135deg,var(--emerald-100, #d1fae5),var(--emerald-50)); color:var(--emerald-600);">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
             </div>
-            <h4>Laporan Keuangan</h4>
+            <h3>Laporan Keuangan</h3>
             <p>Laporan laba rugi otomatis, grafik tren penjualan, dan arus kas bulanan. Pilih periode laporan dengan fleksibel (7/30/60 hari).</p>
           </div>
           <div class="fitur-footer">
@@ -261,7 +264,7 @@
             <div class="fitur-icon" style="background:linear-gradient(135deg,var(--purple-100, #f3e8ff),var(--purple-50, #faf5ff)); color:var(--purple-600);">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
             </div>
-            <h4>Chatbot AI</h4>
+            <h3>Chatbot AI</h3>
             <p>Input stok dan cek data lewat chat natural language. Tanya "berapa stok Aqua?" atau "tambah 50 Indomie masuk" — chatbot paham!</p>
           </div>
           <div class="fitur-footer">
@@ -276,7 +279,7 @@
             <div class="fitur-icon" style="background:linear-gradient(135deg,var(--rose-100),var(--rose-50)); color:var(--rose-600);">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
             </div>
-            <h4>Notifikasi WhatsApp</h4>
+            <h3>Notifikasi WhatsApp</h3>
             <p>Alert otomatis langsung ke WhatsApp pemilik saat stok menipis di bawah batas minimum. Gak perlu cek manual terus-terusan.</p>
           </div>
           <div class="fitur-footer">
@@ -291,7 +294,7 @@
             <div class="fitur-icon" style="background:linear-gradient(135deg,var(--amber-100, #fef3c7),var(--amber-50)); color:var(--amber-600);">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 18v-2"/><path d="M12 18v-4"/><path d="M16 18v-6"/></svg>
             </div>
-            <h4>Export Laporan</h4>
+            <h3>Export Laporan</h3>
             <p>Unduh data inventaris dan transaksi ke CSV, Excel, atau PDF kapan saja. Cocok buat laporan ke partner bisnis atau arsip pribadi.</p>
           </div>
           <div class="fitur-footer">
@@ -306,7 +309,7 @@
             <div class="fitur-icon" style="background:linear-gradient(135deg,var(--sky-100, #e0f2fe),var(--sky-50)); color:var(--sky-600);">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
             </div>
-            <h4>Cloud Database</h4>
+            <h3>Cloud Database</h3>
             <p>Data tersimpan aman di cloud Supabase dengan Row-Level Security. Akses dari mana saja, kapan saja. Backup otomatis setiap hari.</p>
           </div>
           <div class="fitur-footer">
@@ -365,10 +368,10 @@
             </div>
             <div class="chat-demo-input" style="display:flex; align-items:center; gap:8px;">
               <input type="text" placeholder="Ketik pesan..." disabled style="flex:1;">
-              <button disabled style="background:transparent; border:none; color:var(--text-muted); cursor:not-allowed; display:grid; place-items:center; padding:4px;">
+              <button disabled aria-label="Rekam suara (demo)" style="background:transparent; border:none; color:var(--text-muted); cursor:not-allowed; display:grid; place-items:center; padding:4px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
               </button>
-              <button disabled>
+              <button disabled aria-label="Kirim pesan (demo)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
               </button>
             </div>
@@ -391,7 +394,7 @@
         <!-- starter -->
         <div class="harga-card scroll-reveal">
           <div>
-            <h4>Starter</h4>
+            <h3>Starter</h3>
             <p class="desc">Cocok untuk UMKM yang baru mulai digitalisasi. Fitur dasar untuk mengelola inventaris.</p>
             <div class="harga-price">
               <span class="amount">Gratis</span>
@@ -423,7 +426,7 @@
         <div class="harga-card populer scroll-reveal delay-100">
           <span class="harga-badge-populer">Pilihan Terfavorit</span>
           <div>
-            <h4>Profesional</h4>
+            <h3>Profesional</h3>
             <p class="desc">Untuk toko dengan volume tinggi. Fitur lengkap termasuk WhatsApp dan laporan PDF.</p>
             <div class="harga-price">
               <span class="amount">Rp49rb</span>
@@ -465,7 +468,7 @@
         <!-- enterprise -->
         <div class="harga-card scroll-reveal delay-200">
           <div>
-            <h4>Enterprise</h4>
+            <h3>Enterprise</h3>
             <p class="desc">Untuk bisnis dengan banyak cabang. Kustomisasi integrasi dan dukungan prioritas.</p>
             <div class="harga-price">
               <span class="amount">Kustom</span>
@@ -638,6 +641,8 @@
       </div>
     </div>
   </section>
+
+  </main>
 
   <!-- footer -->
   <footer class="landing-footer">

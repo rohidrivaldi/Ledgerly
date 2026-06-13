@@ -426,7 +426,7 @@
 }
 .mockup-url {
   font-size: 12px;
-  color: var(--slate-400);
+  color: var(--slate-500);
   font-family: var(--font-mono);
   margin-left: 8px;
 }
@@ -516,7 +516,7 @@
 .mockup-product-row .name { font-weight: 500; color: var(--slate-800); }
 .mockup-product-row .meta { display: flex; gap: 16px; align-items: center; }
 .mockup-product-row .units { color: var(--slate-500); }
-.mockup-product-row .revenue { font-weight: 600; color: var(--emerald-600); }
+.mockup-product-row .revenue { font-weight: 600; color: var(--emerald-700); }
 
 .mockup-ai-card {
   background: linear-gradient(135deg, var(--indigo-900), var(--purple-950));
@@ -654,7 +654,7 @@
   transition: transform 0.3s;
 }
 .fitur-card:hover .fitur-icon { transform: scale(1.1); }
-.fitur-card h4 {
+.fitur-card h3 {
   font-size: 20px;
   font-weight: 700;
   color: var(--slate-900);
@@ -916,7 +916,7 @@
   box-shadow: var(--shadow-md);
   white-space: nowrap;
 }
-.harga-card h4 {
+.harga-card h3 {
   font-size: 20px;
   font-weight: 700;
   color: var(--slate-900);
@@ -1234,14 +1234,14 @@
 }
 .footer-brand p {
   font-size: 12px;
-  color: var(--slate-500);
+  color: var(--slate-400);
   line-height: 1.7;
   max-width: 280px;
   margin-top: 12px;
 }
 .footer-brand .copy {
   font-size: 12px;
-  color: var(--slate-500);
+  color: var(--slate-400);
   margin-top: 12px;
 }
 .footer-col-title {
@@ -1274,13 +1274,13 @@
   justify-content: space-between;
   gap: 16px;
   font-size: 12px;
-  color: var(--slate-500);
+  color: var(--slate-400);
 }
 .footer-bottom-links {
   display: flex;
   gap: 24px;
 }
-.footer-bottom-links a { color: var(--slate-500); transition: color 0.15s; }
+.footer-bottom-links a { color: var(--slate-400); transition: color 0.15s; }
 .footer-bottom-links a:hover { color: #fff; }
 
 /* ============ ANIMATION KEYFRAMES & CLASSES ============ */
