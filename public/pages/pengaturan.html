@@ -41,14 +41,13 @@
 
   <div class="kategori-container">
     <!-- Input tambah kategori -->
-    <div class="form-group" style="margin-bottom: 16px">
+    <div class="form-group mb-16">
       <input
-        class="form-input"
+        class="form-input flex-1"
         type="text"
         id="input-kategori-baru"
         placeholder="Nama kategori baru..."
         maxlength="30"
-        style="flex: 1"
         onkeydown="if (event.key === 'Enter') tambahKategori();"
       />
       <button class="btn btn-primary" onclick="tambahKategori()">+ Tambah</button>

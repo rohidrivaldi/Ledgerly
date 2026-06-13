@@ -88,7 +88,7 @@
         <div class="modal-title">Transaksi Baru</div>
         <div class="modal-desc">Catat barang masuk atau keluar</div>
       </div>
-      <button onclick="tutupModalTx()" style="padding: 4px" id="btn-tx-close"></button>
+      <button onclick="tutupModalTx()" class="p-4" id="btn-tx-close"></button>
     </div>
     <form class="modal-form" id="form-tx" onsubmit="submitTx(event)">
       <div>
@@ -101,7 +101,7 @@
       <div>
         <label class="form-label">Produk</label>
         <div class="form-group">
-          <select class="form-select" id="tx-produk" style="flex: 1"></select>
+          <select class="form-select flex-1" id="tx-produk"></select>
           <button type="button" class="btn btn-secondary camera-btn" id="btn-tx-scan" onclick="scanBarcodeTx()"></button>
         </div>
         <div class="tx-barcode-scanner" id="tx-barcode-scanner"></div>
@@ -124,8 +124,8 @@
         <input class="form-input" type="text" id="tx-catatan" placeholder="Catatan..." />
       </div>
       <div class="form-group">
-        <button type="button" class="btn btn-secondary" onclick="tutupModalTx()" style="flex: 1">Batal</button>
-        <button type="submit" class="btn btn-primary" style="flex: 1">Simpan</button>
+        <button type="button" class="btn btn-secondary flex-1" onclick="tutupModalTx()">Batal</button>
+        <button type="submit" class="btn btn-primary flex-1">Simpan</button>
       </div>
     </form>
   </div>
