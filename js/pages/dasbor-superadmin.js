@@ -137,11 +137,26 @@ async function initDasborSuperadmin() {
       }
     }
 
+    // 4b. Ambil platform settings untuk cek status WhatsApp Gateway
+    const { data: psData } = await window.supabaseClient.from("Platform_Settings").select("*");
+    let waActive = false;
+    if (psData) {
+      const pingRow = psData.find(row => row.key === "wa_gateway_last_ping");
+      if (pingRow && pingRow.value) {
+        const lastPing = new Date(pingRow.value);
+        const diffMs = new Date() - lastPing;
+        // Jika ping terkirim kurang dari 2 menit yang lalu (120000ms), bot dianggap aktif
+        if (diffMs < 120000) {
+          waActive = true;
+        }
+      }
+    }
+
     // Render Chart subscription
     initSubscriptionChart(owners);
 
-    // sync sukses -> status platform: Supabase hijau (beneran terhubung)
-    setStatusPlatform(true);
+    // sync sukses -> status platform: Supabase hijau, WhatsApp Gateway dinamis
+    setStatusPlatform(true, waActive);
   } catch (err) {
     console.error("Gagal sinkronisasi data dasbor superadmin:", err.message);
     renderErrorDasborSuperadmin();
@@ -151,9 +166,8 @@ async function initDasborSuperadmin() {
 // set status layanan platform DINAMIS (bukan hardcode "Aktif" yg bohong).
 // - Supabase: hijau kalau sync DB sukses, merah kalau gagal.
 // - Gemini AI: hijau (proxy /api/chatbot aktif & ada key di server).
-// - WhatsApp Gateway: bot node.js TERPISAH (repo lain, Pterodactyl) yg blm
-//   tentu jalan -> status "Belum Aktif" (jujur), bukan "Aktif" palsu.
-function setStatusPlatform(supabaseOk) {
+// - WhatsApp Gateway: bot node.js TERPISAH (repo lain, Pterodactyl) yg terhubung dinamis via ping status di database.
+function setStatusPlatform(supabaseOk, waActive) {
   function setBadge(elId, ok, teksOk, teksGagal) {
     let el = document.getElementById(elId);
     if (!el) return;
@@ -167,8 +181,7 @@ function setStatusPlatform(supabaseOk) {
   }
   setBadge('sa-status-supabase', supabaseOk, 'Terhubung', 'Terputus');
   setBadge('sa-status-gemini', true, 'Aktif', 'Nonaktif');
-  // WhatsApp bot belum di-deploy -> tampilkan jujur sbg "Belum Aktif"
-  setBadge('sa-status-wa', false, 'Aktif', 'Belum Aktif');
+  setBadge('sa-status-wa', waActive, 'Aktif', 'Belum Aktif');
 }
 
 // Inisialisasi Chart.js untuk distribusi paket langganan pemilik bisnis.
@@ -254,8 +267,8 @@ function renderErrorDasborSuperadmin() {
       '<tr><td colspan="5" class="text-center" style="padding:30px; color:var(--rose-600);">Gagal memuat data dari server. Cek koneksi internet lalu muat ulang halaman.</td></tr>';
   }
 
-  // status Supabase jadi merah krn sync gagal
-  setStatusPlatform(false);
+  // status Supabase jadi merah krn sync gagal, WhatsApp nonaktif
+  setStatusPlatform(false, false);
 
   // chart kosong (semua 0)
   initSubscriptionChart([]);
