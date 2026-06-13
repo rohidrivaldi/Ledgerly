@@ -3,9 +3,7 @@
     <h1 class="page-title">Dashboard Inventaris</h1>
     <p class="page-desc">Monitoring stok barang secara real-time</p>
   </div>
-  <button class="btn btn-primary flex-center" onclick="bukaModalProduk()" style="gap:6px;">
-    <span id="btn-plus-icon"></span>Tambah Produk
-  </button>
+  <button class="btn btn-primary" onclick="bukaModalProduk()"><span id="btn-plus-icon"></span>Tambah Produk</button>
 </div>
 
 <!-- stat cards -->
@@ -20,8 +18,8 @@
         <div class="card-subtitle" id="inv-chart-subtitle">Merah = di bawah reorder point</div>
       </div>
     </div>
-    <div class="chart-container" style="overflow-x:auto;">
-      <div id="chart-stok-sizer" style="position:relative; height:288px; min-width:100%;">
+    <div class="chart-container" style="overflow-x: auto">
+      <div id="chart-stok-sizer" class="chart-canvas">
         <canvas id="chart-stok"></canvas>
       </div>
     </div>
@@ -39,36 +37,38 @@
 
 <!-- tabel katalog -->
 <div class="card">
-  <div class="card-header flex-between" style="flex-wrap:wrap; gap:12px;">
+  <div class="card-header">
     <div>
       <div class="card-title">Katalog Produk</div>
       <div class="card-subtitle" id="inv-katalog-subtitle"></div>
     </div>
     <!-- Filter bar -->
-    <div style="display:flex; flex-wrap:nowrap; gap:8px; align-items:center;">
-      <input class="form-input" type="text" id="cari-produk" placeholder="Cari nama/SKU..." style="max-width:160px; font-size:12px;">
-      <select class="form-select" id="filter-inv-kategori" style="max-width:140px; font-size:12px;" onchange="renderInventarisTable()">
+    <div class="form-group">
+      <input class="form-input" type="text" id="cari-produk" placeholder="Cari nama/SKU..." />
+      <select class="form-select" id="filter-inv-kategori" onchange="renderInventarisTable()">
         <option value="">Semua Kategori</option>
       </select>
-      <select class="form-select" id="filter-inv-status" style="max-width:120px; font-size:12px;" onchange="renderInventarisTable()">
+      <select class="form-select" id="filter-inv-status" onchange="renderInventarisTable()">
         <option value="">Semua Status</option>
         <option value="aman">Aman</option>
         <option value="rendah">Stok Rendah</option>
       </select>
-      <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px; white-space:nowrap;" onclick="resetFilterInventaris()">Reset</button>
+      <button class="btn btn-secondary" onclick="resetFilterInventaris()">Reset</button>
     </div>
   </div>
-  <div style="overflow-x:auto;">
+  <div style="overflow-x: auto">
     <!-- bar aksi bulk: muncul kalau ada produk yg dicentang -->
-    <div id="inv-bulk-bar" style="display:none; align-items:center; justify-content:space-between; gap:12px; padding:10px 20px; background:var(--indigo-50); border-bottom:1px solid var(--indigo-100);">
-      <span id="inv-bulk-count" style="font-size:13px; font-weight:600; color:var(--indigo-700);"></span>
+    <div class="inv-bulk-bar" id="inv-bulk-bar">
+      <span id="inv-bulk-count" class="inv-bulk-count"></span>
       <button class="btn btn-danger btn-xs" onclick="konfirmasiHapusMassal()">Hapus Terpilih</button>
     </div>
     <table class="tabel" id="tabel-produk">
       <thead>
         <tr>
-          <th class="text-center" style="width:36px;"><input type="checkbox" id="inv-check-all" onclick="toggleSelectAllProduk(this)" title="Pilih semua"></th>
-          <th class="text-center" style="width:54px;">QR</th>
+          <th class="text-center" style="width: 36px">
+            <input type="checkbox" id="inv-check-all" onclick="toggleSelectAllProduk(this)" title="Pilih semua" />
+          </th>
+          <th class="text-center" style="width: 54px">QR</th>
           <th>SKU</th>
           <th>Nama Produk</th>
           <th>Kategori</th>
@@ -77,12 +77,12 @@
           <th class="text-right">Harga Beli</th>
           <th class="text-right">Harga Jual</th>
           <th>Status</th>
-          <th class="text-center" style="width:100px;">Aksi</th>
+          <th class="text-center" style="width: 100px">Aksi</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
   </div>
   <!-- Pagination -->
-  <div id="inv-pagination-placeholder" style="padding:12px 20px; border-top:1px solid var(--slate-100);"></div>
+  <div id="inv-pagination-placeholder" class="pagination-placeholder"></div>
 </div>

@@ -2,6 +2,33 @@
    inventaris.css — styles khusus halaman inventaris
    ============================================= */
 
+.chart-canvas {
+  position: relative;
+  height: 288px;
+  min-width: 100%;
+}
+
+.inv-bulk-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 20px;
+  background: var(--indigo-50);
+  border-bottom: 1px solid var(--indigo-100);
+}
+
+.inv-bulk-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--indigo-700);
+}
+
+.pagination-placeholder {
+  padding: 12px 20px;
+  border-top: 1px solid var(--slate-100);
+}
+
 /* -- peringatan stok -- */
 .alert-list {
   max-height: 288px;
@@ -14,17 +41,23 @@
   padding: 12px 20px;
   border-bottom: 1px solid var(--slate-50);
 }
-.alert-item:last-child { border-bottom: none; }
+.alert-item:last-child {
+  border-bottom: none;
+}
 .alert-icon {
   display: grid;
   place-items: center;
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-lg);
   background: var(--rose-50);
   color: var(--rose-600);
   flex-shrink: 0;
 }
-.alert-info { min-width: 0; flex: 1; }
+.alert-info {
+  min-width: 0;
+  flex: 1;
+}
 .alert-info .nama {
   font-size: 14px;
   font-weight: 500;
