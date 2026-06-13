@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="css/register.css" />
     <link rel="stylesheet" href="css/theme.css" />
     <script>(function(){try{if(localStorage.getItem('ledgerly_theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+    <!-- Cloudflare Turnstile CAPTCHA -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   </head>
   <body>
     <div class="login-wrapper">
@@ -278,6 +280,12 @@
                     </button>
                   </div>
                   <div class="criterion-item invalid" id="crit-match" style="margin-top: 8px;">❌ Konfirmasi sandi harus sama</div>
+                </div>
+
+                <!-- Cloudflare Turnstile CAPTCHA -->
+                <div class="cf-turnstile-container" style="margin: 16px 0; display: flex; justify-content: center;">
+                  <!-- Ganti 'YOUR_TURNSTILE_SITE_KEY' dengan Site Key dari Cloudflare Turnstile Anda -->
+                  <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-theme="auto"></div>
                 </div>
 
                 <div id="register-error" class="login-error"></div>

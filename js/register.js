@@ -245,10 +245,17 @@ async function handleRegister(e) {
       // trigger handle_new_user di server baca ini buat bikin profil otomatis
       // (walau email confirmation aktif & belum ada sesi). ini yg nyegah akun
       // "ada di auth tapi gak ada di Kelola Pemilik".
+      // Ambil token Turnstile jika ada widget di halaman
+      let captchaToken = undefined;
+      if (window.turnstile) {
+        captchaToken = window.turnstile.getResponse();
+      }
+
       const { data, error } = await window.supabaseClient.auth.signUp({
         email: email,
         password: password,
         options: {
+          captchaToken: captchaToken,
           data: {
             nama: name,
             bisnis: bisnis,
@@ -302,6 +309,11 @@ async function handleRegister(e) {
       btn.disabled = false;
       btn.style.opacity = '1';
       btn.style.cursor = 'pointer';
+
+      // Reset Turnstile jika gagal
+      if (window.turnstile) {
+        window.turnstile.reset();
+      }
     }
   } else {
     errDiv.textContent = 'Layanan database cloud Supabase tidak tersedia secara lokal saat ini.';
@@ -313,5 +325,10 @@ async function handleRegister(e) {
     btn.disabled = false;
     btn.style.opacity = '1';
     btn.style.cursor = 'pointer';
+
+    // Reset Turnstile jika gagal
+    if (window.turnstile) {
+      window.turnstile.reset();
+    }
   }
 }

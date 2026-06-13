@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="css/login.css" />
     <link rel="stylesheet" href="css/theme.css" />
     <script>(function(){try{if(localStorage.getItem('ledgerly_theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+    <!-- Cloudflare Turnstile CAPTCHA -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   </head>
   <body>
     <div class="login-wrapper">
@@ -133,6 +135,12 @@
                   </div>
                 </div>
 
+                <!-- Cloudflare Turnstile CAPTCHA -->
+                <div class="cf-turnstile-container" style="margin: 16px 0; display: flex; justify-content: center;">
+                  <!-- Ganti 'YOUR_TURNSTILE_SITE_KEY' dengan Site Key dari Cloudflare Turnstile Anda -->
+                  <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-theme="auto"></div>
+                </div>
+
                 <div id="login-error" class="login-error" style="display: none"></div>
 
                 <button type="submit" class="login-submit">
@@ -182,6 +190,12 @@
                 <div>
                   <label class="form-label" for="forgot-email">Email Terdaftar</label>
                   <input class="form-input" type="email" id="forgot-email" placeholder="Masukkan email aktif Anda" required />
+                </div>
+
+                <!-- Cloudflare Turnstile CAPTCHA -->
+                <div class="cf-turnstile-container" style="margin: 16px 0; display: flex; justify-content: center;">
+                  <!-- Ganti 'YOUR_TURNSTILE_SITE_KEY' dengan Site Key dari Cloudflare Turnstile Anda -->
+                  <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-theme="auto"></div>
                 </div>
 
                 <div id="forgot-error" class="login-error" style="display: none"></div>
@@ -290,6 +304,11 @@
           errDiv.style.color = ""; // reset ke default error
           errDiv.style.borderColor = "";
           errDiv.style.background = "";
+          
+          // Reset Turnstile jika gagal
+          if (window.turnstile) {
+            window.turnstile.reset();
+          }
         }
       }
 
@@ -318,6 +337,11 @@
           errDiv.style.color = "";
           errDiv.style.borderColor = "";
           errDiv.style.background = "";
+
+          // Reset Turnstile jika gagal
+          if (window.turnstile) {
+            window.turnstile.reset();
+          }
         }
       }
 

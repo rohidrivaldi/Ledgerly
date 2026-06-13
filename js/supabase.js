@@ -16,10 +16,19 @@ window.supabaseClient = db;
 async function login(email, password) {
   if (window.supabaseClient) {
     try {
+      // Ambil token Turnstile jika ada widget di halaman
+      let captchaToken = undefined;
+      if (window.turnstile) {
+        captchaToken = window.turnstile.getResponse();
+      }
+
       // authentikasi user pakai function signInWithPassword dari Supabase Library
       const { data, error } = await window.supabaseClient.auth.signInWithPassword({
         email: email,
-        password: password
+        password: password,
+        options: {
+          captchaToken: captchaToken
+        }
       });
 
       if (error) throw error;
@@ -206,8 +215,17 @@ async function cekKembaliOAuth() {
 async function resetPassword(email) {
   if (window.supabaseClient) {
     try {
+      // Ambil token Turnstile jika ada widget di halaman
+      let captchaToken = undefined;
+      if (window.turnstile) {
+        captchaToken = window.turnstile.getResponse();
+      }
+
       const { data, error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/login.html'
+        redirectTo: window.location.origin + '/login.html',
+        options: {
+          captchaToken: captchaToken
+        }
       });
       if (error) throw error;
       return { ok: true };
