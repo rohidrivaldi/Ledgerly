@@ -242,6 +242,17 @@ Skor **B+ (80/100)** — 9 dari 10 tes lolos. Dilengkapi CSP ketat, HSTS, X-Fram
 
 ---
 
+## 🗺️ Batasan Saat Ini & Rencana Pengembangan (Roadmap)
+
+Sebagai proyek capstone dengan keterbatasan waktu, beberapa fitur sengaja **belum** diimplementasikan dan ditandai sebagai pengembangan lanjutan (*coming soon*):
+
+* **Enterprise Multi-Cabang & Multi-User** — Paket Enterprise saat ini masih bersifat placeholder. Dukungan banyak cabang dalam satu akun, manajemen multi-pengguna per toko, dan akses API belum tersedia. *(rencana selanjutnya)*
+* **Payment Gateway** — Belum ada integrasi pembayaran otomatis (e-wallet/bank/virtual account). Upgrade & perpanjangan paket masih ditangani manual oleh Superadmin via WhatsApp. *(rencana selanjutnya)*
+* **SMTP Email Kustom** — Saat ini masih menggunakan layanan email bawaan **Supabase free plan** yang dibatasi **±2 email konfirmasi per jam**. Untuk produksi skala lebih besar, perlu konfigurasi SMTP kustom (mis. Resend/SendGrid) agar tidak terkena rate limit. *(rencana selanjutnya)*
+* **OTP Verifikasi via WhatsApp** — Karena WhatsApp Gateway berbasis Node.js sudah berjalan terus-menerus di VPS, verifikasi akun melalui **OTP WhatsApp** menjadi opsi yang lebih praktis & murah dibanding email. Logika OTP direncanakan dipindahkan ke gateway WA ini. *(rencana selanjutnya)*
+
+---
+
 ## 📝 Catatan Pembaruan Terbaru
 
 Rangkuman peningkatan signifikan pada iterasi terakhir proyek:
