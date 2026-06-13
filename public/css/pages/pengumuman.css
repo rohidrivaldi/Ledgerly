@@ -9,6 +9,12 @@
   gap: 16px;
   padding: 18px 20px;
 }
+
+.peng-saluran-content {
+  flex: 1;
+  min-width: 0;
+}
+
 .peng-saluran-icon {
   flex-shrink: 0;
   width: 48px;
@@ -33,6 +39,13 @@
 .peng-saluran-card.peng-saluran-kosong {
   background: var(--slate-50);
   border-style: dashed;
+}
+
+.peng-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 /* item pengumuman */
