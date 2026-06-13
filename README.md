@@ -210,6 +210,38 @@ Ledgerly dirancang dengan prinsip pertahanan berlapis (*defense in depth*):
 
 ---
 
+## 📊 Hasil Audit Performa & Keamanan
+
+Diuji pada `https://ledgerly.my.id/` menggunakan **Google PageSpeed Insights** (Lighthouse) dan **Mozilla HTTP Observatory**.
+
+### Google PageSpeed Insights (Lighthouse)
+
+| Kategori | Mobile | Desktop |
+| :--- | :---: | :---: |
+| ⚡ Performance | 93 | 99 |
+| ♿ Accessibility | 100 | 100 |
+| ✅ Best Practices | 92 | 92 |
+| 🔍 SEO | 100 | 100 |
+
+<table>
+  <tr>
+    <td align="center"><b>Mobile</b></td>
+    <td align="center"><b>Desktop</b></td>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/pagespeed-mobile.png" alt="PageSpeed Insights Mobile" width="100%"></td>
+    <td><img src="assets/screenshots/pagespeed-desktop.png" alt="PageSpeed Insights Desktop" width="100%"></td>
+  </tr>
+</table>
+
+### Mozilla HTTP Observatory (Keamanan Header)
+
+Skor **B+ (80/100)** — 9 dari 10 tes lolos. Dilengkapi CSP ketat, HSTS, X-Frame-Options, X-Content-Type-Options, dan header keamanan lainnya.
+
+![HTTP Observatory Security Scan](assets/screenshots/security-observatory.png)
+
+---
+
 ## 📝 Catatan Pembaruan Terbaru
 
 Rangkuman peningkatan signifikan pada iterasi terakhir proyek:
