@@ -9,6 +9,20 @@
   border-color: var(--indigo-100);
 }
 
+.kep-prediksi-hasil {
+  padding: 16px 20px 20px;
+  font-size: 14px;
+  color: var(--slate-700);
+  line-height: 1.7;
+}
+
+.info-text {
+  text-align: center;
+  color: var(--slate-400);
+  padding: 24px 0;
+  font-size: 13px;
+}
+
 /* -- ranking list (keputusan) -- */
 .rank-item {
   display: flex;
@@ -17,11 +31,14 @@
   padding: 12px 20px;
   border-top: 1px solid var(--slate-100);
 }
-.rank-item:first-child { border-top: none; }
+.rank-item:first-child {
+  border-top: none;
+}
 .rank-num {
   display: grid;
   place-items: center;
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-lg);
   background: var(--amber-50);
   color: var(--amber-700);
@@ -29,13 +46,31 @@
   font-size: 14px;
   flex-shrink: 0;
 }
-.rank-info { min-width: 0; flex: 1; }
-.rank-name {
-  font-size: 14px; font-weight: 500;
-  color: var(--slate-900);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+.rank-info {
+  min-width: 0;
+  flex: 1;
 }
-.rank-cat { font-size: 12px; color: var(--slate-500); }
-.rank-stats { text-align: right; }
-.rank-units { font-size: 14px; font-weight: 600; color: var(--slate-900); }
-.rank-revenue { font-size: 12px; color: var(--emerald-600); }
+.rank-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--slate-900);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rank-cat {
+  font-size: 12px;
+  color: var(--slate-500);
+}
+.rank-stats {
+  text-align: right;
+}
+.rank-units {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--slate-900);
+}
+.rank-revenue {
+  font-size: 12px;
+  color: var(--emerald-600);
+}

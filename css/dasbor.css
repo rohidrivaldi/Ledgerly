@@ -471,8 +471,7 @@
 .layout-2-1 {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 14px;
 }
 @media (min-width: 1024px) {
   .layout-2-1 { grid-template-columns: 2fr 1fr; }
