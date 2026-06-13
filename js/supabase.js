@@ -223,9 +223,7 @@ async function resetPassword(email) {
 
       const { data, error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + '/login.html',
-        options: {
-          captchaToken: captchaToken
-        }
+        captchaToken: captchaToken
       });
       if (error) throw error;
       return { ok: true };
