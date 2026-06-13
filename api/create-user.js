@@ -58,6 +58,10 @@ module.exports = async function handler(req, res) {
     }
 
     // 4. buat akun auth (email_confirm:true -> langsung aktif, gak perlu verifikasi email)
+    //    user_metadata.created_by='admin' -> nandain ke trigger handle_new_user
+    //    biar dia SKIP bikin profil otomatis. soalnya jalur admin ini insert
+    //    profil sendiri di step 5 (dgn nama/bisnis/paket lengkap). tanpa flag ini
+    //    trigger & step 5 bakal sama2 insert -> unique_violation -> akun gagal dibuat.
     const createResp = await fetch(SUPABASE_URL + '/auth/v1/admin/users', {
       method: 'POST',
       headers: {
@@ -65,7 +69,7 @@ module.exports = async function handler(req, res) {
         Authorization: 'Bearer ' + SERVICE_ROLE,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email: email, password: password, email_confirm: true })
+      body: JSON.stringify({ email: email, password: password, email_confirm: true, user_metadata: { created_by: 'admin' } })
     });
     const created = await createResp.json();
     if (!createResp.ok) {

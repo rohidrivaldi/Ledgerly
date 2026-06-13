@@ -149,7 +149,7 @@ export default defineConfig(({ mode }) => {
 
                 var cR = await fetch(SUPABASE_URL + '/auth/v1/admin/users', {
                   method: 'POST', headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + SERVICE_ROLE, 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ email: d.email, password: d.password, email_confirm: true })
+                  body: JSON.stringify({ email: d.email, password: d.password, email_confirm: true, user_metadata: { created_by: 'admin' } })
                 });
                 var created = await cR.json();
                 if (!cR.ok) return kirim(cR.status, { error: created.msg || created.error_description || 'Gagal buat akun auth.' });

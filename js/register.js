@@ -223,10 +223,22 @@ async function handleRegister(e) {
   
   if (window.supabaseClient) {
     try {
-      // 1. Daftarkan kredensial di Supabase Auth
+      // 1. Daftarkan kredensial di Supabase Auth.
+      // kirim data profil di options.data -> masuk ke raw_user_meta_data.
+      // trigger handle_new_user di server baca ini buat bikin profil otomatis
+      // (walau email confirmation aktif & belum ada sesi). ini yg nyegah akun
+      // "ada di auth tapi gak ada di Kelola Pemilik".
       const { data, error } = await window.supabaseClient.auth.signUp({
         email: email,
-        password: password
+        password: password,
+        options: {
+          data: {
+            nama: name,
+            bisnis: bisnis,
+            noTelp: waNum,
+            paket: paketDb
+          }
+        }
       });
       
       if (error) throw error;
