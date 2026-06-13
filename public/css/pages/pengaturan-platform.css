@@ -1,0 +1,38 @@
+.custom-card {
+  max-width: 720px;
+  padding: 24px;
+}
+.card-subtitle {
+  margin-bottom: 14px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.template-form-container {
+  border-top: 1px solid var(--slate-100);
+  padding-top: 18px;
+}
+.template-input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.template-input-form textarea {
+  resize: vertical;
+}
+
+.ps-status {
+  font-size: 13px;
+  display: none;
+}

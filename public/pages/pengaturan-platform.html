@@ -3,43 +3,50 @@
   <p class="page-desc">Atur kontak WhatsApp dan template pesan yang dipakai di seluruh aplikasi</p>
 </div>
 
-<div class="card" style="max-width:720px; padding:24px;">
-  <form id="form-platform" onsubmit="simpanPlatformSettings(event)" style="display:flex; flex-direction:column; gap:20px;">
-
+<!-- Kontak WhatsApp -->
+<div class="card custom-card">
+  <form class="form-container" id="form-platform " onsubmit="simpanPlatformSettings(event)">
     <div>
-      <div style="font-size:13px; font-weight:700; color:var(--slate-700); margin-bottom:4px;">Kontak WhatsApp</div>
-      <div style="font-size:12px; color:var(--slate-400); margin-bottom:14px;">Nomor ini dipakai di tombol "Hubungi Admin" & "Hubungi CS" pada halaman Pengaturan pemilik toko. Format: 628xxxx.</div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+      <div class="card-title">Kontak WhatsApp</div>
+      <div class="card-subtitle">
+        Nomor ini dipakai di tombol "Hubungi Admin" & "Hubungi CS" pada halaman Pengaturan pemilik toko. Format: 628xxxx.
+      </div>
+
+      <!-- Input Fields -->
+      <div class="input-container">
         <div>
           <label class="form-label">Nomor WhatsApp Admin (Upgrade/Langganan)</label>
-          <input class="form-input" type="text" id="ps-wa-admin" placeholder="628xxxx" inputmode="numeric">
+          <input class="form-input" type="text" id="ps-wa-admin" placeholder="628xxxx" inputmode="numeric" />
         </div>
         <div>
           <label class="form-label">Nomor WhatsApp CS (Bantuan)</label>
-          <input class="form-input" type="text" id="ps-wa-cs" placeholder="628xxxx" inputmode="numeric">
+          <input class="form-input" type="text" id="ps-wa-cs" placeholder="628xxxx" inputmode="numeric" />
         </div>
       </div>
     </div>
 
-    <div style="border-top:1px solid var(--slate-100); padding-top:18px;">
-      <div style="font-size:13px; font-weight:700; color:var(--slate-700); margin-bottom:4px;">Template Pesan Otomatis</div>
-      <div style="font-size:12px; color:var(--slate-400); margin-bottom:14px;">Teks pesan yang sudah terisi otomatis saat pemilik toko menekan tombol WhatsApp.</div>
-      <div style="display:flex; flex-direction:column; gap:14px;">
+    <!-- Template Pesan Otomatis -->
+    <div class="template-form-container">
+      <div class="card-title">Template Pesan Otomatis</div>
+      <div class="card-subtitle">Teks pesan yang sudah terisi otomatis saat pemilik toko menekan tombol WhatsApp.</div>
+      <div class="template-input-form">
         <div>
           <label class="form-label">Pesan ke Admin (Upgrade)</label>
-          <textarea class="form-input" id="ps-pesan-upgrade" rows="2" style="resize:vertical;"></textarea>
+          <textarea class="form-input" id="ps-pesan-upgrade" rows="2"></textarea>
         </div>
         <div>
           <label class="form-label">Pesan ke CS (Bantuan)</label>
-          <textarea class="form-input" id="ps-pesan-cs" rows="2" style="resize:vertical;"></textarea>
+          <textarea class="form-input" id="ps-pesan-cs" rows="2"></textarea>
         </div>
       </div>
     </div>
 
-    <div id="ps-status" style="font-size:13px; display:none;"></div>
+    <!-- Status Message -->
+    <div id="ps-status" class="ps-status"></div>
 
-    <div style="display:flex; justify-content:flex-end;">
-      <button type="submit" class="btn btn-primary" id="ps-btn-simpan" style="padding:10px 20px;">Simpan Pengaturan</button>
+    <!-- Submit Button -->
+    <div class="flex-end">
+      <button type="submit" class="btn btn-primary" id="ps-btn-simpan">Simpan Pengaturan</button>
     </div>
   </form>
 </div>

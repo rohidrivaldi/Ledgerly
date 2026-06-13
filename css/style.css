@@ -220,6 +220,11 @@ textarea {
   cursor: not-allowed;
 }
 
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* ============ FORM ELEMENTS ============ */
 
 .form-label {
