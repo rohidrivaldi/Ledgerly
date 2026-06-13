@@ -38,6 +38,15 @@ function renderTopbar() {
 
   // mulai jam WIB berdetak (sekali aja set intervalnya)
   mulaiJamWIB();
+
+  // re-apply visibilitas search sesuai halaman aktif. WAJIB di sini krn
+  // renderTopbar bisa kepanggil ulang (update notif/user/sync async) & dia
+  // selalu rebuild .topbar-search dlm keadaan visible. tanpa ini, search
+  // bakal nongol lagi di halaman yg harusnya gak ada search (mis. keuangan).
+  if (typeof updateTopbarSearchVisibility === 'function') {
+    var hashAktif = (typeof halamanSkrg !== 'undefined' && halamanSkrg) ? halamanSkrg : (window.location.hash || '#inventaris');
+    updateTopbarSearchVisibility(hashAktif);
+  }
 }
 
 // update teks jam WIB tiap detik di topbar. selalu Asia/Jakarta apapun device.

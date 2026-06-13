@@ -21,22 +21,24 @@ function initKeuangan() {
     `;
   }
 
-  // Init DateRangePicker jika belum
+  // Init DateRangePicker. SELALU panggil buatDateRangePicker (bukan di-guard
+  // "kalau instance belum ada") — krn tiap navigasi nimpa innerHTML konten,
+  // container drp-keuangan jadi kosong & instance lama nunjuk DOM yg udah
+  // dibuang. komponen udah handle dedup sendiri (tutup instance lama dulu).
+  // ini yg bikin DRP keuangan ngilang pas balik ke halaman ini.
   if (typeof buatDateRangePicker === 'function' && document.getElementById('drp-keuangan')) {
-    if (!window._drp_instances || !window._drp_instances['drp-keuangan']) {
-      buatDateRangePicker({
-        containerId: 'drp-keuangan',
-        placeholder: 'Rentang tanggal...',
-        onChange: function(start, end) {
-          keuCustomStart = start;
-          keuCustomEnd   = end;
-          // Hapus highlight tombol periode
-          let ps = document.getElementById('keu-period-selector');
-          if (ps) ps.querySelectorAll('.period-btn').forEach(function(b) { b.classList.remove('active'); });
-          renderKeuangan();
-        }
-      });
-    }
+    buatDateRangePicker({
+      containerId: 'drp-keuangan',
+      placeholder: 'Rentang tanggal...',
+      onChange: function(start, end) {
+        keuCustomStart = start;
+        keuCustomEnd   = end;
+        // Hapus highlight tombol periode
+        let ps = document.getElementById('keu-period-selector');
+        if (ps) ps.querySelectorAll('.period-btn').forEach(function(b) { b.classList.remove('active'); });
+        renderKeuangan();
+      }
+    });
   }
 
   renderKeuangan();
