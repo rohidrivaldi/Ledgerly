@@ -3,6 +3,17 @@
    sebagian besar pakai komponen tabel & card global
    ============================================= */
 
+.kp-saluran-status {
+  font-size: 12px;
+  margin-top: 8px;
+  display: none;
+}
+
+.form-input {
+  flex: 1;
+  min-width: 220px;
+}
+
 #tabel-pengumuman td {
   vertical-align: middle;
 }

@@ -3,20 +3,20 @@
     <h1 class="page-title">Kelola Pengumuman</h1>
     <p class="page-desc">Kirim pengumuman ke semua pemilik toko & atur saluran WhatsApp</p>
   </div>
-  <button class="btn btn-primary" onclick="bukaModalPengumuman()" style="display:inline-flex; align-items:center; gap:6px;">
-    <span id="kp-plus-icon"></span> Pengumuman Baru
-  </button>
+  <button class="btn btn-primary" onclick="bukaModalPengumuman()"><span id="kp-plus-icon"></span> Pengumuman Baru</button>
 </div>
 
 <!-- atur link saluran whatsapp -->
-<div class="card" style="padding:20px; margin-bottom:20px;">
-  <div style="font-size:13px; font-weight:700; color:var(--slate-700); margin-bottom:4px;">Link Saluran WhatsApp</div>
-  <div style="font-size:12px; color:var(--slate-400); margin-bottom:12px;">Tempel link saluran WhatsApp (channel) di sini. Jika dikosongkan, di halaman pemilik akan tampil status "belum tersedia".</div>
-  <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-    <input class="form-input" type="text" id="kp-wa-saluran" placeholder="https://whatsapp.com/channel/..." style="flex:1; min-width:220px;">
+<div class="card p-20">
+  <div class="card-title">Link Saluran WhatsApp</div>
+  <div class="card-subtitle mb-16">
+    Tempel link saluran WhatsApp (channel) di sini. Jika dikosongkan, di halaman pemilik akan tampil status "belum tersedia".
+  </div>
+  <div class="form-group">
+    <input class="form-input" type="text" id="kp-wa-saluran" placeholder="https://whatsapp.com/channel/..." />
     <button class="btn btn-primary" onclick="simpanSaluranWA()" id="kp-btn-saluran">Simpan Link</button>
   </div>
-  <div id="kp-saluran-status" style="font-size:12px; margin-top:8px; display:none;"></div>
+  <div id="kp-saluran-status" class="kp-saluran-status"></div>
 </div>
 
 <!-- daftar pengumuman -->
@@ -27,18 +27,22 @@
       <div class="card-subtitle" id="kp-subtitle">Memuat...</div>
     </div>
   </div>
-  <div style="overflow-x:auto;">
+  <div style="overflow-x: auto">
     <table class="tabel" id="tabel-pengumuman">
       <thead>
         <tr>
           <th>Judul</th>
           <th>Isi</th>
           <th>Tanggal</th>
-          <th class="text-center" style="width:80px;">Status</th>
-          <th class="text-right" style="width:160px;">Aksi</th>
+          <th class="text-center" style="width: 80px">Status</th>
+          <th class="text-center" style="width: 160px">Aksi</th>
         </tr>
       </thead>
-      <tbody><tr><td colspan="5" class="text-center" style="padding:40px; color:var(--slate-400);">Memuat data...</td></tr></tbody>
+      <tbody>
+        <tr>
+          <td colspan="5" class="text-center td-mono p-40">Memuat data...</td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </div>
