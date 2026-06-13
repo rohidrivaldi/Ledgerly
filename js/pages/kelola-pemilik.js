@@ -173,8 +173,18 @@ function bukaModalPemilik(userId) {
             </div>
             <div>
               <label class="form-label">Email Kerja</label>
-              <input class="form-input" type="email" id="p-email" value="${target.email || ""}" style="text-transform:none;" required>
+              <input class="form-input" type="email" id="p-email" value="${target.email || ""}" style="text-transform:none;" required ${userId ? 'readonly disabled' : ''}>
             </div>
+            ${userId ? '' : `
+            <div>
+              <label class="form-label">Kata Sandi <span style="font-weight:400; text-transform:none; color:var(--slate-400);">(min 8 karakter)</span></label>
+              <div class="login-input-group" style="position:relative;">
+                <input class="form-input" type="password" id="p-password" minlength="8" required placeholder="Buat kata sandi untuk pemilik" autocomplete="new-password">
+                <button type="button" onclick="togglePwPemilik()" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--slate-400); padding:4px;" id="btn-pw-pemilik">${icon('eye', 16)}</button>
+              </div>
+              <div style="font-size:11px; color:var(--slate-400); margin-top:4px;">Akun langsung aktif (tanpa verifikasi email). Catat & beritahukan sandi ini ke pemilik.</div>
+            </div>
+            `}
             <div>
               <label class="form-label">Nama Bisnis / Toko</label>
               <input class="form-input" type="text" id="p-bisnis" value="${target.bisnis || ""}" required>
@@ -218,6 +228,20 @@ function bukaModalPemilik(userId) {
 function tutupModalPemilik() {
   let modal = document.getElementById("modal-pemilik-container");
   if (modal) modal.remove();
+}
+
+// toggle lihat/sembunyi password di form tambah pemilik
+function togglePwPemilik() {
+  let inp = document.getElementById("p-password");
+  let btn = document.getElementById("btn-pw-pemilik");
+  if (!inp) return;
+  if (inp.type === "password") {
+    inp.type = "text";
+    if (btn) btn.innerHTML = icon("eyeOff", 16);
+  } else {
+    inp.type = "password";
+    if (btn) btn.innerHTML = icon("eye", 16);
+  }
 }
 
 // Simpan data pemilik baru atau yang sudah diubah ke database
@@ -264,13 +288,34 @@ async function simpanPemilik(e, userId) {
       if (error) throw error;
       console.log("Berhasil memperbarui data pemilik!");
     } else {
-      // INSERT data user baru ke Supabase
-      const { error } = await window.supabaseClient
-        .from("Users")
-        .insert({ nama: nama, email: email, bisnis: bisnis, noTelp: parseInt(noTelp), role: role, paket: paket, tgl_expired: tglExpired, status_langganan: statusLangganan });
+      // TAMBAH pemilik baru: lewat endpoint serverless /api/create-user.
+      // endpoint pegang service_role key di server (bikin akun auth + profil
+      // sekaligus, email langsung aktif). gak bisa dr frontend langsung krn
+      // signUp bakal nge-logout admin + service_role gak boleh ke browser.
+      let password = (document.getElementById("p-password") || {}).value || "";
 
-      if (error) throw error;
-      console.log("Berhasil menambahkan pemilik baru!");
+      // ambil JWT admin buat dikirim ke endpoint (dipakai verifikasi superadmin)
+      let token = "";
+      try {
+        const { data: sesi } = await window.supabaseClient.auth.getSession();
+        token = sesi && sesi.session ? sesi.session.access_token : "";
+      } catch (e) {}
+
+      const resp = await fetch("/api/create-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+        body: JSON.stringify({ email: email, password: password, nama: nama, bisnis: bisnis, noTelp: noTelp, paket: paket })
+      });
+      const hasil = await resp.json();
+      if (!resp.ok) throw new Error(hasil.error || "Gagal membuat akun pemilik.");
+
+      // klo paket business, set tgl_expired + status (endpoint cuma set profil dasar)
+      if (paket === "business" && hasil.user_id) {
+        await window.supabaseClient.from("Users")
+          .update({ tgl_expired: tglExpired, status_langganan: statusLangganan })
+          .eq("user_id", hasil.user_id);
+      }
+      console.log("Berhasil menambahkan pemilik baru + akun login!");
     }
 
     tutupModalPemilik(); // tutup modal setelah berhasil menyimpan

@@ -98,6 +98,62 @@ export default defineConfig(({ mode }) => {
             });
           });
         }
+      },
+      {
+        // Dev proxy buat /api/create-user — bikin akun pemilik (auth+profil) oleh
+        // superadmin. SERVICE_ROLE key cuma di server. mirror api/create-user.js.
+        name: 'dev-api-create-user',
+        configureServer(server) {
+          server.middlewares.use('/api/create-user', function(req, res) {
+            if (req.method !== 'POST') { res.statusCode = 405; res.end('Method Not Allowed'); return; }
+            var SUPABASE_URL = env.VITE_SUPABASE_URL;
+            var SERVICE_ROLE = env.SUPABASE_SERVICE_ROLE_KEY;
+            if (!SUPABASE_URL || !SERVICE_ROLE) { res.statusCode = 500; res.end(JSON.stringify({ error: 'SERVICE_ROLE_KEY belum diset di .env' })); return; }
+
+            var token = (req.headers['authorization'] || '').replace(/^Bearer\s+/i, '');
+            if (!token) { res.statusCode = 401; res.end(JSON.stringify({ error: 'Harus login superadmin.' })); return; }
+
+            var body = '';
+            req.on('data', function(c) { body += c; });
+            req.on('end', async function() {
+              function kirim(code, obj) { res.statusCode = code; res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify(obj)); }
+              try {
+                // verifikasi token -> user pemanggil
+                var meR = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + token } });
+                if (!meR.ok) return kirim(401, { error: 'Token tidak valid.' });
+                var me = await meR.json();
+                // cek role superadmin
+                var roleR = await fetch(SUPABASE_URL + '/rest/v1/Users?user_id=eq.' + me.id + '&select=role', { headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + SERVICE_ROLE } });
+                var roleRows = await roleR.json();
+                if (!roleRows[0] || roleRows[0].role !== 'superadmin') return kirim(403, { error: 'Akses ditolak. Hanya superadmin.' });
+
+                var d = {};
+                try { d = JSON.parse(body || '{}'); } catch (e) {}
+                if (!d.email || !d.password || !d.nama || !d.bisnis) return kirim(400, { error: 'Email, password, nama, bisnis wajib diisi.' });
+                if (String(d.password).length < 8) return kirim(400, { error: 'Password minimal 8 karakter.' });
+
+                var cR = await fetch(SUPABASE_URL + '/auth/v1/admin/users', {
+                  method: 'POST', headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + SERVICE_ROLE, 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email: d.email, password: d.password, email_confirm: true })
+                });
+                var created = await cR.json();
+                if (!cR.ok) return kirim(cR.status, { error: created.msg || created.error_description || 'Gagal buat akun auth.' });
+
+                var pR = await fetch(SUPABASE_URL + '/rest/v1/Users', {
+                  method: 'POST', headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + SERVICE_ROLE, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+                  body: JSON.stringify({ user_id: created.id, email: d.email, nama: d.nama, bisnis: d.bisnis, noTelp: d.noTelp ? parseInt(d.noTelp) : null, role: 'pemilik', paket: d.paket || 'starter' })
+                });
+                if (!pR.ok) {
+                  await fetch(SUPABASE_URL + '/auth/v1/admin/users/' + created.id, { method: 'DELETE', headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + SERVICE_ROLE } });
+                  return kirim(pR.status, { error: 'Gagal simpan profil: ' + (await pR.text()) });
+                }
+                kirim(200, { ok: true, user_id: created.id });
+              } catch (err) {
+                kirim(500, { error: 'Internal Server Error: ' + err.message });
+              }
+            });
+          });
+        }
       }
     ],
     // aktifin folder public biar pages/ dan css/pages/ ke-load statis dgn mime type yg bener
