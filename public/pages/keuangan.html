@@ -5,12 +5,14 @@
 </div>
 
 <!-- Tombol pilih periode (7/30/60 hari) + date range custom -->
-<div style="margin-bottom: 16px; display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+<div class="filter-container">
   <div class="period-selector" id="keu-period-selector"></div>
-  <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-    <span style="font-size:12px; color:var(--slate-500);">atau pilih:</span>
-    <div id="drp-keuangan" style="min-width:220px;"></div>
-    <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="resetFilterKeuangan()">Reset</button>
+
+  <!-- Date Range Picker -->
+  <div class="date-range-picker">
+    <span>atau pilih:</span>
+    <div id="drp-keuangan" style="min-width: 220px"></div>
+    <button class="btn btn-secondary" onclick="resetFilterKeuangan()">Reset</button>
   </div>
 </div>
 

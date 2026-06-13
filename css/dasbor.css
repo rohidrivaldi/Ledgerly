@@ -480,8 +480,7 @@
 .layout-1-1 {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 10px;
 }
 @media (min-width: 1024px) {
   .layout-1-1 { grid-template-columns: 1fr 1fr; }

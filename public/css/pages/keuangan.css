@@ -3,6 +3,13 @@
    ============================================= */
 
 /* -- period selector (keuangan) -- */
+.filter-container {
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
 .period-selector {
   display: inline-flex;
   border-radius: var(--radius-lg);
@@ -25,6 +32,18 @@
   background: var(--indigo-600);
   color: #fff;
   box-shadow: var(--shadow-sm);
+}
+
+.date-range-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.date-range-picker span {
+  font-size: 12px;
+  color: var(--slate-500);
 }
 
 /* -- laba rugi list -- */
