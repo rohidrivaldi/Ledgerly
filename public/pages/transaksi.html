@@ -3,7 +3,7 @@
     <h1 class="page-title">Riwayat Transaksi</h1>
     <p class="page-desc">Pencatatan barang masuk dan keluar</p>
   </div>
-  <div style="display:flex; gap:8px;">
+  <div class="form-group">
     <button class="btn btn-primary" onclick="bukaModalTx()"><span id="tx-plus-icon"></span> Transaksi Baru</button>
     <button class="btn btn-secondary" onclick="bukaUploadModal()"><span id="tx-upload-icon"></span> Upload CSV</button>
   </div>
@@ -25,32 +25,41 @@
 </div>
 
 <div class="card">
-  <div class="card-header flex-between" style="flex-wrap:wrap; gap:12px;">
+  <div class="card-header flex-between">
     <div>
       <div class="card-title">Daftar Transaksi</div>
       <div class="card-subtitle" id="tx-list-subtitle">0 transaksi</div>
     </div>
     <!-- Filter bar -->
-    <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-      <input class="form-input" type="text" id="cari-transaksi" placeholder="Cari transaksi..." style="max-width:160px; font-size:12px;">
-      <select class="form-select" id="filter-tx-tipe" style="max-width:130px; font-size:12px;" onchange="filterTransaksiUpdate()">
+    <div class="form-group">
+      <!-- Search Input -->
+      <input class="form-input search" type="text" id="cari-transaksi" placeholder="Cari transaksi..." />
+
+      <!-- Tipe Filter -->
+      <select class="form-select dropdown" id="filter-tx-tipe" onchange="filterTransaksiUpdate()">
         <option value="">Semua Tipe</option>
         <option value="MASUK">Masuk</option>
         <option value="KELUAR">Keluar</option>
       </select>
-      <select class="form-select" id="filter-tx-metode" style="max-width:130px; font-size:12px;" onchange="filterTransaksiUpdate()">
+
+      <!-- Metode Filter -->
+      <select class="form-select dropdown" id="filter-tx-metode" onchange="filterTransaksiUpdate()">
         <option value="">Semua Metode</option>
         <option value="cash">Cash</option>
         <option value="transfer">Transfer</option>
         <option value="qris">QRIS</option>
       </select>
-      <div style="display:flex; align-items:center; gap:4px;">
-        <div id="drp-transaksi" style="min-width:220px;"></div>
-        <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="resetFilterTransaksi()">Reset</button>
+
+      <!-- Tanggal Filter -->
+      <div class="form-group">
+        <div id="drp-transaksi"></div>
+        <button class="btn btn-secondary" onclick="resetFilterTransaksi()">Reset</button>
       </div>
     </div>
   </div>
-  <div style="overflow-x:auto;">
+
+  <!-- Tabel Transaksi -->
+  <div class="table-container">
     <table class="tabel">
       <thead>
         <tr>
@@ -60,27 +69,28 @@
           <th class="text-right">Jumlah</th>
           <th class="text-right">Harga Satuan</th>
           <th class="text-right">Total</th>
-          <th>Metode</th>
-          <th class="text-center" style="width:130px;">Aksi</th>
+          <th class="text-center">Metode</th>
+          <th class="text-center">Aksi</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
   </div>
   <!-- Pagination -->
-  <div id="tx-pagination-placeholder" style="padding:12px 20px; border-top:1px solid var(--slate-100);"></div>
+  <div class="pagination" id="tx-pagination-placeholder"></div>
 </div>
 
+<!-- Modal Transaksi -->
 <div class="modal-overlay hidden" id="modal-tx">
   <div class="modal-box">
-    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+    <div class="modal-header">
       <div>
         <div class="modal-title">Transaksi Baru</div>
         <div class="modal-desc">Catat barang masuk atau keluar</div>
       </div>
-      <button onclick="tutupModalTx()" style="padding:4px;" id="btn-tx-close"></button>
+      <button onclick="tutupModalTx()" style="padding: 4px" id="btn-tx-close"></button>
     </div>
-    <form id="form-tx" style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" onsubmit="submitTx(event)">
+    <form class="modal-form" id="form-tx" onsubmit="submitTx(event)">
       <div>
         <label class="form-label">Tipe</label>
         <select class="form-select" id="tx-tipe">
@@ -90,16 +100,16 @@
       </div>
       <div>
         <label class="form-label">Produk</label>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <select class="form-select" id="tx-produk" style="flex:1;"></select>
-          <button type="button" class="btn btn-secondary" style="padding:8px 12px; white-space:nowrap;" id="btn-tx-scan" onclick="scanBarcodeTx()"></button>
+        <div class="form-group">
+          <select class="form-select" id="tx-produk" style="flex: 1"></select>
+          <button type="button" class="btn btn-secondary camera-btn" id="btn-tx-scan" onclick="scanBarcodeTx()"></button>
         </div>
-        <div id="tx-barcode-scanner" style="display:none; margin-top:10px; border-radius:10px; overflow:hidden;"></div>
-        <div id="tx-scan-msg" style="font-size:11px; margin-top:4px; display:none;"></div>
+        <div class="tx-barcode-scanner" id="tx-barcode-scanner"></div>
+        <div class="tx-scan-msg" id="tx-scan-msg"></div>
       </div>
       <div>
         <label class="form-label">Jumlah</label>
-        <input class="form-input" type="number" id="tx-jumlah" min="1" value="1" required>
+        <input class="form-input" type="number" id="tx-jumlah" min="1" value="1" required />
       </div>
       <div>
         <label class="form-label">Metode Pembayaran</label>
@@ -111,11 +121,11 @@
       </div>
       <div>
         <label class="form-label">Catatan (opsional)</label>
-        <input class="form-input" type="text" id="tx-catatan" placeholder="Catatan...">
+        <input class="form-input" type="text" id="tx-catatan" placeholder="Catatan..." />
       </div>
-      <div style="display:flex; gap:8px; margin-top:8px;">
-        <button type="button" class="btn btn-secondary" onclick="tutupModalTx()" style="flex:1;">Batal</button>
-        <button type="submit" class="btn btn-primary" style="flex:1;">Simpan</button>
+      <div class="form-group">
+        <button type="button" class="btn btn-secondary" onclick="tutupModalTx()" style="flex: 1">Batal</button>
+        <button type="submit" class="btn btn-primary" style="flex: 1">Simpan</button>
       </div>
     </form>
   </div>

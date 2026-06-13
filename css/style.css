@@ -318,7 +318,7 @@ input, select, textarea { font-family: inherit; }
 .badge-dot.red { background: var(--rose-500); }
 
 /* ============ TABLES ============ */
-
+.table-container {overflow-x: auto;}
 .tabel {
   width: 100%;
   font-size: 14px;
@@ -337,6 +337,8 @@ input, select, textarea { font-family: inherit; }
   text-align: left;
 }
 .tabel th.text-right { text-align: right; }
+.tabel th.text-center { text-align: center; }
+
 .tabel td {
   padding: 12px 20px;
   border-top: 1px solid var(--slate-100);

@@ -12,7 +12,10 @@
   margin-bottom: 24px;
 }
 @media (max-width: 767px) {
-  .summary-row { grid-template-columns: 1fr; gap: 10px; }
+  .summary-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 .summary-card {
   padding: 16px;
@@ -20,7 +23,7 @@
 }
 .summary-card.pemasukan {
   background: var(--emerald-50);
-  border: 1px solid rgba(6,95,70,0.15);
+  border: 1px solid rgba(6, 95, 70, 0.15);
 }
 .summary-card.pengeluaran {
   background: var(--rose-50);
@@ -28,7 +31,7 @@
 }
 .summary-card.bersih-positif {
   background: var(--emerald-50);
-  border: 1px solid rgba(6,95,70,0.15);
+  border: 1px solid rgba(6, 95, 70, 0.15);
 }
 .summary-card.bersih-negatif {
   background: var(--rose-50);
@@ -36,7 +39,7 @@
 }
 .summary-card.bersih-netral {
   background: var(--indigo-50);
-  border: 1px solid rgba(99,102,241,0.15);
+  border: 1px solid rgba(99, 102, 241, 0.15);
 }
 .summary-label {
   display: flex;
@@ -45,18 +48,97 @@
   font-size: 12px;
   font-weight: 500;
 }
-.summary-card.pemasukan .summary-label { color: var(--emerald-700); }
-.summary-card.pengeluaran .summary-label { color: var(--rose-700); }
-.summary-card.bersih-positif .summary-label { color: var(--emerald-700); }
-.summary-card.bersih-negatif .summary-label { color: var(--rose-700); }
-.summary-card.bersih-netral .summary-label { color: var(--indigo-700); }
+.summary-card.pemasukan .summary-label {
+  color: var(--emerald-700);
+}
+.summary-card.pengeluaran .summary-label {
+  color: var(--rose-700);
+}
+.summary-card.bersih-positif .summary-label {
+  color: var(--emerald-700);
+}
+.summary-card.bersih-negatif .summary-label {
+  color: var(--rose-700);
+}
+.summary-card.bersih-netral .summary-label {
+  color: var(--indigo-700);
+}
 .summary-value {
   margin-top: 4px;
   font-size: 20px;
   font-weight: 600;
 }
-.summary-card.pemasukan .summary-value { color: var(--emerald-800); }
-.summary-card.pengeluaran .summary-value { color: var(--rose-800); }
-.summary-card.bersih-positif .summary-value { color: var(--emerald-800); }
-.summary-card.bersih-negatif .summary-value { color: var(--rose-800); }
-.summary-card.bersih-netral .summary-value { color: var(--indigo-800); }
+.summary-card.pemasukan .summary-value {
+  color: var(--emerald-800);
+}
+.summary-card.pengeluaran .summary-value {
+  color: var(--rose-800);
+}
+.summary-card.bersih-positif .summary-value {
+  color: var(--emerald-800);
+}
+.summary-card.bersih-negatif .summary-value {
+  color: var(--rose-800);
+}
+.summary-card.bersih-netral .summary-value {
+  color: var(--indigo-800);
+}
+
+.form-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Filter Bar Styles */
+.search {
+  max-width: 160px;
+  font-size: 12px;
+}
+
+.dropdown {
+  max-width: 130px;
+  font-size: 12px;
+}
+
+.datepicker {
+  min-width: 220px;
+}
+
+/* Pagination Styles */
+.pagination {
+  padding: 12px 20px;
+  border-top: 1px solid var(--slate-100);
+}
+
+/* Modal Styles */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.modal-form {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.camera-btn {
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.tx-barcode-scanner {
+  display: none;
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tx-scan-msg {
+  font-size: 11px;
+  margin-top: 4px;
+  display: none;
+}
