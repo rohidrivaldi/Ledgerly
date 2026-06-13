@@ -76,6 +76,19 @@ Ledgerly mengadopsi arsitektur **Pure Decoupled SPA (Single Page Application)** 
 ### 5. Dasbor Kontrol Superadmin
 * Antarmuka khusus superadmin platform untuk mengelola akun pemilik UMKM, memantau volume total transaksi platform, status server, dan analisis chart paket langganan aktif.
 
+### 6. QR Code Produk
+* Setiap produk di katalog inventaris dilengkapi dengan QR Code unik yang di-generate secara otomatis.
+* QR Code dapat di-scan untuk mengidentifikasi detail produk secara instan, mencakup nama produk, SKU, harga beli, dan harga jual.
+* Mempercepat proses pencatatan dan verifikasi barang di lapangan tanpa perlu pencarian manual.
+
+
+### 7. Notifikasi WhatsApp Otomatis
+* Sistem mengirimkan alert otomatis via WhatsApp kepada pemilik toko ketika stok suatu produk turun di bawah batas minimum (reorder point).
+* Memastikan pemilik UMKM selalu mendapatkan informasi stok kritis secara real-time, bahkan saat tidak sedang membuka aplikasi.
+
+### 8. Papan Pengumuman (Announcement)
+* Menampilkan info dan kabar terbaru dari tim Ledgerly langsung di dalam dashboard pengguna.
+* Pemilik UMKM dapat memperoleh informasi terkini seputar pembaruan fitur, pemberitahuan pemeliharaan sistem, atau pengumuman penting lainnya tanpa harus meninggalkan platform.
 ---
 
 ## 📂 Struktur Arsitektur Kode
