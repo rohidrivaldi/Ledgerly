@@ -6,48 +6,47 @@
 </div>
 
 <!-- Grid stat cards -->
-<div class="grid-4" style="margin-bottom:24px;" id="sa-stats-container"></div>
+<div class="grid-4" id="sa-stats-container"></div>
 
 <!-- Area Utama (Grid 2 Kolom) -->
-<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:24px; margin-bottom:24px;">
-  
+<div class="grid-2">
   <!-- Kolom Kiri: Pembagian Paket Langganan (Chart) -->
-  <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between; min-height:360px;">
+  <div class="card p-20">
     <div>
       <div class="card-title">Pembagian Paket Langganan UMKM</div>
       <div class="card-subtitle">Distribusi jenis langganan aktif saat ini</div>
     </div>
-    <div style="max-height:220px; position:relative; margin-top:20px; display:flex; justify-content:center;">
-      <canvas id="chart-subscription" style="max-width:220px; max-height:220px;"></canvas>
+    <div class="canvas-container">
+      <canvas id="chart-subscription" class="canvas-size"></canvas>
     </div>
   </div>
 
   <!-- Kolom Kanan: Status Layanan & Akses Cepat -->
-  <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between; min-height:360px;">
+  <div class="card p-20">
     <div>
       <div class="card-title">Status Platform & Pintasan</div>
       <div class="card-subtitle">Pemantauan kesehatan server cloud dan pintasan aksi</div>
     </div>
-    <div style="margin-top:20px; flex:1; display:flex; flex-direction:column; gap:12px; justify-content:center;">
-      <div style="display:flex; justify-content:space-between; padding:10px 14px; background:var(--slate-50); border-radius:var(--radius-md); font-size:13px;">
-        <span style="font-weight:500; color:var(--slate-600);">Koneksi Supabase Cloud</span>
+    <div class="inner-card-container">
+      <div class="card-item">
+        <span class="card-item-text">Koneksi Supabase Cloud</span>
         <span class="badge badge-success"><span class="badge-dot green"></span>Terhubung</span>
       </div>
-      <div style="display:flex; justify-content:space-between; padding:10px 14px; background:var(--slate-50); border-radius:var(--radius-md); font-size:13px;">
-        <span style="font-weight:500; color:var(--slate-600);">WhatsApp Gateway Service</span>
+      <div class="card-item">
+        <span class="card-item-text">WhatsApp Gateway Service</span>
         <span class="badge badge-success"><span class="badge-dot green"></span>Aktif</span>
       </div>
-      <div style="display:flex; justify-content:space-between; padding:10px 14px; background:var(--slate-50); border-radius:var(--radius-md); font-size:13px;">
-        <span style="font-weight:500; color:var(--slate-600);">AI Recommendation Engine</span>
+      <div class="card-item">
+        <span class="card-item-text">AI Recommendation Engine</span>
         <span class="badge badge-success"><span class="badge-dot green"></span>Aktif</span>
       </div>
     </div>
-    <div style="margin-top:20px; display:flex; gap:10px;">
-      <button class="btn btn-primary" onclick="navigasi('#kelola-pemilik')" style="flex:1; gap:6px; font-size:13px;" id="sa-nav-kp-btn"></button>
-      <button class="btn btn-secondary" onclick="logout()" style="flex:1; gap:6px; font-size:13px;" id="sa-logout-btn"></button>
+
+    <div class="button-container">
+      <button class="btn btn-primary" onclick="navigasi('#kelola-pemilik')" style="flex: 1" id="sa-nav-kp-btn"></button>
+      <button class="btn btn-secondary" onclick="logout()" style="flex: 1" id="sa-logout-btn"></button>
     </div>
   </div>
-  
 </div>
 
 <!-- Daftar UMKM Terdaftar (Tabel Singkat) -->
@@ -59,7 +58,7 @@
     </div>
     <button class="btn btn-secondary btn-xs" onclick="navigasi('#kelola-pemilik')">Lihat Semua</button>
   </div>
-  <div style="overflow-x:auto;">
+  <div style="overflow-x: auto">
     <table class="tabel">
       <thead>
         <tr>
@@ -72,7 +71,7 @@
       </thead>
       <tbody id="sa-body-pemilik">
         <tr>
-          <td colspan="5" class="text-center" style="padding:30px; color:var(--slate-400);">Memuat data pemilik bisnis...</td>
+          <td colspan="5" class="text-center td-mono p-40">Memuat data pemilik bisnis...</td>
         </tr>
       </tbody>
     </table>

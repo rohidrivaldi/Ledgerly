@@ -2,4 +2,46 @@
    dasbor-superadmin.css — styles khusus halaman dasbor-superadmin
    ============================================= */
 
-/* halaman ini mewarisi class grid-4 dan card global */
+/* halaman ini mewarisi class grid-4, grid-2, dan card global */
+
+.canvas-container {
+  max-height: 220px;
+  position: relative;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.canvas-size {
+  max-width: 220px;
+  max-height: 220px;
+}
+
+.inner-card-container {
+  margin-top: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+}
+
+.card-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--slate-50);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+}
+
+.card-item-text {
+  font-weight: 500;
+  color: var(--slate-600);
+}
+
+.button-container {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
