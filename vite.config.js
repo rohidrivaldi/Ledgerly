@@ -27,12 +27,16 @@ export default defineConfig(({ mode }) => {
     window.process = {
       env: {
         VITE_SUPABASE_URL: ${JSON.stringify(env.VITE_SUPABASE_URL || '')},
-        VITE_SUPABASE_ANON_KEY: ${JSON.stringify(env.VITE_SUPABASE_ANON_KEY || '')}
+        VITE_SUPABASE_ANON_KEY: ${JSON.stringify(env.VITE_SUPABASE_ANON_KEY || '')},
+        VITE_TURNSTILE_SITE_KEY: ${JSON.stringify(env.VITE_TURNSTILE_SITE_KEY || '')}
       }
     };
   </script>
 </head>`
           )
+
+          // 1b. Inject Turnstile Site Key ke widget data-sitekey di HTML
+          out = out.replace(/YOUR_TURNSTILE_SITE_KEY/g, env.VITE_TURNSTILE_SITE_KEY || '')
 
           // 2. auto cache-busting: ganti semua ?v=NN di tag script jadi versi otomatis.
           // jadi gak usah bump manual ?v=8 -> ?v=9 tiap edit js lagi.
@@ -188,7 +192,8 @@ export default defineConfig(({ mode }) => {
     publicDir: 'public',
     define: {
       'process.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL || ''),
-      'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY || '')
+      'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY || ''),
+      'process.env.VITE_TURNSTILE_SITE_KEY': JSON.stringify(env.VITE_TURNSTILE_SITE_KEY || '')
     },
     build: {
       rollupOptions: {
