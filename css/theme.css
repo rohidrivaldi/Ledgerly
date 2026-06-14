@@ -58,7 +58,9 @@ html[data-theme="dark"] .faq-item,
 html[data-theme="dark"] .plan-card,
 html[data-theme="dark"] .drp-input,
 html[data-theme="dark"] .drp-popup,
-html[data-theme="dark"] .drp-nav-btn {
+html[data-theme="dark"] .drp-nav-btn,
+html[data-theme="dark"] .period-selector,
+html[data-theme="dark"] .chatbot-fab-tip {
   background: var(--surface);
 }
 
@@ -237,3 +239,94 @@ html[data-theme="dark"] .chat-demo-input input {
   border: 1px solid #334155;
   color: #cbd5e1;
 }
+
+/* =============================================
+   Override tambahan buat nyesuaiin warna mode gelap
+   agar ramah mata & kontras (Dashboard Pemilik)
+   ============================================= */
+
+/* 1. Chatbot FAB Tip bubble pointer (arrow) */
+html[data-theme="dark"] .chatbot-fab-tip::after {
+  background: var(--surface) !important;
+  border-right-color: var(--slate-200) !important;
+  border-top-color: var(--slate-200) !important;
+}
+
+/* 2. Period Button States (pemilih rentang waktu 7/30/60 Hari) */
+html[data-theme="dark"] .period-selector {
+  border-color: var(--slate-200) !important;
+}
+html[data-theme="dark"] .period-btn {
+  color: var(--slate-500);
+}
+html[data-theme="dark"] .period-btn:hover {
+  background: var(--slate-100);
+  color: var(--slate-900);
+}
+html[data-theme="dark"] .period-btn.active {
+  background: var(--indigo-600);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+/* 3. Summary Cards di Halaman Transaksi & Keuangan */
+html[data-theme="dark"] .summary-card.pemasukan,
+html[data-theme="dark"] .summary-card.bersih-positif {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border: 1px solid rgba(16, 185, 129, 0.25) !important;
+}
+html[data-theme="dark"] .summary-card.pemasukan .summary-label,
+html[data-theme="dark"] .summary-card.bersih-positif .summary-label {
+  color: #34d399 !important; /* emerald-400 */
+}
+html[data-theme="dark"] .summary-card.pemasukan .summary-value,
+html[data-theme="dark"] .summary-card.bersih-positif .summary-value {
+  color: #6ee7b7 !important; /* emerald-300 */
+}
+
+html[data-theme="dark"] .summary-card.pengeluaran,
+html[data-theme="dark"] .summary-card.bersih-negatif {
+  background: rgba(244, 63, 94, 0.1) !important;
+  border: 1px solid rgba(244, 63, 94, 0.25) !important;
+}
+html[data-theme="dark"] .summary-card.pengeluaran .summary-label,
+html[data-theme="dark"] .summary-card.bersih-negatif .summary-label {
+  color: #f87171 !important; /* rose-400 */
+}
+html[data-theme="dark"] .summary-card.pengeluaran .summary-value,
+html[data-theme="dark"] .summary-card.bersih-negatif .summary-value {
+  color: #fca5a5 !important; /* rose-300 */
+}
+
+html[data-theme="dark"] .summary-card.bersih-netral {
+  background: rgba(99, 102, 241, 0.1) !important;
+  border: 1px solid rgba(99, 102, 241, 0.25) !important;
+}
+html[data-theme="dark"] .summary-card.bersih-netral .summary-label {
+  color: #818cf8 !important; /* indigo-400 */
+}
+html[data-theme="dark"] .summary-card.bersih-netral .summary-value {
+  color: #a5b4fc !important; /* indigo-300 */
+}
+
+/* 4. Alert & Peringatan Stok di Dasbor Inventaris */
+html[data-theme="dark"] .alert-item {
+  border-bottom-color: var(--slate-100) !important;
+}
+html[data-theme="dark"] .alert-icon {
+  background: rgba(244, 63, 94, 0.15) !important;
+  color: #fca5a5 !important; /* rose-300 */
+}
+html[data-theme="dark"] .inv-bulk-bar {
+  background: rgba(99, 102, 241, 0.1) !important;
+  border-bottom-color: rgba(99, 102, 241, 0.2) !important;
+}
+html[data-theme="dark"] .inv-bulk-count {
+  color: #a5b4fc !important;
+}
+
+/* 5. Laba Rugi List (Keuangan) */
+html[data-theme="dark"] .pl-amount.negative {
+  color: #f87171 !important; /* rose-400 */
+}
+
