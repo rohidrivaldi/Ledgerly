@@ -84,18 +84,18 @@
     </div>
 
     <!-- CDN libraries (import functions dari library CDN supabase.js, chart.js, jspdf[Export PDF], PapaParse[Import/Export CSV], XLSX[Import/Export Excel]) -->
-    <!-- supabase-js SELF-HOSTED (same-origin) — dulu dr jsdelivr CDN tp sering
-         kena 503 transient -> login & DB mati. di-host lokal biar gak gantung
-         CDN pihak ketiga utk fungsi kritis (auth + database). -->
+    <!-- semua library SELF-HOSTED (same-origin) — dulu dr CDN jsdelivr/cdnjs
+         tp sering kena 503 (rate-limit) -> chart/export/scan/import mati.
+         di-host lokal di public/js/vendor biar gak gantung CDN pihak ketiga. -->
     <script src="js/vendor/supabase.js?v=9"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" integrity="sha384-NrKB+u6Ts6AtkIhwPixiKTzgSKNblyhlk0Sohlgar9UHUBzai/sgnNNWWd291xqt" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js" integrity="sha384-Xl/CUCfJbzsngMp0CFxkmF0VW/8C160IsGujqeQlIhaGxKz2+JsIGORFqtCPeldF" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha384-D/t0ZMqQW31H3az8ktEiNb39wyKnS82iFY52QPACM+IjKW3jDUhyIgh2PApRqJZs" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js" integrity="sha384-OUW9euuUyxyHcAhTqbhI+Iyb8LMssXt/cpz0yXhs9UWG2/R/uaWdakx/4cfww7Vb" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js" integrity="sha384-c9d8RFSL+u3exBOJ4Yp3HUJXS4znl9f+z66d1y54ig+ea249SpqR+w1wyvXz/lk+" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js" integrity="sha384-Pqp51FUN2/qzfxZxBCtF0stpc9ONI6MYZpVqmo8m20SoaQCzf+arZvACkLkirlPz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js" integrity="sha384-Dr98ddmUw2QkdCarNQ+OL7xLty7cSxgR0T7v1tq4UErS/qLV0132sBYTolRAFuOV" crossorigin="anonymous"></script>
+    <script src="js/vendor/chart.js?v=9"></script>
+    <script src="js/vendor/jspdf.js?v=9"></script>
+    <script src="js/vendor/jspdf-autotable.js?v=9"></script>
+    <script src="js/vendor/papaparse.js?v=9"></script>
+    <script src="js/vendor/xlsx.js?v=9"></script>
+    <script src="js/vendor/html5-qrcode.js?v=9"></script>
+    <script src="js/vendor/exceljs.js?v=9"></script>
+    <script src="js/vendor/qrious.js?v=9"></script>
 
     <!-- app modules (urutan penting, karena depedensi antar modul) -->
     <script src="js/supabase.js?v=9"></script>
