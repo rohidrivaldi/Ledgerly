@@ -175,7 +175,10 @@ function bukaMobileNav() {
           <div style="font-size:11px; color:var(--slate-400);">Sistem UMKM</div>
         </div>
       </div>
-      <button class="mobile-nav-close" onclick="tutupMobileNav()">${icon('x')}</button>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button class="mobile-nav-tema-toggle js-tema-toggle" type="button" title="Ganti Tema" aria-label="Ganti Tema"></button>
+        <button class="mobile-nav-close" onclick="tutupMobileNav()">${icon('x')}</button>
+      </div>
     </div>
     <div class="mobile-nav-links">
       ${linksHtml}
@@ -183,6 +186,9 @@ function bukaMobileNav() {
       <button class="mobile-nav-logout" onclick="logout()">${icon('logOut', 16)} Keluar</button>
     </div>
   `;
+
+  // panel di-render tiap buka -> ikon toggle tema kosong. repaint sesuai tema.
+  if (typeof window.pasangIkonTema === "function") window.pasangIkonTema();
 }
 
 function tutupMobileNav() {

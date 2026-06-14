@@ -122,6 +122,34 @@
   color: var(--slate-500);
 }
 
+/* toggle tema di sidebar, sebelah brand text. cuma muncul saat expanded.
+   margin-left:auto -> dorong ke kanan, nempel sblm toggle collapse. */
+.sidebar-tema-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--slate-200);
+  background: var(--surface, #fff);
+  color: var(--slate-600);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+}
+.sidebar-tema-toggle:hover {
+  transform: scale(1.08);
+  color: var(--indigo-600);
+  background: var(--slate-50);
+}
+.sidebar-tema-toggle svg { width: 16px; height: 16px; }
+/* saat collapsed sidebar sempit (72px) -> sembunyiin toggle tema */
+@media (min-width: 768px) {
+  .sidebar-collapsed .sidebar-tema-toggle { display: none; }
+}
+
 .sidebar-nav {
   flex: 1;
   overflow-y: auto;
@@ -855,6 +883,25 @@
   border-radius: var(--radius-sm);
 }
 .mobile-nav-close:hover { background: var(--slate-100); }
+.mobile-nav-tema-toggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--slate-200);
+  background: var(--surface, #fff);
+  color: var(--slate-600);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+}
+.mobile-nav-tema-toggle:hover {
+  transform: scale(1.08);
+  color: var(--indigo-600);
+  background: var(--slate-50);
+}
+.mobile-nav-tema-toggle svg { width: 16px; height: 16px; }
 .mobile-nav-links {
   padding: 12px;
   display: flex;

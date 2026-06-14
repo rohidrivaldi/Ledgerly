@@ -49,6 +49,7 @@ function renderSidebar() {
         <div class="sidebar-app-name">Ledgerly</div>
         <div class="sidebar-app-sub">Sistem UMKM</div>
       </div>
+      <button class="sidebar-tema-toggle js-tema-toggle" type="button" title="Ganti Tema" aria-label="Ganti Tema"></button>
       <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" onclick="toggleSidebarCollapse()" title="${isCollapsed ? "Expand Sidebar" : "Minimize Sidebar"}">
         ${isCollapsed ? icon("chevronRight", 16) : icon("chevronLeft", 16)}
       </button>
@@ -74,6 +75,10 @@ function renderSidebar() {
       navigasi(this.getAttribute("data-hash"));
     });
   });
+
+  // sidebar di-render ulang tiap navigasi -> ikon toggle tema kosong.
+  // theme.js expose pasangIkonTema buat ngegambar ulang ikon sesuai tema skrg.
+  if (typeof window.pasangIkonTema === "function") window.pasangIkonTema();
 }
 
 // helper bikin nav link html
