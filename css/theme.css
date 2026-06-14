@@ -330,3 +330,116 @@ html[data-theme="dark"] .pl-amount.negative {
   color: #f87171 !important; /* rose-400 */
 }
 
+/* =============================================
+   Override tambahan — Landing Page sections
+   ============================================= */
+
+/* --- Simulasi steps: paksa warna teks karena slate-200 ke-invert jadi gelap --- */
+html[data-theme="dark"] .simulasi-step {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(71, 85, 105, 0.8);
+}
+html[data-theme="dark"] .simulasi-step .text {
+  color: #e2e8f0; /* paksa terang, tidak ikut invert */
+}
+
+/* --- Harga & FAQ section background --- */
+html[data-theme="dark"] .section-harga,
+html[data-theme="dark"] .section-faq {
+  background: var(--slate-50); /* = #0f172a di dark mode */
+}
+
+/* --- Harga card --- */
+html[data-theme="dark"] .harga-card {
+  border-color: var(--slate-200); /* = #334155 di dark */
+}
+html[data-theme="dark"] .harga-card .desc {
+  color: var(--slate-400); /* = #94a3b8 */
+}
+html[data-theme="dark"] .harga-price {
+  border-color: var(--slate-200);
+}
+html[data-theme="dark"] .harga-features li {
+  color: var(--slate-600); /* = #cbd5e1 di dark */
+}
+html[data-theme="dark"] .harga-btn.secondary {
+  background: var(--slate-200); /* = #334155 */
+  color: var(--slate-800);      /* = #f1f5f9 */
+}
+html[data-theme="dark"] .harga-btn.secondary:hover {
+  background: var(--slate-300);
+}
+html[data-theme="dark"] .harga-note {
+  color: var(--slate-400);
+}
+
+/* --- Testimoni card --- */
+html[data-theme="dark"] .testimoni-card {
+  border-color: var(--slate-200);
+}
+html[data-theme="dark"] .testimoni-quote {
+  color: var(--slate-600); /* = #cbd5e1 di dark */
+}
+html[data-theme="dark"] .testimoni-author {
+  border-color: var(--slate-200);
+}
+
+/* --- FAQ --- */
+html[data-theme="dark"] .faq-item {
+  border-color: var(--slate-200);
+}
+html[data-theme="dark"] .faq-answer {
+  color: var(--slate-600);
+  border-color: var(--slate-200);
+  background: rgba(15, 23, 42, 0.3);
+}
+html[data-theme="dark"] .faq-question:hover {
+  background: rgba(30, 41, 59, 0.5);
+}
+
+/* --- Fitur card footer border --- */
+html[data-theme="dark"] .fitur-footer {
+  border-color: var(--slate-200);
+}
+
+/* --- Social proof border --- */
+html[data-theme="dark"] .social-proof {
+  border-color: var(--slate-200);
+}
+
+/* --- Hero secondary button & trust text --- */
+html[data-theme="dark"] .hero-trust {
+  color: var(--slate-400);
+}
+html[data-theme="dark"] .hero-badge {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #a5b4fc;
+}
+
+/* --- Mockup tambahan --- */
+html[data-theme="dark"] .mockup-stat {
+  background: var(--slate-100); /* = #1e293b */
+  border-color: var(--slate-200);
+}
+/* --- Simulasi left: deskripsi & heading --- */
+html[data-theme="dark"] .simulasi-left p {
+  color: #94a3b8;
+}
+html[data-theme="dark"] .simulasi-left h2 {
+  color: #f1f5f9;
+}
+html[data-theme="dark"] .mockup-top-products {
+  background: var(--slate-100);
+  border-color: var(--slate-200);
+}
+html[data-theme="dark"] .mockup-toolbar {
+  border-color: var(--slate-200);
+}
+html[data-theme="dark"] .mockup-sync {
+  background: var(--slate-200);
+  color: var(--slate-700);
+}
+html[data-theme="dark"] .mockup-product-row {
+  border-color: var(--slate-200);
+}
