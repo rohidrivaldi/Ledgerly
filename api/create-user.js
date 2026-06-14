@@ -37,15 +37,29 @@ module.exports = async function handler(req, res) {
     }
     const me = await meResp.json();
 
-    // 2. cek role pemanggil di tabel Users HARUS superadmin
+    // 2. cek role pemanggil di tabel Users HARUS superadmin.
+    //    pakai service_role key biar BYPASS RLS. klo query ini balik kosong/gagal,
+    //    artinya key di env BUKAN service_role valid (mis. kepaste anon/publishable)
+    //    -> row admin kefilter RLS -> keliatan "bukan superadmin" padahal bukan.
+    //    kasih error spesifik biar gampang didiagnosa, bukan "akses ditolak" doang.
     const roleResp = await fetch(
       SUPABASE_URL + '/rest/v1/Users?user_id=eq.' + me.id + '&select=role',
       { headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + SERVICE_ROLE } }
     );
+    if (!roleResp.ok) {
+      const errTxt = await roleResp.text();
+      return res.status(500).json({ error: 'Gagal verifikasi role. Pastikan SUPABASE_SERVICE_ROLE_KEY di env = service_role key (legacy JWT eyJ... atau sb_secret_...), bukan anon/publishable. Detail: ' + errTxt });
+    }
     const roleRows = await roleResp.json();
-    const role = roleRows && roleRows[0] ? roleRows[0].role : null;
+    if (!Array.isArray(roleRows)) {
+      return res.status(500).json({ error: 'Respon role tak terduga — kemungkinan SUPABASE_SERVICE_ROLE_KEY salah (bukan service_role).' });
+    }
+    const role = roleRows[0] ? roleRows[0].role : null;
     if (role !== 'superadmin') {
-      return res.status(403).json({ error: 'Akses ditolak. Hanya superadmin yang boleh menambah pemilik.' });
+      // role==null & data admin bener di DB -> hampir pasti key bukan service_role
+      // (row kefilter RLS). kasih petunjuk itu.
+      const petunjuk = role ? '' : ' (role tidak ditemukan — kemungkinan SERVICE_ROLE key di env salah, row keblok RLS)';
+      return res.status(403).json({ error: 'Akses ditolak. Hanya superadmin yang boleh menambah pemilik.' + petunjuk });
     }
 
     // 3. validasi input

@@ -137,10 +137,16 @@ export default defineConfig(({ mode }) => {
                 var meR = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + token } });
                 if (!meR.ok) return kirim(401, { error: 'Token tidak valid.' });
                 var me = await meR.json();
-                // cek role superadmin
+                // cek role superadmin (service_role bypass RLS). klo balik kosong,
+                // kemungkinan SERVICE_ROLE key salah (bukan service_role) -> RLS blok.
                 var roleR = await fetch(SUPABASE_URL + '/rest/v1/Users?user_id=eq.' + me.id + '&select=role', { headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + SERVICE_ROLE } });
+                if (!roleR.ok) return kirim(500, { error: 'Gagal verifikasi role. Cek SUPABASE_SERVICE_ROLE_KEY (harus service_role, bukan anon). Detail: ' + (await roleR.text()) });
                 var roleRows = await roleR.json();
-                if (!roleRows[0] || roleRows[0].role !== 'superadmin') return kirim(403, { error: 'Akses ditolak. Hanya superadmin.' });
+                var roleVal = (Array.isArray(roleRows) && roleRows[0]) ? roleRows[0].role : null;
+                if (roleVal !== 'superadmin') {
+                  var petunjuk = roleVal ? '' : ' (role tdk ketemu — kemungkinan SERVICE_ROLE key salah, row keblok RLS)';
+                  return kirim(403, { error: 'Akses ditolak. Hanya superadmin.' + petunjuk });
+                }
 
                 var d = {};
                 try { d = JSON.parse(body || '{}'); } catch (e) {}
