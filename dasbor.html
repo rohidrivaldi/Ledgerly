@@ -84,7 +84,10 @@
     </div>
 
     <!-- CDN libraries (import functions dari library CDN supabase.js, chart.js, jspdf[Export PDF], PapaParse[Import/Export CSV], XLSX[Import/Export Excel]) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.108.1" integrity="sha384-UQ9Ztz63gzT2JZCuDRkNXV8RP/gXxdPUuM9LKlz2BzqGx9xFYNAK8yAEgbfZHs7P" crossorigin="anonymous"></script>
+    <!-- supabase-js SELF-HOSTED (same-origin) — dulu dr jsdelivr CDN tp sering
+         kena 503 transient -> login & DB mati. di-host lokal biar gak gantung
+         CDN pihak ketiga utk fungsi kritis (auth + database). -->
+    <script src="js/vendor/supabase.js?v=9"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" integrity="sha384-NrKB+u6Ts6AtkIhwPixiKTzgSKNblyhlk0Sohlgar9UHUBzai/sgnNNWWd291xqt" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js" integrity="sha384-Xl/CUCfJbzsngMp0CFxkmF0VW/8C160IsGujqeQlIhaGxKz2+JsIGORFqtCPeldF" crossorigin="anonymous"></script>

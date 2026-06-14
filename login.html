@@ -188,7 +188,8 @@
     </div>
 
     <!-- load data sama supabase js buat fungsi login -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.108.1" integrity="sha384-UQ9Ztz63gzT2JZCuDRkNXV8RP/gXxdPUuM9LKlz2BzqGx9xFYNAK8yAEgbfZHs7P" crossorigin="anonymous"></script>
+    <!-- supabase-js self-hosted (same-origin), bukan CDN — hindari 503 jsdelivr -->
+    <script src="js/vendor/supabase.js?v=9"></script>
     <script src="js/supabase.js?v=9"></script>
     <script src="js/data.js?v=9"></script>
     <script src="js/utils.js?v=9"></script>
