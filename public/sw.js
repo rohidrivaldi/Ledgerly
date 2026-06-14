@@ -16,7 +16,7 @@
    ============================================= */
 
 // BUMP versi ini tiap kali strategi cache berubah -> cache lama auto-dihapus
-var CACHE_NAME = 'ledgerly-v2';
+var CACHE_NAME = 'ledgerly-v3';
 
 // aset inti yg di-precache pas install (yg URL-nya stabil/tanpa query)
 var ASET_INTI = [
@@ -79,6 +79,11 @@ self.addEventListener('fetch', function(e) {
 
   // skip endpoint internal API (chatbot dll) — gak boleh ke-cache
   if (req.url.indexOf('/api/') !== -1) return;
+
+  // skip Cloudflare Turnstile (captcha) — script & challenge-nya dinamis +
+  // response opaque cross-origin. kalau di-intercept SW, widget captcha gak
+  // ke-render ulang sesudah logout/refresh (cuma sembuh klo hapus site data).
+  if (req.url.indexOf('challenges.cloudflare.com') !== -1) return;
 
   var ck = keyCache(req);
 
