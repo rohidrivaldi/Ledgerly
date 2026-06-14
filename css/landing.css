@@ -464,6 +464,7 @@
   right: 0;
   height: 96px;
   background: linear-gradient(to top, #fff, transparent);
+  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
   z-index: 10;
 }
 .mockup-frame {
