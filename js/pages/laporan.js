@@ -4,15 +4,16 @@
    ============================================= */
 
 function initLaporan() {
-  // Init DateRangePicker
+  // Init DateRangePicker. SELALU panggil buatDateRangePicker (jangan di-guard
+  // pakai _drp_instances), krn navigasi() nimpa innerHTML halaman -> container
+  // drp-laporan jadi kosong tapi instance lama masih nunjuk DOM yg udah ilang
+  // -> picker gak ke-render. komponen sendiri yg handle dedup internal.
   if (typeof buatDateRangePicker === 'function' && document.getElementById('drp-laporan')) {
-    if (!window._drp_instances || !window._drp_instances['drp-laporan']) {
-      buatDateRangePicker({
-        containerId: 'drp-laporan',
-        placeholder: 'Pilih rentang periode...',
-        onChange: function() { initLaporan(); }
-      });
-    }
+    buatDateRangePicker({
+      containerId: 'drp-laporan',
+      placeholder: 'Pilih rentang periode...',
+      onChange: function() { initLaporan(); }
+    });
   }
 
   let ring = hitungRingkasanLaporan();
