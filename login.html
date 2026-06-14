@@ -138,7 +138,7 @@
                 <!-- Cloudflare Turnstile CAPTCHA -->
                 <div class="cf-turnstile-container" style="margin: 16px 0;">
                   <p style="font-size:12px; color:var(--slate-500); text-align:center; margin-bottom:8px;">Silakan klik centang di bawah untuk verifikasi bahwa Anda bukan robot.</p>
-                  <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-theme="auto" data-size="flexible"></div>
+                  <div class="cf-turnstile" id="turnstile-login" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-theme="auto" data-size="flexible"></div>
                 </div>
 
                 <div id="login-error" class="login-error" style="display: none"></div>
@@ -195,7 +195,7 @@
                 <!-- Cloudflare Turnstile CAPTCHA -->
                 <div class="cf-turnstile-container" style="margin: 16px 0;">
                   <p style="font-size:12px; color:var(--slate-500); text-align:center; margin-bottom:8px;">Silakan klik centang di bawah untuk verifikasi bahwa Anda bukan robot.</p>
-                  <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-theme="auto" data-size="flexible"></div>
+                  <div class="cf-turnstile" id="turnstile-forgot" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-theme="auto" data-size="flexible"></div>
                 </div>
 
                 <div id="forgot-error" class="login-error" style="display: none"></div>
@@ -305,9 +305,10 @@
           errDiv.style.borderColor = "";
           errDiv.style.background = "";
           
-          // Reset Turnstile jika gagal
+          // Reset Turnstile widget LOGIN (token sekali pakai; biar bisa coba lagi)
           if (window.turnstile) {
-            window.turnstile.reset();
+            var elL = document.getElementById('turnstile-login');
+            if (elL) window.turnstile.reset(elL); else window.turnstile.reset();
           }
         }
       }
@@ -338,9 +339,10 @@
           errDiv.style.borderColor = "";
           errDiv.style.background = "";
 
-          // Reset Turnstile jika gagal
+          // Reset Turnstile widget FORGOT-PW (token sekali pakai; biar bisa coba lagi)
           if (window.turnstile) {
-            window.turnstile.reset();
+            var elF = document.getElementById('turnstile-forgot');
+            if (elF) window.turnstile.reset(elF); else window.turnstile.reset();
           }
         }
       }
