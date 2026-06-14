@@ -686,7 +686,8 @@
   </footer>
 
   <!-- Lenis Smooth Scroll CDN -->
-  <script src="https://unpkg.com/lenis@1.3.23/dist/lenis.min.js" integrity="sha384-iiCtod6ZId6zT42Bar9EFXNKZh8X4VliWYWFOuY3/t1AxCvLejXExXcbluoc57CJ" crossorigin="anonymous"></script>
+  <!-- Lenis self-hosted (same-origin), bukan unpkg CDN — konsisten anti-503 -->
+  <script src="js/vendor/lenis.js?v=9"></script>
   <script>
     // Inisialisasi Lenis Smooth Scroll
     const lenis = new Lenis({
