@@ -349,7 +349,7 @@ function muatStylesHalaman(pageName) {
   let link = document.createElement('link');
   link.id = 'dynamic-page-stylesheet';
   link.rel = 'stylesheet';
-  link.href = `/css/pages/${pageName}.css`;
+  link.href = `/css/pages/${pageName}.css?v=9`;
   document.head.appendChild(link);
 }
 
