@@ -1,9 +1,10 @@
 /* =============================================
    theme.js — toggle dark/light mode
-   - baca preferensi dr localStorage ('ledgerly_theme')
-   - bikin tombol floating (pojok kiri bawah) dgn ikon matahari/bulan
-   - anti-FOUC: data-theme udh di-set inline di <head> sblm css ke-paint,
-     file ini cuma ngurus tombol + ganti tema pas diklik.
+   - baca preferensi dr localStorage ('ledgerly_theme'), DEFAULT light
+     (gak ikut prefers-color-scheme sistem — sesuai permintaan).
+   - kalau ada elemen #tema-toggle-btn di HTML (mis. di header landing),
+     wire elemen itu. kalau gak ada, bikin tombol floating pojok kiri-bawah.
+   - anti-FOUC: data-theme udh di-set inline di <head> sblm css ke-paint.
    ============================================= */
 (function () {
   var KEY = 'ledgerly_theme';
@@ -19,8 +20,9 @@
   function pasangIkon(btn) {
     // klo lagi dark, tampilin ikon matahari (artinya: klik utk terang). sebaliknya.
     btn.innerHTML = temaSekarang() === 'dark' ? ICON_SUN : ICON_MOON;
-    btn.setAttribute('title', temaSekarang() === 'dark' ? 'Mode Terang' : 'Mode Gelap');
-    btn.setAttribute('aria-label', btn.getAttribute('title'));
+    var judul = temaSekarang() === 'dark' ? 'Mode Terang' : 'Mode Gelap';
+    btn.setAttribute('title', judul);
+    btn.setAttribute('aria-label', judul);
   }
 
   function setTema(mode) {
@@ -29,23 +31,29 @@
     try { localStorage.setItem(KEY, mode); } catch (e) {}
   }
 
-  function buatTombol() {
-    if (document.getElementById('tema-toggle-btn')) return; // jgn dobel
-    var btn = document.createElement('button');
-    btn.id = 'tema-toggle-btn';
-    btn.className = 'tema-toggle';
-    btn.type = 'button';
+  function pasangTombol() {
+    // 1. kalau HTML udh nyediain tombol (mis. di header landing), pakai itu.
+    var btn = document.getElementById('tema-toggle-btn');
+
+    // 2. kalau gak ada, bikin tombol floating pojok kiri-bawah.
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'tema-toggle-btn';
+      btn.className = 'tema-toggle';
+      btn.type = 'button';
+      document.body.appendChild(btn);
+    }
+
     pasangIkon(btn);
     btn.addEventListener('click', function () {
       setTema(temaSekarang() === 'dark' ? 'light' : 'dark');
       pasangIkon(btn);
     });
-    document.body.appendChild(btn);
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', buatTombol);
+    document.addEventListener('DOMContentLoaded', pasangTombol);
   } else {
-    buatTombol();
+    pasangTombol();
   }
 })();
