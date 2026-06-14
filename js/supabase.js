@@ -109,6 +109,100 @@ async function register(email, password, nama, bisnis) {
   return { ok: false, pesan: 'Layanan database cloud tidak tersedia.' };
 }
 
+// -- login pakai Google OAuth --
+// cuma MEMULAI flow; browser bakal redirect ke google lalu balik ke login.html.
+// gate "harus terdaftar" dicek pas balik di cekKembaliOAuth().
+async function loginWithGoogle() {
+  if (!window.supabaseClient) {
+    return { ok: false, pesan: 'Layanan database cloud tidak tersedia.' };
+  }
+  try {
+    const { error } = await window.supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/login.html',
+        queryParams: { prompt: 'select_account' } // selalu tampilin pemilih akun
+      }
+    });
+    if (error) throw error;
+    return { ok: true }; // sukses -> browser lagi redirect ke google
+  } catch (err) {
+    console.warn('Gagal memulai login Google:', err.message);
+    return { ok: false, pesan: err.message || 'Gagal memulai login Google.' };
+  }
+}
+
+// -- gate pendekatan X: dipanggil pas login.html dimuat --
+// kalau ini hasil balik dr login Google: cuma email yg UDAH terdaftar (punya
+// profil di tabel Users) yg boleh masuk. selainnya akun nyangkut dihapus + tolak.
+// return { status: 'ok' | 'ditolak' | 'none' }
+async function cekKembaliOAuth() {
+  if (!window.supabaseClient) return { status: 'none' };
+  // udah ada localStorage -> berarti udah login normal, bukan OAuth return
+  if (localStorage.getItem('ledgerly_user')) return { status: 'none' };
+
+  let session = null;
+  try {
+    const { data } = await window.supabaseClient.auth.getSession();
+    session = data ? data.session : null;
+  } catch (e) { return { status: 'none' }; }
+  if (!session || !session.user) return { status: 'none' };
+
+  const user = session.user;
+
+  // gate dicek BY EMAIL ("email ini udah daftar?"), bukan by user_id, krn
+  // identitas google bisa beda dr akun email/password kalau gak ke-link.
+  let profil = null;
+  try {
+    const r = await window.supabaseClient
+      .from('Users').select('*').eq('email', user.email).maybeSingle();
+    profil = r.data;
+  } catch (e) {}
+
+  if (!profil) {
+    // BELUM terdaftar -> tolak. hapus akun auth nyangkut + signOut.
+    try {
+      await fetch('/api/delete-orphan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token }
+      });
+    } catch (e) {}
+    try { await window.supabaseClient.auth.signOut(); } catch (e) {}
+    return { status: 'ditolak' };
+  }
+
+  // terdaftar -> bangun userData (sama logika kaya login biasa, termasuk cek expired)
+  let paketAktif = profil.paket || 'starter';
+  let tglExpired = profil.tgl_expired || null;
+  let statusLangganan = profil.status_langganan || null;
+  if (paketAktif === 'business' && tglExpired && new Date(tglExpired) < new Date()) {
+    paketAktif = 'starter';
+    tglExpired = null;
+    statusLangganan = null;
+    try {
+      await window.supabaseClient.from('Users')
+        .update({ paket: 'starter', tgl_expired: null, status_langganan: null })
+        .eq('user_id', profil.user_id);
+    } catch (e) {}
+  }
+
+  const userData = {
+    id: profil.user_id,
+    nama: profil.nama || 'Pemilik Toko',
+    email: profil.email,
+    bisnis: profil.bisnis || 'Toko Saya',
+    role: profil.role || 'pemilik',
+    paket: paketAktif,
+    tglExpired: tglExpired,
+    statusLangganan: statusLangganan,
+    noTelp: profil.noTelp || null,
+    tglDaftar: user.created_at
+  };
+  localStorage.setItem('ledgerly_user', JSON.stringify(userData));
+  if (typeof store !== 'undefined') store.user = userData;
+  return { status: 'ok' };
+}
+
 async function resetPassword(email) {
   if (window.supabaseClient) {
     try {
