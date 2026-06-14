@@ -269,6 +269,21 @@ async function simpanPemilik(e, userId) {
   let email = document.getElementById("p-email").value.trim();
   let bisnis = document.getElementById("p-bisnis").value.trim();
   let noTelp = document.getElementById("p-notelp").value.trim();
+
+  // validasi nomor WA — mirror aturan form register: bersihin non-angka,
+  // buang awalan 0/62, base HARUS 9-13 digit. nyegah nomor luber (input
+  // number gak punya maxlength jadi wajib dicek manual di sini).
+  let waClean = noTelp.replace(/[^0-9]/g, '');
+  let waBase = waClean;
+  if (waBase.startsWith('62')) waBase = waBase.substring(2);
+  else if (waBase.startsWith('0')) waBase = waBase.substring(1);
+  if (waBase.length < 9 || waBase.length > 13) {
+    alert('Nomor WhatsApp tidak valid. Masukkan 9 hingga 13 digit (di luar kode negara/awalan 0).');
+    return;
+  }
+  // simpan dalam format 62xxxx yg konsisten
+  noTelp = '62' + waBase;
+
   let target =
     listPemilik.find(function (u) {
       return u.user_id === userId;

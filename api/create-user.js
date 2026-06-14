@@ -70,6 +70,16 @@ module.exports = async function handler(req, res) {
     if (String(password).length < 8) {
       return res.status(400).json({ error: 'Password minimal 8 karakter.' });
     }
+    // validasi nomor WA server-side (defense in depth — client bisa dibypass).
+    // base (tanpa kode negara/awalan 0) harus 9-13 digit.
+    let waClean = String(noTelp == null ? '' : noTelp).replace(/[^0-9]/g, '');
+    let waBase = waClean;
+    if (waBase.indexOf('62') === 0) waBase = waBase.substring(2);
+    else if (waBase.indexOf('0') === 0) waBase = waBase.substring(1);
+    if (waBase.length < 9 || waBase.length > 13) {
+      return res.status(400).json({ error: 'Nomor WhatsApp tidak valid (harus 9-13 digit di luar kode negara).' });
+    }
+    const noTelpClean = '62' + waBase;
 
     // 4. buat akun auth (email_confirm:true -> langsung aktif, gak perlu verifikasi email)
     //    user_metadata.created_by='admin' -> nandain ke trigger handle_new_user
@@ -105,7 +115,7 @@ module.exports = async function handler(req, res) {
         email: email,
         nama: nama,
         bisnis: bisnis,
-        noTelp: noTelp ? parseInt(noTelp) : null,
+        noTelp: parseInt(noTelpClean),
         role: 'pemilik',
         paket: paket || 'starter'
       })

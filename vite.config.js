@@ -152,6 +152,13 @@ export default defineConfig(({ mode }) => {
                 try { d = JSON.parse(body || '{}'); } catch (e) {}
                 if (!d.email || !d.password || !d.nama || !d.bisnis) return kirim(400, { error: 'Email, password, nama, bisnis wajib diisi.' });
                 if (String(d.password).length < 8) return kirim(400, { error: 'Password minimal 8 karakter.' });
+                // validasi nomor WA (mirror api/create-user.js): base 9-13 digit
+                var waClean = String(d.noTelp == null ? '' : d.noTelp).replace(/[^0-9]/g, '');
+                var waBase = waClean;
+                if (waBase.indexOf('62') === 0) waBase = waBase.substring(2);
+                else if (waBase.indexOf('0') === 0) waBase = waBase.substring(1);
+                if (waBase.length < 9 || waBase.length > 13) return kirim(400, { error: 'Nomor WhatsApp tidak valid (harus 9-13 digit di luar kode negara).' });
+                var noTelpClean = '62' + waBase;
 
                 var cR = await fetch(SUPABASE_URL + '/auth/v1/admin/users', {
                   method: 'POST', headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + SERVICE_ROLE, 'Content-Type': 'application/json' },
@@ -162,7 +169,7 @@ export default defineConfig(({ mode }) => {
 
                 var pR = await fetch(SUPABASE_URL + '/rest/v1/Users', {
                   method: 'POST', headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + SERVICE_ROLE, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-                  body: JSON.stringify({ user_id: created.id, email: d.email, nama: d.nama, bisnis: d.bisnis, noTelp: d.noTelp ? parseInt(d.noTelp) : null, role: 'pemilik', paket: d.paket || 'starter' })
+                  body: JSON.stringify({ user_id: created.id, email: d.email, nama: d.nama, bisnis: d.bisnis, noTelp: parseInt(noTelpClean), role: 'pemilik', paket: d.paket || 'starter' })
                 });
                 if (!pR.ok) {
                   await fetch(SUPABASE_URL + '/auth/v1/admin/users/' + created.id, { method: 'DELETE', headers: { apikey: SERVICE_ROLE, Authorization: 'Bearer ' + SERVICE_ROLE } });
