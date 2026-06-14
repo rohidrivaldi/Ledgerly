@@ -464,7 +464,13 @@
   right: 0;
   height: 96px;
   background: linear-gradient(to top, #fff, transparent);
+  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
   z-index: 10;
+}
+@media (min-width: 640px) {
+  .mockup-fade {
+    border-radius: 0 0 var(--radius-3xl) var(--radius-3xl);
+  }
 }
 .mockup-frame {
   border: 1px solid rgba(226, 232, 240, 0.8);
