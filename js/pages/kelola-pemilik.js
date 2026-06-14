@@ -208,7 +208,8 @@ function bukaModalPemilik(userId) {
             </div>
             <div>
               <label class="form-label">Nomor WhatsApp (Format: 628xxxx)</label>
-              <input class="form-input" type="number" id="p-notelp" value="${notelpVal}" placeholder="Contoh: 628123456789" required>
+              <input class="form-input" type="text" inputmode="numeric" id="p-notelp" value="${notelpVal}" placeholder="Contoh: 628123456789" required oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,15)">
+              <div style="font-size:11px; color:var(--slate-400); margin-top:4px;">Format 62xxx, 9-13 digit (di luar kode negara).</div>
             </div>
             <div>
               <label class="form-label">Paket Langganan</label>

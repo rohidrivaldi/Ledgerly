@@ -33,7 +33,7 @@ async function initDasborSuperadmin() {
 
   // sinkronisasi data dari Supabase
   if (!window.supabaseClient) {
-    renderMockDasborSuperadmin(); // Gunakan mock data jika Supabase tidak terhubung
+    renderErrorDasborSuperadmin(); // koneksi DB gak ada -> tampilkan error jujur, bukan dummy
     return;
   }
 
@@ -133,43 +133,78 @@ async function initDasborSuperadmin() {
 
     // Render Chart subscription
     initSubscriptionChart(owners);
+
+    // sync sukses -> status platform: Supabase hijau (beneran terhubung)
+    setStatusPlatform(true);
   } catch (err) {
     console.error("Gagal sinkronisasi data dasbor superadmin:", err.message);
-    renderMockDasborSuperadmin();
+    renderErrorDasborSuperadmin();
   }
 }
 
-// Inisialisasi Chart.js untuk distribusi paket langganan pemilik bisnis
+// set status layanan platform DINAMIS (bukan hardcode "Aktif" yg bohong).
+// - Supabase: hijau kalau sync DB sukses, merah kalau gagal.
+// - Gemini AI: hijau (proxy /api/chatbot aktif & ada key di server).
+// - WhatsApp Gateway: bot node.js TERPISAH (repo lain, Pterodactyl) yg blm
+//   tentu jalan -> status "Belum Aktif" (jujur), bukan "Aktif" palsu.
+function setStatusPlatform(supabaseOk) {
+  function setBadge(elId, ok, teksOk, teksGagal) {
+    let el = document.getElementById(elId);
+    if (!el) return;
+    if (ok) {
+      el.className = 'badge badge-success';
+      el.innerHTML = '<span class="badge-dot green"></span>' + teksOk;
+    } else {
+      el.className = 'badge badge-neutral';
+      el.innerHTML = '<span class="badge-dot"></span>' + teksGagal;
+    }
+  }
+  setBadge('sa-status-supabase', supabaseOk, 'Terhubung', 'Terputus');
+  setBadge('sa-status-gemini', true, 'Aktif', 'Nonaktif');
+  // WhatsApp bot belum di-deploy -> tampilkan jujur sbg "Belum Aktif"
+  setBadge('sa-status-wa', false, 'Aktif', 'Belum Aktif');
+}
+
+// Inisialisasi Chart.js untuk distribusi paket langganan pemilik bisnis.
+// 4 segmen: Starter, Business Trial, Business Langganan, Enterprise.
+// business dipecah berdasarkan status_langganan (trial vs udah bayar).
 function initSubscriptionChart(owners) {
   let canvas = document.getElementById("chart-subscription");
   if (!canvas) return;
 
   if (chartSub) chartSub.destroy();
 
-  // Hitung jumlah paket
+  // Hitung jumlah tiap paket/status
   let starterCount = 0;
-  let businessCount = 0;
+  let businessTrialCount = 0;
+  let businessLanggananCount = 0;
   let enterpriseCount = 0;
 
-  // hitung jumlah pemilik berdasarkan paket langganan
   owners.forEach((u) => {
-    if (u.paket === "business") businessCount++;
-    else if (u.paket === "enterprise") enterpriseCount++;
-    else starterCount++;
+    if (u.paket === "business") {
+      // pisah trial vs langganan (default trial kalau status belum diset)
+      if (u.status_langganan === "langganan") businessLanggananCount++;
+      else businessTrialCount++;
+    } else if (u.paket === "enterprise") {
+      enterpriseCount++;
+    } else {
+      starterCount++;
+    }
   });
 
   // Buat chart untuk display distribusi paket langganan
   chartSub = new Chart(canvas, {
     type: "doughnut",
     data: {
-      labels: ["Starter", "Business (Trial)", "Enterprise"],
+      labels: ["Starter", "Business (Trial)", "Business (Langganan)", "Enterprise"],
       datasets: [
         {
-          data: [starterCount, businessCount, enterpriseCount],
+          data: [starterCount, businessTrialCount, businessLanggananCount, enterpriseCount],
           backgroundColor: [
-            "#64748b", // Slate / Gray
-            "#6366f1", // Indigo
-            "#f43f5e", // Rose
+            "#64748b", // Slate / Gray — Starter
+            "#6366f1", // Indigo — Business Trial
+            "#10b981", // Emerald — Business Langganan (udah bayar)
+            "#f43f5e", // Rose — Enterprise
           ],
           borderWidth: 2,
           borderColor: "#ffffff",
@@ -193,12 +228,14 @@ function initSubscriptionChart(owners) {
   });
 }
 
-// render dummy data jika Supabase tidak terhubung atau terjadi error saat mengambil data asli dari Supabase
-function renderMockDasborSuperadmin() {
-  superadminStats.totalOwners = 3;
-  superadminStats.totalProducts = 6;
-  superadminStats.totalTransactions = 12;
-  superadminStats.totalVolume = 667000;
+// render state ERROR (bukan dummy palsu). dulu fungsi ini nampilin nama palsu
+// "Budi Santoso" dll yg nyesatin admin. sekarang jujur: zero + pesan gagal,
+// biar admin tau ini bukan data asli & ada masalah koneksi.
+function renderErrorDasborSuperadmin() {
+  superadminStats.totalOwners = 0;
+  superadminStats.totalProducts = 0;
+  superadminStats.totalTransactions = 0;
+  superadminStats.totalVolume = 0;
 
   let container = document.getElementById("sa-stats-container");
   if (container) {
@@ -207,25 +244,13 @@ function renderMockDasborSuperadmin() {
 
   let body = document.getElementById("sa-body-pemilik");
   if (body) {
-    body.innerHTML = `
-      <tr>
-        <td class="td-bold">M. Rohid Rivaldi (dummy)</td>
-        <td>Toko Sejahtera</td>
-        <td style="text-transform:none;">rohid@ledgerly.id</td>
-        <td><span class="badge badge-info">Business (Trial)</span></td>
-        <td class="td-mono">+628123456789</td>
-      </tr>
-      <tr>
-        <td class="td-bold">Budi Santoso (dummy)</td>
-        <td>Warung Budi</td>
-        <td style="text-transform:none;">budi@gmail.com</td>
-        <td><span class="badge badge-neutral">Starter</span></td>
-        <td class="td-mono">+628571234567</td>
-      </tr>
-    `;
+    body.innerHTML =
+      '<tr><td colspan="5" class="text-center" style="padding:30px; color:var(--rose-600);">Gagal memuat data dari server. Cek koneksi internet lalu muat ulang halaman.</td></tr>';
   }
 
-  // Render Chart dengan data mock
-  let mockOwners = [{ paket: "starter" }, { paket: "business" }, { paket: "starter" }];
-  initSubscriptionChart(mockOwners);
+  // status Supabase jadi merah krn sync gagal
+  setStatusPlatform(false);
+
+  // chart kosong (semua 0)
+  initSubscriptionChart([]);
 }
