@@ -38,24 +38,31 @@
   function pasangTombol() {
     var btns = document.querySelectorAll('.js-tema-toggle');
 
-    // kalau HTML gak nyediain tombol (dashboard/login/register), bikin floating
-    if (!btns.length) {
+    // floating fallback CUMA buat halaman tanpa sidebar (login/register).
+    // dashboard punya #sidebar + toggle di dalemnya -> jgn bikin floating
+    // (sidebar bisa ke-render setelah theme.js jalan, jadi cek #sidebar bukan
+    // jumlah tombol biar gak ada floating nyangkut).
+    if (!btns.length && !document.getElementById('sidebar')) {
       var fb = document.createElement('button');
       fb.className = 'tema-toggle js-tema-toggle';
       fb.type = 'button';
       document.body.appendChild(fb);
-      btns = document.querySelectorAll('.js-tema-toggle');
     }
 
     pasangIkonSemua();
-
-    for (var i = 0; i < btns.length; i++) {
-      btns[i].addEventListener('click', function () {
-        setTema(temaSekarang() === 'dark' ? 'light' : 'dark');
-        pasangIkonSemua();
-      });
-    }
   }
+
+  // delegasi 1 listener di document: tahan re-render (sidebar di-render ulang
+  // tiap navigasi, jadi listener per-elemen bakal ilang). expose pasangIkonTema
+  // biar sidebar.js bisa repaint ikon setelah render ulang.
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('.js-tema-toggle') : null;
+    if (!t) return;
+    setTema(temaSekarang() === 'dark' ? 'light' : 'dark');
+    pasangIkonSemua();
+  });
+
+  window.pasangIkonTema = pasangIkonSemua;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', pasangTombol);
