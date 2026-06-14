@@ -409,7 +409,6 @@ html[data-theme="dark"] .inv-bulk-count {
 
 /* 5. Laba Rugi List (Keuangan) */
 html[data-theme="dark"] .pl-amount.negative {
-<<<<<<< HEAD
   color: #f87171 !important; /* rose-400 */
 }
 
