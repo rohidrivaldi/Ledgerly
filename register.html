@@ -237,6 +237,49 @@
                   <div class="criterion-item invalid" id="crit-spec">❌ Minimal 1 karakter spesial (@$!%*?&)</div>
                 </div>
 
+                <!-- Konfirmasi Kata Sandi (ketik ulang biar gak salah) -->
+                <div style="margin-top: 16px;">
+                  <label class="form-label" for="reg-password-confirm">Konfirmasi Kata Sandi</label>
+                  <div class="login-input-group">
+                    <input
+                      class="form-input"
+                      type="password"
+                      id="reg-password-confirm"
+                      name="confirm-password"
+                      autocomplete="new-password"
+                      placeholder="Ketik ulang kata sandi"
+                      required
+                      oninput="validatePasswordStrength()"
+                    />
+                    <button
+                      type="button"
+                      class="login-toggle-pw"
+                      onclick="togglePasswordVisibility('reg-password-confirm', 'reg-icon-eye-c', 'reg-icon-eye-off-c')"
+                    >
+                      <svg id="reg-icon-eye-c" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                      <svg
+                        id="reg-icon-eye-off-c"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        style="display: none"
+                      >
+                        <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
+                        <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                        <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />
+                        <path d="m2 2 20 20" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="criterion-item invalid" id="crit-match" style="margin-top: 8px;">❌ Konfirmasi sandi harus sama</div>
+                </div>
+
                 <div id="register-error" class="login-error"></div>
 
                 <button type="submit" class="login-submit" id="reg-submit-btn" disabled>

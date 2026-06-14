@@ -87,20 +87,26 @@ function togglePasswordVisibility(inputId, eyeId, eyeOffId) {
 // Validasi kekuatan kata sandi real-time
 function validatePasswordStrength() {
   var pw = document.getElementById('reg-password').value;
-  
+  var confEl = document.getElementById('reg-password-confirm');
+  var pwConfirm = confEl ? confEl.value : '';
+
   // Kriteria UAT
   var hasLength = pw.length >= 8;
   var hasUpper = /[A-Z]/.test(pw);
   var hasLower = /[a-z]/.test(pw);
   var hasNum = /[0-9]/.test(pw);
   var hasSpec = /[@$!%*?&]/.test(pw);
-  
+
   updateCriterionElement('crit-len', hasLength, 'Minimal 8 karakter');
   updateCriterionElement('crit-upper', hasUpper, 'Minimal 1 huruf besar (A-Z)');
   updateCriterionElement('crit-lower', hasLower, 'Minimal 1 huruf kecil (a-z)');
   updateCriterionElement('crit-num', hasNum, 'Minimal 1 angka (0-9)');
   updateCriterionElement('crit-spec', hasSpec, 'Minimal 1 karakter spesial (@$!%*?&)');
-  
+
+  // cek konfirmasi sandi cocok (cuma valid kalau sandi utama udh diisi)
+  var isMatch = pwConfirm.length > 0 && pw === pwConfirm;
+  updateCriterionElement('crit-match', isMatch, 'Konfirmasi sandi harus sama');
+
   // Hitung jumlah kriteria terpenuhi
   var score = 0;
   if (hasLength) score++;
@@ -129,7 +135,7 @@ function validatePasswordStrength() {
     return;
   }
   
-  var allMet = hasLength && hasUpper && hasLower && hasNum && hasSpec;
+  var allMet = hasLength && hasUpper && hasLower && hasNum && hasSpec && isMatch;
   
   // Warna bar bergantung kekuatan
   if (score <= 2) {
@@ -182,9 +188,20 @@ async function handleRegister(e) {
   var email = document.getElementById('reg-email').value.trim();
   var waInput = document.getElementById('reg-wa').value.trim();
   var password = document.getElementById('reg-password').value;
+  var passwordConfirm = document.getElementById('reg-password-confirm').value;
   var errDiv = document.getElementById('register-error');
   var btn = document.getElementById('reg-submit-btn');
-  
+
+  // safety net: pastikan konfirmasi sandi cocok (selain gate tombol di UI)
+  if (password !== passwordConfirm) {
+    errDiv.textContent = 'Konfirmasi kata sandi tidak cocok. Silakan periksa kembali.';
+    errDiv.style.display = 'block';
+    errDiv.style.color = 'var(--rose-700)';
+    errDiv.style.borderColor = 'var(--rose-200)';
+    errDiv.style.background = 'var(--rose-50)';
+    return;
+  }
+
   // Sanitasi nomor WhatsApp (harus numeric dan diawali 62)
   var waClean = waInput.replace(/[^0-9]/g, '');
   if (waClean.startsWith('0')) {
