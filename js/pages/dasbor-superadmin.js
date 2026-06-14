@@ -110,8 +110,14 @@ async function initDasborSuperadmin() {
             let paketBadge = "badge-neutral";
             let paketLabel = "Starter";
             if (u.paket === "business") {
-              paketBadge = "badge-info";
-              paketLabel = "Business (Trial)";
+              // bedain trial vs langganan biar konsisten sama chart
+              if (u.status_langganan === "langganan") {
+                paketBadge = "badge-success";
+                paketLabel = "Business (Langganan)";
+              } else {
+                paketBadge = "badge-info";
+                paketLabel = "Business (Trial)";
+              }
             } else if (u.paket === "enterprise") {
               paketBadge = "badge-danger";
               paketLabel = "Enterprise";
