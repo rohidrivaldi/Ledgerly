@@ -47,7 +47,7 @@ Ledgerly mengadopsi arsitektur **Pure Decoupled SPA (Single Page Application)** 
 * **Database & Cloud Backend**: [Supabase](https://supabase.com) (PostgreSQL Database, Supabase Auth, Row-Level Security / RLS).
 * **Serverless Functions**: Vercel Serverless (`/api/create-user` untuk pembuatan akun oleh superadmin & `/api/chatbot` sebagai proxy AI ber-JWT).
 * **Kecerdasan Buatan (AI)**: [Gemini AI API](https://deepmind.google/technologies/gemini/) (`gemini-2.5-flash` untuk pemrosesan NLP & Voice Input).
-* **Notifikasi WhatsApp**: WhatsApp Gateway berbasis Node.js (repositori terpisah, di-host di Pterodactyl Panel).
+* **Notifikasi WhatsApp**: WhatsApp Gateway berbasis Node.js + [Baileys](https://github.com/WhiskeySockets/Baileys), di-host di Pterodactyl Panel. Kode di repositori terpisah → **[Ledgerly-bot-wa](https://github.com/rohidrivaldi/Ledgerly-bot-wa)**.
 * **Ekspor & Utilitas**: [jsPDF](https://github.com/parallax/jsPDF) (Ekspor PDF Laba Rugi), [SheetJS](https://sheetjs.com) (Ekspor XLSX Excel), [PapaParse](https://www.papaparse.com) (Parsing CSV cepat).
 * **Visualisasi Bagan**: [Chart.js](https://www.chartjs.org) (Grafik interaktif inventaris & performa arus kas).
 * **Strategi Aset**: Seluruh pustaka pihak ketiga **di-self-host** (`public/js/vendor/`) — tanpa dependensi CDN runtime — untuk keandalan (anti-503) dan keamanan (CSP ketat `script-src 'self'`).
@@ -88,6 +88,7 @@ Ledgerly mengadopsi arsitektur **Pure Decoupled SPA (Single Page Application)** 
 ### 7. Notifikasi WhatsApp Otomatis
 * Sistem mengirimkan alert otomatis via WhatsApp kepada pemilik toko ketika stok suatu produk turun di bawah batas minimum (reorder point).
 * Memastikan pemilik UMKM selalu mendapatkan informasi stok kritis secara real-time, bahkan saat tidak sedang membuka aplikasi.
+* Bot juga menyediakan perintah interaktif (`/stok`, `/ringkasan`, `/menu`, `/ping`) untuk cek data lewat chat. Kode bot ada di repo terpisah: **[Ledgerly-bot-wa](https://github.com/rohidrivaldi/Ledgerly-bot-wa)**.
 
 ### 8. Papan Pengumuman (Announcement)
 * Menampilkan info dan kabar terbaru dari tim Ledgerly langsung di dalam dashboard pengguna.
