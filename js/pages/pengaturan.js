@@ -161,9 +161,25 @@ function initPengaturan() {
     integrationsCard.style.display = 'block';
     
     if (user.paket === 'starter') {
-      // Paket Starter: HANYA tampilkan Chatbot AI (tidak ada WhatsApp Notifikasi)
+      // Paket Starter: Notifikasi WhatsApp DITAMPILKAN tapi toggle dikunci & default
+      // OFF (klik -> notif upgrade). nomor WA tetep bisa diisi & disimpan realtime
+      // (sama kaya business) biar pas upgrade nanti nomornya udah siap kepasang.
       togglesContainer.innerHTML = `
         <div style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+          ${toggleRow('whatsapp', icon('whatsapp', 18), 'Notifikasi WhatsApp', 'Kirim alert otomatis saat stok di bawah minimum', false, 'var(--emerald-600)', true)}
+
+          <div style="margin-left: 36px; display: flex; flex-direction: column; gap: 6px; padding-top: 12px; border-top: 1px dashed var(--slate-100);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+              <div style="font-size: 13px; font-weight: 500; color: var(--slate-600);">Nomor WhatsApp Anda:</div>
+              <div style="position: relative; display: flex; align-items: center; max-width: 200px; width: 100%;">
+                <input class="form-input" type="text" value="${s.nomorWA || ''}" id="input-wa-nomor" style="width: 100%; font-size: 13px; padding-right: 30px;" placeholder="Contoh: 6285750917686" oninput="window.tanganiInputWA(this.value)">
+                <span id="wa-indicator" style="position: absolute; right: 10px; display: flex; align-items: center; pointer-events: none;"></span>
+              </div>
+            </div>
+            <div id="wa-error-msg" style="font-size: 11px; text-align: right; margin-top: 2px; display: none;"></div>
+            <div style="font-size: 11px; color: var(--slate-400); margin-top: 2px;">Simpan nomor sekarang. Notifikasi otomatis aktif setelah upgrade ke paket Profesional.</div>
+          </div>
+
           ${toggleRow('chatbot', icon('sparkles', 18), 'Chatbot AI', 'Input data dan tanya jawab lewat chat', s.chatbotEnabled, 'var(--indigo-600)')}
         </div>
       `;
@@ -192,11 +208,14 @@ function initPengaturan() {
     }
   }
 
-  // Jalankan validasi awal untuk menampilkan indikator centang/silang jika WhatsApp aktif
-  if (s.waEnabled && user.paket !== 'starter') {
+  // Jalankan validasi awal utk indikator centang/silang kalau ada input WA.
+  // starter sekarang juga punya input WA (walau notif-nya terkunci), jadi
+  // indikator tetep jalan biar user tau nomornya valid/nggak.
+  let adaInputWA = (user.paket === 'starter') || s.waEnabled;
+  if (adaInputWA) {
     setTimeout(function() {
       let inputEl = document.getElementById('input-wa-nomor');
-      if (inputEl) {
+      if (inputEl && inputEl.value) {
         window.tanganiInputWA(inputEl.value);
       }
     }, 10);
@@ -206,17 +225,22 @@ function initPengaturan() {
   renderKategoriList();
 }
 
-function toggleRow(key, iconSvg, title, desc, isActive, color) {
+function toggleRow(key, iconSvg, title, desc, isActive, color, locked) {
+  // locked=true -> fitur ada tapi terkunci (paket starter). toggle tetep keliatan
+  // (default off & redup) + ada badge "Upgrade". diklik -> munculin notif upgrade.
+  let badgeUpgrade = locked
+    ? '<span class="badge badge-info" style="font-size:10px; padding:2px 8px; margin-left:8px; vertical-align:middle;">Upgrade</span>'
+    : '';
   return `
     <div class="toggle-row" style="padding:0; margin:0; display:flex; flex-wrap:nowrap; align-items:center; justify-content:space-between; gap:12px;">
       <div class="toggle-left" style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
         <div class="toggle-icon" style="color:${color || 'var(--slate-500)'};">${iconSvg}</div>
         <div>
-          <div class="toggle-title" style="font-weight:600; font-size:14px; color:var(--slate-800);">${title}</div>
+          <div class="toggle-title" style="font-weight:600; font-size:14px; color:var(--slate-800);">${title}${badgeUpgrade}</div>
           <div class="toggle-desc" style="font-size:12px; color:var(--slate-500); margin-top:2px;">${desc}</div>
         </div>
       </div>
-      <div class="toggle-track${isActive ? ' active' : ''}" id="toggle-${key}" onclick="toggleSetting('${key}')" style="cursor:pointer;">
+      <div class="toggle-track${isActive ? ' active' : ''}${locked ? ' toggle-locked' : ''}" id="toggle-${key}" onclick="toggleSetting('${key}')" style="cursor:pointer;${locked ? ' opacity:0.5;' : ''}">
         <span class="toggle-knob"></span>
       </div>
     </div>`;
@@ -224,7 +248,14 @@ function toggleRow(key, iconSvg, title, desc, isActive, color) {
 
 function toggleSetting(key) {
   let s = store.settings || {};
+  let user = store.user || {};
+
   if (key === 'whatsapp') {
+    // paket starter: WhatsApp terkunci. jgn toggle, munculin notif upgrade.
+    if (user.paket === 'starter') {
+      tampilkanUpgradeWA();
+      return;
+    }
     s.waEnabled = !s.waEnabled;
     store.settings = { ...s };
   } else if (key === 'chatbot') {
@@ -238,6 +269,39 @@ function toggleSetting(key) {
   }
   salinSettingsKeLocalStorage();
   initPengaturan(); // re-render untuk memperbarui layout nested WA input
+}
+
+// modal notif upgrade pas user starter coba aktifin Notifikasi WhatsApp.
+// CTA-nya ngarah ke wa.me admin (diatur superadmin di platform settings).
+function tampilkanUpgradeWA() {
+  let lama = document.getElementById('modal-upgrade-wa');
+  if (lama) lama.remove();
+
+  let ps = store.platformSettings || {};
+  let psWaAdmin = ps.wa_admin || '6285750917686';
+  let pesan = encodeURIComponent('Halo Admin Ledgerly, saya ingin upgrade paket agar bisa pakai fitur Notifikasi WhatsApp stok rendah.');
+
+  let modalHtml = '<div class="modal-overlay" id="modal-upgrade-wa" onclick="if(event.target.id===\'modal-upgrade-wa\') tutupUpgradeWA()">'
+    + '<div class="modal-box" style="max-width:430px;">'
+    + '<div style="display:flex; align-items:flex-start; gap:14px; margin-bottom:18px;">'
+    + '<div style="flex-shrink:0; width:42px; height:42px; border-radius:50%; background:var(--emerald-50); color:var(--emerald-600); display:grid; place-items:center;">' + icon('whatsapp', 20) + '</div>'
+    + '<div>'
+    + '<div class="modal-title">Fitur Paket Berbayar</div>'
+    + '<div class="modal-desc" style="margin-top:6px; line-height:1.5;">Notifikasi WhatsApp otomatis (alert stok rendah ke nomor Anda) cuma tersedia di paket <b>Profesional</b> & <b>Enterprise</b>. Upgrade dulu untuk mengaktifkan fitur ini.</div>'
+    + '</div>'
+    + '</div>'
+    + '<div style="display:flex; justify-content:flex-end; gap:8px;">'
+    + '<button class="btn btn-secondary" onclick="tutupUpgradeWA()">Nanti Saja</button>'
+    + '<a href="https://wa.me/' + psWaAdmin + '?text=' + pesan + '" target="_blank" class="btn btn-primary" style="display:inline-flex; align-items:center; gap:6px;" onclick="tutupUpgradeWA()">' + icon('whatsapp', 16) + ' Hubungi Admin (Upgrade)</a>'
+    + '</div>'
+    + '</div></div>';
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function tutupUpgradeWA() {
+  let modal = document.getElementById('modal-upgrade-wa');
+  if (modal) modal.remove();
 }
 
 window.tanganiInputWA = async function(val) {
